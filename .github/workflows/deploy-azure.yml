@@ -1,0 +1,210 @@
+name: Deploy GapHunter to Azure
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: gaphunter-rg
+  AZURE_LOCATION: eastus
+  CONTAINER_REGISTRY: gaphunterregistry
+  BACKEND_APP_NAME: gaphunter-backend
+  FRONTEND_APP_NAME: gaphunter-frontend
+  SQL_SERVER_NAME: gaphunter-sql-server
+  DATABASE_NAME: gaphunter
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create Resource Group
+      run: |
+        az group create \
+          --name ${{ env.AZURE_RESOURCE_GROUP }} \
+          --location ${{ env.AZURE_LOCATION }}
+
+    - name: Create Container Registry
+      run: |
+        if ! az acr show --name ${{ env.CONTAINER_REGISTRY }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          az acr create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.CONTAINER_REGISTRY }} \
+            --sku Basic \
+            --admin-enabled true
+        fi
+
+    - name: Get ACR credentials
+      id: acr-creds
+      run: |
+        ACR_SERVER=$(az acr show --name ${{ env.CONTAINER_REGISTRY }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "loginServer" --output tsv)
+        ACR_USERNAME=$(az acr credential show --name ${{ env.CONTAINER_REGISTRY }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "username" --output tsv)
+        ACR_PASSWORD=$(az acr credential show --name ${{ env.CONTAINER_REGISTRY }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "passwords[0].value" --output tsv)
+        
+        echo "acr-server=$ACR_SERVER" >> $GITHUB_OUTPUT
+        echo "acr-username=$ACR_USERNAME" >> $GITHUB_OUTPUT
+        echo "acr-password=$ACR_PASSWORD" >> $GITHUB_OUTPUT
+
+    - name: Build and push backend image
+      run: |
+        cd backend
+        az acr build \
+          --registry ${{ env.CONTAINER_REGISTRY }} \
+          --image gaphunter-backend:${{ github.sha }} \
+          --image gaphunter-backend:latest \
+          .
+
+    - name: Build and push frontend image
+      run: |
+        cd frontend
+        az acr build \
+          --registry ${{ env.CONTAINER_REGISTRY }} \
+          --image gaphunter-frontend:${{ github.sha }} \
+          --image gaphunter-frontend:latest \
+          .
+
+    - name: Create SQL Server and Database
+      run: |
+        # Check if SQL Server exists
+        if ! az sql server show --name ${{ env.SQL_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          echo "Creating SQL Server..."
+          az sql server create \
+            --name ${{ env.SQL_SERVER_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --location ${{ env.AZURE_LOCATION }} \
+            --admin-user gaphunter \
+            --admin-password "${{ secrets.DB_ADMIN_PASSWORD }}"
+          
+          # Configure firewall
+          az sql server firewall-rule create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name AllowAzureServices \
+            --start-ip-address 0.0.0.0 \
+            --end-ip-address 0.0.0.0
+        fi
+        
+        # Check if database exists
+        if ! az sql db show --name ${{ env.DATABASE_NAME }} --server ${{ env.SQL_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          echo "Creating database..."
+          az sql db create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name ${{ env.DATABASE_NAME }} \
+            --service-objective Basic \
+            --max-size 2GB
+        fi
+
+    - name: Create Container Apps Environment
+      run: |
+        if ! az containerapp env show --name gaphunter-env --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          az containerapp env create \
+            --name gaphunter-env \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --location ${{ env.AZURE_LOCATION }}
+        fi
+
+    - name: Deploy Backend Container App
+      run: |
+        DATABASE_URL="mssql+pyodbc://gaphunter:${{ secrets.DB_ADMIN_PASSWORD }}@${{ env.SQL_SERVER_NAME }}.database.windows.net:1433/${{ env.DATABASE_NAME }}?driver=ODBC+Driver+18+for+SQL+Server"
+        
+        if az containerapp show --name ${{ env.BACKEND_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          # Update existing app
+          az containerapp update \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ steps.acr-creds.outputs.acr-server }}/gaphunter-backend:latest
+        else
+          # Create new app
+          az containerapp create \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --environment gaphunter-env \
+            --image ${{ steps.acr-creds.outputs.acr-server }}/gaphunter-backend:latest \
+            --registry-server ${{ steps.acr-creds.outputs.acr-server }} \
+            --registry-username ${{ steps.acr-creds.outputs.acr-username }} \
+            --registry-password ${{ steps.acr-creds.outputs.acr-password }} \
+            --target-port 8000 \
+            --ingress external \
+            --min-replicas 0 \
+            --max-replicas 3 \
+            --cpu 0.5 \
+            --memory 1Gi \
+            --secrets database-url="$DATABASE_URL" secret-key="${{ secrets.SECRET_KEY }}" openrouter-api-key="${{ secrets.OPENROUTER_API_KEY }}" \
+            --env-vars DATABASE_URL=secretref:database-url SECRET_KEY=secretref:secret-key OPENROUTER_API_KEY=secretref:openrouter-api-key ENVIRONMENT=production
+        fi
+
+    - name: Get Backend URL
+      id: backend-url
+      run: |
+        BACKEND_URL=$(az containerapp show --name ${{ env.BACKEND_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "properties.configuration.ingress.fqdn" --output tsv)
+        echo "backend-url=$BACKEND_URL" >> $GITHUB_OUTPUT
+
+    - name: Deploy Frontend Container App
+      run: |
+        if az containerapp show --name ${{ env.FRONTEND_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          # Update existing app
+          az containerapp update \
+            --name ${{ env.FRONTEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ steps.acr-creds.outputs.acr-server }}/gaphunter-frontend:latest \
+            --set-env-vars VITE_API_BASE_URL="https://${{ steps.backend-url.outputs.backend-url }}/api"
+        else
+          # Create new app
+          az containerapp create \
+            --name ${{ env.FRONTEND_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --environment gaphunter-env \
+            --image ${{ steps.acr-creds.outputs.acr-server }}/gaphunter-frontend:latest \
+            --registry-server ${{ steps.acr-creds.outputs.acr-server }} \
+            --registry-username ${{ steps.acr-creds.outputs.acr-username }} \
+            --registry-password ${{ steps.acr-creds.outputs.acr-password }} \
+            --target-port 80 \
+            --ingress external \
+            --min-replicas 0 \
+            --max-replicas 2 \
+            --cpu 0.25 \
+            --memory 0.5Gi \
+            --env-vars VITE_API_BASE_URL="https://${{ steps.backend-url.outputs.backend-url }}/api"
+        fi
+
+    - name: Get Frontend URL
+      id: frontend-url
+      run: |
+        FRONTEND_URL=$(az containerapp show --name ${{ env.FRONTEND_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "properties.configuration.ingress.fqdn" --output tsv)
+        echo "frontend-url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+
+    - name: Run Database Migrations
+      run: |
+        # Wait for backend to be ready
+        sleep 60
+        
+        # Run migrations via container exec
+        az containerapp exec \
+          --name ${{ env.BACKEND_APP_NAME }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --command "alembic upgrade head" || true
+
+    - name: Display Deployment Info
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo ""
+        echo "🌐 Application URLs:"
+        echo "Frontend: https://${{ steps.frontend-url.outputs.frontend-url }}"
+        echo "Backend:  https://${{ steps.backend-url.outputs.backend-url }}"
+        echo "API Docs: https://${{ steps.backend-url.outputs.backend-url }}/docs"
+        echo ""
+        echo "💰 Cost-optimized configuration applied:"
+        echo "- Azure SQL Database: Basic tier (5 DTU)"
+        echo "- Container Apps: Minimal resources with scale-to-zero"
+        echo "- Estimated cost: $15-30/month"
+

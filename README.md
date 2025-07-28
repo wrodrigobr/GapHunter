@@ -1,207 +1,188 @@
-# GapHunter - Análise Técnica de Poker com IA
+# 🎯 GapHunter - Plataforma de Análise de Poker
 
-![GapHunter Logo](https://img.shields.io/badge/GapHunter-Poker%20Analysis-blue)
-![Version](https://img.shields.io/badge/version-1.0.0-green)
-![License](https://img.shields.io/badge/license-MIT-blue)
+Uma plataforma completa para análise de hand histories de poker com IA, identificação automática de gaps e sistema de coaching.
 
-## 📋 Visão Geral
+## 🚀 Deploy Rápido no Azure
 
-GapHunter é uma plataforma avançada para análise técnica de mãos de poker, focada em jogadores de torneios online (MTTs). Utilizando inteligência artificial e princípios de GTO (Game Theory Optimal), o sistema identifica gaps recorrentes no jogo dos usuários e fornece feedback técnico detalhado para melhoria contínua.
+### Opção 1: GitHub Actions (Recomendado)
+```bash
+# 1. Configure os secrets no GitHub (ver GITHUB_ACTIONS_SETUP.md)
+# 2. Faça push no repositório
+git push origin master
+# 3. Deploy automático será executado
+```
 
-### 🎯 Principais Funcionalidades
+### Opção 2: Script Manual
+```bash
+# Deploy econômico ($15-30/mês)
+chmod +x deploy-azure-budget.sh
+export OPENROUTER_API_KEY="sua-chave"
+./deploy-azure-budget.sh
+```
 
-- **Análise Automática de Mãos**: Upload de hand histories do PokerStars com análise por IA
-- **Identificação de Gaps**: Sistema inteligente que identifica padrões problemáticos recorrentes
-- **Feedback Técnico**: Análises detalhadas baseadas em estratégia GTO
-- **Histórico Completo**: Armazenamento e consulta de todas as mãos analisadas
-- **Interface Moderna**: Dashboard responsivo e intuitivo
-- **Autenticação Segura**: Sistema de usuários com JWT
+## 💰 Custos Otimizados
+
+| Recurso | Configuração | Custo/mês |
+|---------|--------------|-----------|
+| Azure SQL Database | Basic (5 DTU) | ~$5 |
+| Container Apps Backend | 0.5 CPU, 1GB RAM | ~$8-12 |
+| Container Apps Frontend | 0.25 CPU, 0.5GB RAM | ~$2-5 |
+| Container Registry | Basic SKU | ~$5 |
+| **Total** | **Scale-to-zero ativo** | **$15-30** |
+
+## 🎯 Funcionalidades
+
+### ✅ Core Features
+- **GapHunter Core**: Identificação automática de gaps recorrentes
+- **Upload de Hand History**: Parser completo do PokerStars
+- **Análise de IA**: Integração com OpenRouter/Mistral
+- **Sistema de Usuários**: Autenticação JWT completa
+
+### ✅ ROI & Performance Tracker
+- **Análise Financeira**: Buy-ins, premiações, ROI
+- **Gráficos Temporais**: Evolução de performance
+- **Estatísticas ITM**: In-the-money percentage
+- **Adição Manual**: Resultados de torneios
+
+### ✅ Módulo para Coaches
+- **Perfis de Coach**: Especialidades e avaliações
+- **Gestão de Alunos**: Acompanhamento de progresso
+- **Sistema de Notas**: Categorizadas por prioridade
+- **Análise de Gaps**: Por aluno individual
+
+### ✅ GapHunter Vision (Modo Justo)
+- **Configurações de Privacidade**: Controle granular
+- **Análises Mútuas**: Sistema de reciprocidade
+- **Jogadores Públicos**: Lista com estatísticas
+- **Análise de Adversários**: Conhecidos de mesas regulares
+
+### ✅ Sistema de Assinatura
+- **5 Planos**: Free, Basic, Pro, Coach, Premium
+- **Controle de Acesso**: Por funcionalidade
+- **Pagamentos**: Sistema integrado
+- **Upgrades**: Automáticos por plano
+
+### ✅ GapHunter Club & Afiliados
+- **Sistema de Afiliados**: 30% regular, 50% influenciador
+- **4 Níveis**: Bronze, Silver, Gold, Diamond
+- **Sistema de Pontos**: Progressão automática
+- **Leaderboard**: Ranking dos membros
+- **Comissionamento**: Automático por indicação
 
 ## 🏗️ Arquitetura
 
 ### Backend (FastAPI)
-- **Framework**: FastAPI 0.104.1
-- **Banco de Dados**: SQLite (desenvolvimento) / SQL Server (produção)
-- **Autenticação**: JWT com bcrypt
-- **IA**: Integração com OpenRouter (Mistral)
-- **ORM**: SQLAlchemy 2.0
+- **Framework**: FastAPI + SQLAlchemy
+- **Banco**: Azure SQL Database (Basic)
+- **IA**: OpenRouter/Mistral integration
+- **Auth**: JWT com refresh tokens
 
 ### Frontend (React)
-- **Framework**: React 18 com Vite
-- **UI Components**: shadcn/ui + Tailwind CSS
-- **Gerenciamento de Estado**: React Hooks + Context API
-- **HTTP Client**: Axios
-- **Roteamento**: React Router DOM
+- **Framework**: React + Vite
+- **UI**: Tailwind CSS + shadcn/ui
+- **State**: Context API
+- **Build**: Otimizado para produção
 
-## 🚀 Instalação e Execução
+### Infraestrutura
+- **Hosting**: Azure Container Apps
+- **Database**: Azure SQL Database
+- **Registry**: Azure Container Registry
+- **CI/CD**: GitHub Actions
 
-### Pré-requisitos
+## 📚 Documentação
 
-- Python 3.11+
-- Node.js 20+
-- pnpm (recomendado)
+- **[DEPLOY_BUDGET_GUIDE.md](DEPLOY_BUDGET_GUIDE.md)**: Guia completo de deploy econômico
+- **[GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)**: Configuração de CI/CD
+- **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)**: Guia de deploy padrão
+- **[AZURE_DEPLOYMENT_SUMMARY.md](AZURE_DEPLOYMENT_SUMMARY.md)**: Resumo técnico
 
-### 1. Configuração do Backend
+## 🛠️ Desenvolvimento Local
 
+### Backend
 ```bash
 cd backend
 pip install -r requirements.txt
-
-# Configurar variáveis de ambiente
-cp .env.example .env
-# Editar .env com suas configurações
-
-# Iniciar servidor
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --reload
 ```
 
-### 2. Configuração do Frontend
-
+### Frontend
 ```bash
 cd frontend
 pnpm install
-
-# Iniciar servidor de desenvolvimento
-pnpm run dev --host
+pnpm dev
 ```
 
-### 3. Acessar a Aplicação
-
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- Documentação da API: http://localhost:8000/docs
-
-## 📁 Estrutura do Projeto
-
-```
-gaphunter/
-├── backend/                 # API FastAPI
-│   ├── app/
-│   │   ├── models/         # Modelos SQLAlchemy
-│   │   ├── routers/        # Endpoints da API
-│   │   ├── services/       # Lógica de negócio
-│   │   ├── utils/          # Utilitários
-│   │   └── main.py         # Aplicação principal
-│   ├── requirements.txt    # Dependências Python
-│   └── .env               # Configurações
-├── frontend/               # Interface React
-│   ├── src/
-│   │   ├── components/     # Componentes React
-│   │   ├── hooks/          # Hooks customizados
-│   │   ├── lib/           # Utilitários e API
-│   │   └── App.jsx        # Componente principal
-│   ├── package.json       # Dependências Node.js
-│   └── vite.config.js     # Configuração Vite
-└── README.md              # Este arquivo
+### Banco de Dados
+```bash
+# Migrações
+cd backend
+alembic upgrade head
 ```
 
 ## 🔧 Configuração
 
-### Variáveis de Ambiente (Backend)
-
-```env
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+### Variáveis de Ambiente
+```bash
+# Backend (.env)
 DATABASE_URL=sqlite:///./gaphunter.db
-OPENROUTER_API_KEY=your-openrouter-api-key
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+SECRET_KEY=sua-chave-secreta
+OPENROUTER_API_KEY=sua-chave-openrouter
+
+# Frontend (.env)
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
-### Configuração da IA
+## 📊 Monitoramento
 
-Para utilizar as funcionalidades de análise por IA, você precisa:
+### Logs
+```bash
+# Backend logs
+az containerapp logs show --name gaphunter-backend --resource-group gaphunter-rg --follow
 
-1. Criar uma conta no [OpenRouter](https://openrouter.ai)
-2. Obter uma API key
-3. Configurar a variável `OPENROUTER_API_KEY` no arquivo `.env`
+# Frontend logs
+az containerapp logs show --name gaphunter-frontend --resource-group gaphunter-rg --follow
+```
 
-## 📖 Como Usar
+### Custos
+```bash
+# Verificar gastos
+az consumption usage list --top 10
 
-### 1. Criar Conta
-- Acesse a aplicação e clique em "Cadastre-se"
-- Preencha os dados e crie sua conta
+# Configurar alertas
+az consumption budget create --budget-name "GapHunter-Budget" --amount 50
+```
 
-### 2. Upload de Hand History
-- Faça login na aplicação
-- Vá para a aba "Upload de Mãos"
-- Selecione ou arraste um arquivo .txt com suas mãos do PokerStars
-- Clique em "Analisar" para processar
-
-### 3. Visualizar Análises
-- Acesse a aba "Histórico" para ver todas as mãos analisadas
-- Clique em "Ver Análise" para detalhes completos
-- Visualize feedback da IA e sugestões de melhoria
-
-### 4. Identificar Gaps
-- O sistema automaticamente identifica padrões problemáticos
-- Acesse endpoints `/api/gaps/analyze` para análise detalhada
-- Visualize resumo de gaps em `/api/gaps/summary`
-
-## 🎮 Obtendo Hand Histories do PokerStars
-
-1. Abra o PokerStars
-2. Vá em "Opções" → "Histórico de Mãos"
-3. Selecione o período desejado
-4. Clique em "Solicitar Mãos"
-5. Baixe o arquivo .txt quando estiver pronto
-6. Faça upload no GapHunter
-
-## 🔍 API Endpoints
-
-### Autenticação
-- `POST /api/auth/register` - Criar conta
-- `POST /api/auth/login` - Fazer login
-- `GET /api/auth/me` - Dados do usuário atual
-
-### Mãos
-- `POST /api/hands/upload` - Upload de hand history
-- `GET /api/hands/history/my-hands` - Listar mãos do usuário
-- `GET /api/hands/history/my-hands/{id}` - Detalhes de uma mão
-- `DELETE /api/hands/history/my-hands/{id}` - Deletar mão
-
-### Gaps
-- `GET /api/gaps/analyze` - Analisar gaps recorrentes
-- `GET /api/gaps/summary` - Resumo dos gaps
-- `GET /api/gaps/my-gaps` - Listar todos os gaps
-
-### Usuários
-- `GET /api/users/profile` - Perfil do usuário
-- `GET /api/users/stats` - Estatísticas do usuário
-
-## 🤝 Contribuindo
+## 🤝 Contribuição
 
 1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 🆘 Suporte
+## 🎯 Roadmap
 
-Para suporte e dúvidas:
-- Abra uma [issue](https://github.com/seu-usuario/gaphunter/issues)
-- Entre em contato: suporte@gaphunter.com
+### Próximas Funcionalidades
+- [ ] Importação de outras plataformas (888poker, GGPoker)
+- [ ] IA ajustável por perfil de jogador
+- [ ] Modo demonstrativo público
+- [ ] Análise de evolução temporal
+- [ ] Sistema de notificações
 
-## 🔮 Roadmap
-
-### Versão 1.1
-- [ ] Suporte para outras plataformas (888poker, GGPoker)
-- [ ] Análise de ROI e performance
-- [ ] Módulo para coaches
-- [ ] Sistema de assinatura
-
-### Versão 1.2
-- [ ] GapHunter Vision (análise de oponentes)
-- [ ] GapHunter Club (programa de afiliados)
-- [ ] Modo demonstrativo
-- [ ] Análise avançada de ICM
+### Melhorias Técnicas
+- [ ] Testes automatizados
+- [ ] Monitoramento avançado
+- [ ] Cache Redis
+- [ ] CDN para assets
+- [ ] Backup automático
 
 ---
 
-**GapHunter** - Desenvolvido com ❤️ para a comunidade de poker
+**🎉 GapHunter - Transformando dados em vitórias!**
+
+Para suporte ou dúvidas, abra uma issue no GitHub ou consulte a documentação completa.
 
