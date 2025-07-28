@@ -10,7 +10,7 @@ echo "💰 Iniciando deploy GRATUITO do GapHunter com App Service F1..."
 
 # Configurações GRATUITAS
 RESOURCE_GROUP="gaphunter-rg"
-LOCATION="eastus"  # Região mais barata
+LOCATION="${AZURE_LOCATION:-westus2}"  # Alterado de eastus, permite override via variável
 BACKEND_APP_NAME="gaphunter-backend"
 FRONTEND_APP_NAME="gaphunter-frontend-static"
 POSTGRES_SERVER_NAME="gaphunter-postgres"

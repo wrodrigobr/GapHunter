@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_RESOURCE_GROUP: gaphunter-rg
-  AZURE_LOCATION: eastus
+  AZURE_LOCATION: westus2  # Alterado de eastus para westus2 (melhor disponibilidade)
   BACKEND_APP_NAME: gaphunter-backend
   FRONTEND_APP_NAME: gaphunter-frontend-static
   POSTGRES_SERVER_NAME: gaphunter-postgres
