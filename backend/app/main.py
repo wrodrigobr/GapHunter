@@ -103,18 +103,19 @@ async def check_database_status():
     """Verifica status do banco de dados"""
     try:
         from app.models.database import SessionLocal
+        from sqlalchemy import text
         
         db = SessionLocal()
         try:
             # Teste simples de conexão
-            db.execute("SELECT 1")
+            db.execute(text("SELECT 1"))
             
             # Verificar se tabelas existem
-            tables_query = """
+            tables_query = text("""
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'dbo'
-            """
+            """)
             result = db.execute(tables_query)
             tables = [row[0] for row in result.fetchall()]
             
