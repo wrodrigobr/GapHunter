@@ -9,8 +9,18 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
+    full_name = Column(String(100), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
+    
+    # Informações específicas de poker
+    poker_experience = Column(String(20), nullable=True)  # "beginner", "intermediate", "advanced", "professional"
+    preferred_games = Column(String(20), nullable=True)   # "cash", "tournaments", "both"
+    main_stakes = Column(String(20), nullable=True)       # "micro", "low", "mid", "high"
+    poker_goals = Column(String(20), nullable=True)       # "recreational", "profit", "professional"
+    country = Column(String(50), nullable=True)
+    timezone = Column(String(50), nullable=True)
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

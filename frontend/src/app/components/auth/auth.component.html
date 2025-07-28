@@ -62,40 +62,155 @@
 
     <!-- Formulário de Registro -->
     <form *ngIf="!isLoginMode" (ngSubmit)="onRegister()" class="auth-form">
-      <div class="form-group">
-        <label for="register-name">Nome</label>
-        <input 
-          type="text" 
-          id="register-name"
-          [(ngModel)]="registerData.name"
-          name="name"
-          placeholder="Seu nome"
-          [disabled]="isLoading"
-          required>
+      <!-- Informações Básicas -->
+      <div class="form-section">
+        <h3 class="section-title">Informações Básicas</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="register-username">Username *</label>
+            <input 
+              type="text" 
+              id="register-username"
+              [(ngModel)]="registerData.username"
+              name="username"
+              placeholder="meuusername"
+              [disabled]="isLoading"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="register-fullname">Nome Completo *</label>
+            <input 
+              type="text" 
+              id="register-fullname"
+              [(ngModel)]="registerData.full_name"
+              name="full_name"
+              placeholder="Seu nome completo"
+              [disabled]="isLoading"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-email">Email *</label>
+          <input 
+            type="email" 
+            id="register-email"
+            [(ngModel)]="registerData.email"
+            name="email"
+            placeholder="seu@email.com"
+            [disabled]="isLoading"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="register-password">Senha *</label>
+          <input 
+            type="password" 
+            id="register-password"
+            [(ngModel)]="registerData.password"
+            name="password"
+            placeholder="••••••••"
+            [disabled]="isLoading"
+            required>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="register-email">Email</label>
-        <input 
-          type="email" 
-          id="register-email"
-          [(ngModel)]="registerData.email"
-          name="email"
-          placeholder="seu@email.com"
-          [disabled]="isLoading"
-          required>
-      </div>
+      <!-- Perfil de Poker -->
+      <div class="form-section">
+        <h3 class="section-title">Perfil de Poker</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="poker-experience">Experiência</label>
+            <select 
+              id="poker-experience"
+              [(ngModel)]="registerData.poker_experience"
+              name="poker_experience"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="beginner">Iniciante</option>
+              <option value="intermediate">Intermediário</option>
+              <option value="advanced">Avançado</option>
+              <option value="professional">Profissional</option>
+            </select>
+          </div>
 
-      <div class="form-group">
-        <label for="register-password">Senha</label>
-        <input 
-          type="password" 
-          id="register-password"
-          [(ngModel)]="registerData.password"
-          name="password"
-          placeholder="••••••••"
-          [disabled]="isLoading"
-          required>
+          <div class="form-group">
+            <label for="preferred-games">Jogos Preferidos</label>
+            <select 
+              id="preferred-games"
+              [(ngModel)]="registerData.preferred_games"
+              name="preferred_games"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="cash">Cash Games</option>
+              <option value="tournaments">Torneios</option>
+              <option value="both">Ambos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="main-stakes">Stakes Principais</label>
+            <select 
+              id="main-stakes"
+              [(ngModel)]="registerData.main_stakes"
+              name="main_stakes"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="micro">Micro ($0.01/$0.02 - $0.05/$0.10)</option>
+              <option value="low">Low ($0.25/$0.50 - $1/$2)</option>
+              <option value="mid">Mid ($2/$5 - $10/$20)</option>
+              <option value="high">High ($25/$50+)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="poker-goals">Objetivos</label>
+            <select 
+              id="poker-goals"
+              [(ngModel)]="registerData.poker_goals"
+              name="poker_goals"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="recreational">Recreativo</option>
+              <option value="profit">Lucro</option>
+              <option value="professional">Profissional</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="country">País</label>
+            <input 
+              type="text" 
+              id="country"
+              [(ngModel)]="registerData.country"
+              name="country"
+              placeholder="Brasil"
+              [disabled]="isLoading">
+          </div>
+
+          <div class="form-group">
+            <label for="timezone">Fuso Horário</label>
+            <select 
+              id="timezone"
+              [(ngModel)]="registerData.timezone"
+              name="timezone"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="America/Sao_Paulo">Brasília (UTC-3)</option>
+              <option value="America/New_York">Nova York (UTC-5)</option>
+              <option value="Europe/London">Londres (UTC+0)</option>
+              <option value="Europe/Berlin">Berlim (UTC+1)</option>
+              <option value="Asia/Tokyo">Tóquio (UTC+9)</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <button 

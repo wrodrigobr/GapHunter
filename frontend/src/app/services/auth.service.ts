@@ -15,9 +15,17 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  name: string;
+  username: string;
+  full_name: string;
   email: string;
   password: string;
+  // Informações específicas de poker
+  poker_experience?: string;
+  preferred_games?: string;
+  main_stakes?: string;
+  poker_goals?: string;
+  country?: string;
+  timezone?: string;
 }
 
 export interface AuthResponse {

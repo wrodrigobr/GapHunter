@@ -22,9 +22,16 @@ export class AuthComponent {
   };
 
   registerData: RegisterRequest = {
-    name: '',
+    username: '',
+    full_name: '',
     email: '',
-    password: ''
+    password: '',
+    poker_experience: '',
+    preferred_games: '',
+    main_stakes: '',
+    poker_goals: '',
+    country: '',
+    timezone: ''
   };
 
   constructor(
@@ -59,8 +66,8 @@ export class AuthComponent {
   }
 
   onRegister() {
-    if (!this.registerData.name || !this.registerData.email || !this.registerData.password) {
-      this.notificationService.warning('Campos obrigatórios', 'Por favor, preencha todos os campos');
+    if (!this.registerData.username || !this.registerData.full_name || !this.registerData.email || !this.registerData.password) {
+      this.notificationService.warning('Campos obrigatórios', 'Por favor, preencha todos os campos obrigatórios');
       return;
     }
 
