@@ -4,14 +4,16 @@ from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv
 
-from app.routers import auth, hands, users, gaps, performance, coaching, subscription
+from app.routers import auth, hands, users, gaps, performance, coaching
+from app.routers import subscription as subscription_router
 from app.models.database import engine, Base
 
 # Carregar variáveis de ambiente
 load_dotenv()
 
 # Importar todos os modelos para criação das tabelas
-from app.models import user, hand, gap, tournament, coach, subscription
+from app.models import user, hand, gap, tournament, coach
+from app.models import subscription as subscription_model
 
 # Criar tabelas do banco de dados
 Base.metadata.create_all(bind=engine)
@@ -41,7 +43,7 @@ app.include_router(hands.router, prefix="/api/hands", tags=["hands"])
 app.include_router(gaps.router, prefix="/api/gaps", tags=["gaps"])
 app.include_router(performance.router, prefix="/api/performance", tags=["performance"])
 app.include_router(coaching.router, prefix="/api/coaching", tags=["coaching"])
-app.include_router(subscription.router, prefix="/api/subscription", tags=["subscription"])
+app.include_router(subscription_router.router, prefix="/api/subscription", tags=["subscription"])
 
 @app.get("/")
 async def root():
