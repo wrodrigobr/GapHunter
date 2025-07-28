@@ -1,0 +1,25 @@
+<div class="notifications-container">
+  <div 
+    *ngFor="let notification of notifications; trackBy: trackByFn"
+    class="notification"
+    [attr.data-type]="notification.type">
+    
+    <div class="notification-content">
+      <div class="notification-header">
+        <span class="notification-icon">{{ getIcon(notification.type) }}</span>
+        <h4 class="notification-title">{{ notification.title }}</h4>
+        <button 
+          class="close-button"
+          (click)="removeNotification(notification.id)"
+          aria-label="Fechar notificação">
+          ×
+        </button>
+      </div>
+      
+      <p *ngIf="notification.message" class="notification-message">
+        {{ notification.message }}
+      </p>
+    </div>
+  </div>
+</div>
+

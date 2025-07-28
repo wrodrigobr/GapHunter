@@ -38,8 +38,21 @@ export class AuthService {
     // Verificar se há token salvo no localStorage
     const token = this.getToken();
     if (token) {
-      // TODO: Validar token e carregar dados do usuário
+      this.validateToken();
     }
+  }
+
+  private validateToken(): void {
+    // Fazer uma requisição simples para validar o token
+    this.http.get(`${this.apiUrl}/auth/me`).subscribe({
+      next: (user: any) => {
+        this.currentUserSubject.next(user);
+      },
+      error: () => {
+        // Token inválido, remover
+        this.logout();
+      }
+    });
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {

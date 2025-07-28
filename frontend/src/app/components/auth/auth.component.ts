@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest, RegisterRequest } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-auth',
@@ -14,7 +15,6 @@ import { AuthService, LoginRequest, RegisterRequest } from '../../services/auth.
 export class AuthComponent {
   isLoginMode = true;
   isLoading = false;
-  errorMessage = '';
 
   loginData: LoginRequest = {
     email: '',
@@ -29,57 +29,57 @@ export class AuthComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
-    this.errorMessage = '';
   }
 
   onLogin() {
     if (!this.loginData.email || !this.loginData.password) {
-      this.errorMessage = 'Por favor, preencha todos os campos';
+      this.notificationService.warning('Campos obrigatórios', 'Por favor, preencha todos os campos');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.isLoading = false;
+        this.notificationService.success('Login realizado!', `Bem-vindo, ${response.user.name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error;
+        this.notificationService.error('Erro no login', error);
       }
     });
   }
 
   onRegister() {
     if (!this.registerData.name || !this.registerData.email || !this.registerData.password) {
-      this.errorMessage = 'Por favor, preencha todos os campos';
+      this.notificationService.warning('Campos obrigatórios', 'Por favor, preencha todos os campos');
       return;
     }
 
     if (this.registerData.password.length < 6) {
-      this.errorMessage = 'A senha deve ter pelo menos 6 caracteres';
+      this.notificationService.warning('Senha muito curta', 'A senha deve ter pelo menos 6 caracteres');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
+        this.notificationService.success('Conta criada!', `Bem-vindo ao GapHunter, ${response.user.name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error;
+        this.notificationService.error('Erro no registro', error);
       }
     });
   }
