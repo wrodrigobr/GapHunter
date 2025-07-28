@@ -157,6 +157,8 @@ openssl rand -base64 32
 3. **Startup Command**: `python startup.py`
 4. Clique **"Save"**
 
+**Nota**: O arquivo `startup.py` na raiz do projeto redireciona para o backend automaticamente.
+
 ### **4.4 Configurar Deploy do GitHub**
 1. No menu lateral, clique **"Deployment Center"**
 2. **Source**: `GitHub`

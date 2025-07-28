@@ -1,0 +1,5 @@
+# GapHunter - Requirements para Azure App Service
+# Este arquivo aponta para os requirements do backend
+
+-r backend/requirements-prod.txt
+
