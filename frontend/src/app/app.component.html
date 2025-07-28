@@ -1,0 +1,201 @@
+<!-- GapHunter Professional Layout -->
+<div class="app-container">
+  <!-- Header -->
+  <header class="header glass-card">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/images/logo_main.png" alt="GapHunter" class="logo-metallic" width="50" height="50">
+        <h1 class="app-title">GapHunter</h1>
+        <span class="app-subtitle">Análise Técnica de Poker</span>
+      </div>
+      
+      <nav class="nav-menu" *ngIf="isAuthenticated">
+        <button class="nav-btn" [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')">
+          Dashboard
+        </button>
+        <button class="nav-btn" [class.active]="currentView === 'upload'" (click)="setView('upload')">
+          Upload
+        </button>
+        <button class="nav-btn" [class.active]="currentView === 'history'" (click)="setView('history')">
+          Histórico
+        </button>
+        <button class="nav-btn logout-btn" (click)="logout()">
+          Sair
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Login/Register View -->
+    <div *ngIf="!isAuthenticated" class="auth-container">
+      <div class="auth-card glass-card">
+        <div class="auth-header">
+          <img src="assets/images/logo_horizontal.png" alt="GapHunter" class="auth-logo">
+          <p class="auth-description">
+            Identifique gaps em seu jogo e melhore sua performance no poker
+          </p>
+        </div>
+
+        <div class="auth-tabs">
+          <button 
+            class="tab-btn" 
+            [class.active]="authMode === 'login'" 
+            (click)="authMode = 'login'">
+            Login
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="authMode === 'register'" 
+            (click)="authMode = 'register'">
+            Registro
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form *ngIf="authMode === 'login'" (ngSubmit)="login()" class="auth-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              [(ngModel)]="loginData.email" 
+              name="email"
+              placeholder="seu@email.com"
+              required>
+          </div>
+          
+          <div class="form-group">
+            <label>Senha</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              [(ngModel)]="loginData.password" 
+              name="password"
+              placeholder="••••••••"
+              required>
+          </div>
+          
+          <button type="submit" class="btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Entrando...' : 'Entrar' }}
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form *ngIf="authMode === 'register'" (ngSubmit)="register()" class="auth-form">
+          <div class="form-group">
+            <label>Nome</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="registerData.name" 
+              name="name"
+              placeholder="Seu nome"
+              required>
+          </div>
+          
+          <div class="form-group">
+            <label>Email</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              [(ngModel)]="registerData.email" 
+              name="email"
+              placeholder="seu@email.com"
+              required>
+          </div>
+          
+          <div class="form-group">
+            <label>Senha</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              [(ngModel)]="registerData.password" 
+              name="password"
+              placeholder="••••••••"
+              required>
+          </div>
+          
+          <button type="submit" class="btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Criando...' : 'Criar Conta' }}
+          </button>
+        </form>
+
+        <!-- Error/Success Messages -->
+        <div *ngIf="message" class="message" [class.error]="messageType === 'error'" [class.success]="messageType === 'success'">
+          {{ message }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Views -->
+    <div *ngIf="isAuthenticated" class="dashboard-container">
+      <!-- Dashboard -->
+      <div *ngIf="currentView === 'dashboard'" class="dashboard-view">
+        <div class="welcome-section glass-card">
+          <h2>Bem-vindo, {{ currentUser?.name }}!</h2>
+          <p>Analise suas mãos e identifique gaps em seu jogo</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card glass-card">
+            <h3>Mãos Analisadas</h3>
+            <div class="stat-number">{{ stats.totalHands || 0 }}</div>
+          </div>
+          
+          <div class="stat-card glass-card">
+            <h3>Gaps Encontrados</h3>
+            <div class="stat-number">{{ stats.totalGaps || 0 }}</div>
+          </div>
+          
+          <div class="stat-card glass-card">
+            <h3>Gaps Críticos</h3>
+            <div class="stat-number">{{ stats.criticalGaps || 0 }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload -->
+      <div *ngIf="currentView === 'upload'" class="upload-view">
+        <div class="upload-card glass-card">
+          <h2>Upload de Hand History</h2>
+          <div class="upload-area" 
+               (dragover)="onDragOver($event)" 
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop($event)"
+               [class.drag-over]="isDragOver">
+            <div class="upload-icon">📁</div>
+            <p>Arraste um arquivo .txt aqui ou clique para selecionar</p>
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept=".txt" style="display: none;">
+            <button class="btn-primary" (click)="fileInput.click()">Selecionar Arquivo</button>
+          </div>
+          
+          <div *ngIf="uploadProgress > 0" class="progress-bar">
+            <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div *ngIf="currentView === 'history'" class="history-view">
+        <div class="history-header">
+          <h2>Histórico de Mãos</h2>
+        </div>
+        
+        <div class="hands-list">
+          <div *ngFor="let hand of hands" class="hand-card glass-card">
+            <div class="hand-header">
+              <span class="hand-date">{{ hand.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+              <span class="gaps-count">{{ (hand.gaps_found && hand.gaps_found.length) || 0 }} gaps</span>
+            </div>
+            <div class="hand-preview">
+              {{ hand.hand_text.substring(0, 100) }}...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
