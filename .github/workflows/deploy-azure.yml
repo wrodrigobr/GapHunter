@@ -11,7 +11,7 @@ env:
   CONTAINER_REGISTRY: gaphunterregistry
   BACKEND_APP_NAME: gaphunter-backend
   FRONTEND_APP_NAME: gaphunter-frontend
-  SQL_SERVER_NAME: gaphunter-sql-server
+  POSTGRES_SERVER_NAME: gaphunter-postgres
   DATABASE_NAME: gaphunter
 
 jobs:
@@ -72,36 +72,31 @@ jobs:
           --image gaphunter-frontend:latest \
           .
 
-    - name: Create SQL Server and Database
+    - name: Create PostgreSQL Server and Database
       run: |
-        # Check if SQL Server exists
-        if ! az sql server show --name ${{ env.SQL_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
-          echo "Creating SQL Server..."
-          az sql server create \
-            --name ${{ env.SQL_SERVER_NAME }} \
+        # Check if PostgreSQL Server exists
+        if ! az postgres flexible-server show --name ${{ env.POSTGRES_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          echo "Creating PostgreSQL Flexible Server..."
+          az postgres flexible-server create \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.POSTGRES_SERVER_NAME }} \
             --location ${{ env.AZURE_LOCATION }} \
             --admin-user gaphunter \
-            --admin-password "${{ secrets.DB_ADMIN_PASSWORD }}"
-          
-          # Configure firewall
-          az sql server firewall-rule create \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --server ${{ env.SQL_SERVER_NAME }} \
-            --name AllowAzureServices \
-            --start-ip-address 0.0.0.0 \
-            --end-ip-address 0.0.0.0
+            --admin-password "${{ secrets.DB_ADMIN_PASSWORD }}" \
+            --sku-name Standard_B1ms \
+            --tier Burstable \
+            --storage-size 32 \
+            --version 14 \
+            --public-access 0.0.0.0
         fi
         
         # Check if database exists
-        if ! az sql db show --name ${{ env.DATABASE_NAME }} --server ${{ env.SQL_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+        if ! az postgres flexible-server db show --database-name ${{ env.DATABASE_NAME }} --server-name ${{ env.POSTGRES_SERVER_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
           echo "Creating database..."
-          az sql db create \
+          az postgres flexible-server db create \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --server ${{ env.SQL_SERVER_NAME }} \
-            --name ${{ env.DATABASE_NAME }} \
-            --service-objective Basic \
-            --max-size 2GB
+            --server-name ${{ env.POSTGRES_SERVER_NAME }} \
+            --database-name ${{ env.DATABASE_NAME }}
         fi
 
     - name: Create Container Apps Environment
@@ -115,7 +110,7 @@ jobs:
 
     - name: Deploy Backend Container App
       run: |
-        DATABASE_URL="mssql+pyodbc://gaphunter:${{ secrets.DB_ADMIN_PASSWORD }}@${{ env.SQL_SERVER_NAME }}.database.windows.net:1433/${{ env.DATABASE_NAME }}?driver=ODBC+Driver+18+for+SQL+Server"
+        DATABASE_URL="postgresql://gaphunter:${{ secrets.DB_ADMIN_PASSWORD }}@${{ env.POSTGRES_SERVER_NAME }}.postgres.database.azure.com:5432/${{ env.DATABASE_NAME }}"
         
         if az containerapp show --name ${{ env.BACKEND_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
           # Update existing app
@@ -204,7 +199,7 @@ jobs:
         echo "API Docs: https://${{ steps.backend-url.outputs.backend-url }}/docs"
         echo ""
         echo "💰 Cost-optimized configuration applied:"
-        echo "- Azure SQL Database: Basic tier (5 DTU)"
+        echo "- Azure Database for PostgreSQL: Burstable B1ms tier"
         echo "- Container Apps: Minimal resources with scale-to-zero"
-        echo "- Estimated cost: $15-30/month"
+        echo "- Estimated cost: $10-25/month"
 

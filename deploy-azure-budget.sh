@@ -66,36 +66,32 @@ cd frontend
 az acr build --registry $CONTAINER_REGISTRY --image gaphunter-frontend:latest .
 cd ..
 
-# Criar Azure SQL Database (CONFIGURAÇÃO MAIS BARATA)
-echo "🗄️ Criando Azure SQL Database (configuração econômica)..."
+# Criar Azure Database for PostgreSQL (CONFIGURAÇÃO MAIS BARATA)
+echo "🗄️ Criando Azure Database for PostgreSQL (configuração econômica)..."
 DB_ADMIN_PASSWORD=$(openssl rand -base64 32)
+POSTGRES_SERVER_NAME="gaphunter-postgres"
 
-# Criar SQL Server
-az sql server create \
-    --name $SQL_SERVER_NAME \
+# Criar PostgreSQL Flexible Server (mais barato que SQL Server)
+az postgres flexible-server create \
     --resource-group $RESOURCE_GROUP \
+    --name $POSTGRES_SERVER_NAME \
     --location $LOCATION \
     --admin-user gaphunter \
-    --admin-password $DB_ADMIN_PASSWORD
+    --admin-password $DB_ADMIN_PASSWORD \
+    --sku-name Standard_B1ms \
+    --tier Burstable \
+    --storage-size 32 \
+    --version 14 \
+    --public-access 0.0.0.0
 
-# Configurar firewall para permitir Azure services
-az sql server firewall-rule create \
+# Criar database
+az postgres flexible-server db create \
     --resource-group $RESOURCE_GROUP \
-    --server $SQL_SERVER_NAME \
-    --name AllowAzureServices \
-    --start-ip-address 0.0.0.0 \
-    --end-ip-address 0.0.0.0
+    --server-name $POSTGRES_SERVER_NAME \
+    --database-name $DATABASE_NAME
 
-# Criar database com configuração MAIS BARATA (Basic tier)
-az sql db create \
-    --resource-group $RESOURCE_GROUP \
-    --server $SQL_SERVER_NAME \
-    --name $DATABASE_NAME \
-    --service-objective Basic \
-    --max-size 2GB
-
-# Connection string para Azure SQL Database
-DATABASE_URL="mssql+pyodbc://gaphunter:$DB_ADMIN_PASSWORD@$SQL_SERVER_NAME.database.windows.net:1433/$DATABASE_NAME?driver=ODBC+Driver+18+for+SQL+Server"
+# Connection string para PostgreSQL
+DATABASE_URL="postgresql://gaphunter:$DB_ADMIN_PASSWORD@$POSTGRES_SERVER_NAME.postgres.database.azure.com:5432/$DATABASE_NAME"
 
 # Criar Container Apps Environment
 echo "🏗️ Criando Container Apps Environment..."

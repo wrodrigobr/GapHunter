@@ -7,20 +7,30 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    ENVIRONMENT=production
+    ENVIRONMENT=production \
+    DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies for Azure SQL Database
-# First install curl and gnupg, then add Microsoft GPG key and repository
+# Install system dependencies in stages to avoid conflicts
+# Stage 1: Basic tools and dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gnupg \
+    lsb-release \
+    ca-certificates \
+    apt-transport-https \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Install build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 3: Install ODBC dependencies (without Microsoft SQL Server driver for now)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    unixodbc \
     unixodbc-dev \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
-    && sh -c 'echo "deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/11/prod bullseye main" > /etc/apt/sources.list.d/mssql-release.list' \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
