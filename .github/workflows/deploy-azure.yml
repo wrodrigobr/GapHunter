@@ -63,12 +63,27 @@ jobs:
     - name: Create App Service Plan
       run: |
         if ! az appservice plan show --name ${{ env.APP_SERVICE_PLAN }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
-          az appservice plan create \
+          echo "🎯 Tentando criar plano B1 Basic..."
+          if az appservice plan create \
             --name ${{ env.APP_SERVICE_PLAN }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --location ${{ env.AZURE_LOCATION }} \
             --sku B1 \
-            --is-linux
+            --is-linux 2>/dev/null; then
+            echo "✅ Plano B1 Basic criado com sucesso!"
+            echo "PLAN_SKU=B1" >> $GITHUB_ENV
+          else
+            echo "⚠️  B1 não disponível devido a quota. Usando F1 GRATUITO..."
+            az appservice plan create \
+              --name ${{ env.APP_SERVICE_PLAN }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --location ${{ env.AZURE_LOCATION }} \
+              --sku F1 \
+              --is-linux
+            echo "PLAN_SKU=F1" >> $GITHUB_ENV
+            echo "💡 F1 tem limitações: 60min/dia CPU, sem Always-On"
+            echo "💡 Para produção, solicite aumento de quota para B1"
+          fi
         fi
 
     - name: Create Backend App Service
@@ -85,6 +100,7 @@ jobs:
       run: |
         DATABASE_URL="postgresql://gaphunter:${{ secrets.DB_ADMIN_PASSWORD }}@${{ env.POSTGRES_SERVER_NAME }}.postgres.database.azure.com:5432/${{ env.DATABASE_NAME }}"
         
+        # Configurações básicas
         az webapp config appsettings set \
           --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
           --name ${{ env.BACKEND_APP_NAME }} \
@@ -95,6 +111,19 @@ jobs:
           ENVIRONMENT="production" \
           SCM_DO_BUILD_DURING_DEPLOYMENT=true \
           ENABLE_ORYX_BUILD=true
+        
+        # Otimizações específicas para F1
+        if [ "$PLAN_SKU" = "F1" ]; then
+          echo "🔧 Aplicando otimizações para plano F1..."
+          az webapp config appsettings set \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.BACKEND_APP_NAME }} \
+            --settings \
+            WEBSITES_ENABLE_APP_SERVICE_STORAGE=false \
+            WEBSITE_HTTPLOGGING_RETENTION_DAYS=1 \
+            GUNICORN_WORKERS=1 \
+            GUNICORN_TIMEOUT=120
+        fi
 
     - name: Configure Backend Startup
       run: |
@@ -135,7 +164,12 @@ jobs:
     - name: Wait for Backend to be Ready
       run: |
         echo "Aguardando backend ficar online..."
-        sleep 120
+        if [ "$PLAN_SKU" = "F1" ]; then
+          echo "⏱️  Plano F1 pode ter cold start mais lento..."
+          sleep 180  # 3 minutos para F1
+        else
+          sleep 120  # 2 minutos para B1
+        fi
         
         # Test backend health
         for i in {1..10}; do
@@ -161,9 +195,28 @@ jobs:
         echo "Backend:  https://${{ steps.app-urls.outputs.backend-url }}"
         echo "API Docs: https://${{ steps.app-urls.outputs.backend-url }}/docs"
         echo ""
-        echo "💰 Cost-optimized App Service configuration:"
-        echo "- Azure Database for PostgreSQL: Burstable B1ms (~$12/month)"
-        echo "- App Service Plan: B1 Basic (~$13/month)"
-        echo "- Static Web App: FREE"
-        echo "- Total estimated cost: ~$25/month"
+        if [ "$PLAN_SKU" = "F1" ]; then
+          echo "💰 Configuração GRATUITA aplicada:"
+          echo "- App Service Plan: F1 (GRATUITO com limitações)"
+          echo "- Azure Database for PostgreSQL: Burstable B1ms (~$12/month)"
+          echo "- Static Web App: FREE"
+          echo "- Total estimated cost: ~$12/month"
+          echo ""
+          echo "⚠️  LIMITAÇÕES DO PLANO F1:"
+          echo "- 60 minutos/dia de CPU ativa"
+          echo "- Sem Always-On (cold starts de ~10-30s)"
+          echo "- 1GB RAM máximo"
+          echo "- Ideal para MVP e testes"
+          echo ""
+          echo "💡 Para produção, solicite aumento de quota para B1:"
+          echo "   Portal Azure > Help + Support > New Support Request"
+          echo "   Tipo: Service and subscription limits (quotas)"
+          echo "   Serviço: App Service > Basic VMs: 1"
+        else
+          echo "💰 Cost-optimized App Service configuration:"
+          echo "- Azure Database for PostgreSQL: Burstable B1ms (~$12/month)"
+          echo "- App Service Plan: B1 Basic (~$13/month)"
+          echo "- Static Web App: FREE"
+          echo "- Total estimated cost: ~$25/month"
+        fi
 
