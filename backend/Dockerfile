@@ -10,14 +10,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     ENVIRONMENT=production
 
 # Install system dependencies for Azure SQL Database
-# Add Microsoft GPG key and repository
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
+# First install curl and gnupg, then add Microsoft GPG key and repository
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    gcc \
+    g++ \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
     && sh -c 'echo "deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/11/prod bullseye main" > /etc/apt/sources.list.d/mssql-release.list' \
     && apt-get update \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev \
-    && apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
