@@ -1,0 +1,139 @@
+# Azure Container Apps deployment configuration
+apiVersion: 2023-05-01
+location: East US
+resourceGroupName: gaphunter-rg
+
+# Container Apps Environment
+containerAppsEnvironment:
+  name: gaphunter-env
+  location: East US
+  properties:
+    appLogsConfiguration:
+      destination: log-analytics
+      logAnalyticsConfiguration:
+        customerId: ${LOG_ANALYTICS_WORKSPACE_ID}
+        sharedKey: ${LOG_ANALYTICS_SHARED_KEY}
+
+# Backend Container App
+backendApp:
+  name: gaphunter-backend
+  location: East US
+  properties:
+    managedEnvironmentId: /subscriptions/${SUBSCRIPTION_ID}/resourceGroups/gaphunter-rg/providers/Microsoft.App/managedEnvironments/gaphunter-env
+    configuration:
+      ingress:
+        external: true
+        targetPort: 8000
+        allowInsecure: false
+        traffic:
+          - weight: 100
+            latestRevision: true
+      secrets:
+        - name: database-url
+          value: ${DATABASE_URL}
+        - name: secret-key
+          value: ${SECRET_KEY}
+        - name: openrouter-api-key
+          value: ${OPENROUTER_API_KEY}
+    template:
+      containers:
+        - name: gaphunter-backend
+          image: ${CONTAINER_REGISTRY}/gaphunter-backend:latest
+          env:
+            - name: DATABASE_URL
+              secretRef: database-url
+            - name: SECRET_KEY
+              secretRef: secret-key
+            - name: OPENROUTER_API_KEY
+              secretRef: openrouter-api-key
+            - name: ENVIRONMENT
+              value: production
+          resources:
+            cpu: 1.0
+            memory: 2Gi
+          probes:
+            - type: liveness
+              httpGet:
+                path: /health
+                port: 8000
+              initialDelaySeconds: 30
+              periodSeconds: 30
+            - type: readiness
+              httpGet:
+                path: /health
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+      scale:
+        minReplicas: 1
+        maxReplicas: 10
+        rules:
+          - name: http-scaler
+            http:
+              metadata:
+                concurrentRequests: '100'
+
+# Frontend Container App
+frontendApp:
+  name: gaphunter-frontend
+  location: East US
+  properties:
+    managedEnvironmentId: /subscriptions/${SUBSCRIPTION_ID}/resourceGroups/gaphunter-rg/providers/Microsoft.App/managedEnvironments/gaphunter-env
+    configuration:
+      ingress:
+        external: true
+        targetPort: 80
+        allowInsecure: false
+        traffic:
+          - weight: 100
+            latestRevision: true
+    template:
+      containers:
+        - name: gaphunter-frontend
+          image: ${CONTAINER_REGISTRY}/gaphunter-frontend:latest
+          env:
+            - name: VITE_API_BASE_URL
+              value: https://gaphunter-backend.${CONTAINER_APPS_DOMAIN}/api
+          resources:
+            cpu: 0.5
+            memory: 1Gi
+          probes:
+            - type: liveness
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 10
+              periodSeconds: 30
+            - type: readiness
+              httpGet:
+                path: /health
+                port: 80
+              initialDelaySeconds: 5
+              periodSeconds: 10
+      scale:
+        minReplicas: 1
+        maxReplicas: 5
+
+# Database (Azure Database for PostgreSQL)
+database:
+  name: gaphunter-postgres
+  location: East US
+  sku:
+    name: Standard_B1ms
+    tier: Burstable
+  properties:
+    administratorLogin: gaphunteradmin
+    administratorLoginPassword: ${DB_ADMIN_PASSWORD}
+    version: '15'
+    storage:
+      storageSizeGB: 32
+    backup:
+      backupRetentionDays: 7
+      geoRedundantBackup: Disabled
+    highAvailability:
+      mode: Disabled
+    network:
+      publicNetworkAccess: Enabled
+      delegatedSubnetResourceId: null
+      privateDnsZoneResourceId: null
+

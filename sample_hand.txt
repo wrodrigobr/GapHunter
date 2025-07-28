@@ -1,0 +1,70 @@
+PokerStars Hand #123456789: Tournament #987654321, $5.00+$0.50 USD Hold'em No Limit - Level III (25/50) - 2025/07/28 10:30:00 ET
+Table '987654321 1' 9-max Seat #3 is the button
+Seat 1: Player1 (1500 in chips)
+Seat 2: Player2 (1450 in chips)
+Seat 3: testuser (1600 in chips)
+Seat 4: Player4 (1400 in chips)
+Seat 5: Player5 (1550 in chips)
+Player4: posts small blind 25
+Player5: posts big blind 50
+*** HOLE CARDS ***
+Dealt to testuser [As Kh]
+Player1: folds
+Player2: raises 100 to 150
+testuser: calls 150
+Player4: folds
+Player5: folds
+*** FLOP *** [Ah 7c 2d]
+Player2: bets 200
+testuser: raises 400 to 600
+Player2: calls 400
+*** TURN *** [Ah 7c 2d] [Kc]
+Player2: checks
+testuser: bets 850 and is all-in
+Player2: folds
+Uncalled bet (850) returned to testuser
+testuser collected 1575 from pot
+testuser: doesn't show hand
+*** SUMMARY ***
+Total pot 1575 | Rake 0
+Board [Ah 7c 2d Kc]
+Seat 1: Player1 folded before Flop (didn't bet)
+Seat 2: Player2 folded on the Turn
+Seat 3: testuser (button) collected (1575)
+Seat 4: Player4 (small blind) folded before Flop
+Seat 5: Player5 (big blind) folded before Flop
+
+
+PokerStars Hand #123456790: Tournament #987654321, $5.00+$0.50 USD Hold'em No Limit - Level III (25/50) - 2025/07/28 10:32:00 ET
+Table '987654321 1' 9-max Seat #4 is the button
+Seat 1: Player1 (1500 in chips)
+Seat 2: Player2 (700 in chips)
+Seat 3: testuser (2025 in chips)
+Seat 4: Player4 (1375 in chips)
+Seat 5: Player5 (1500 in chips)
+Player5: posts small blind 25
+Player1: posts big blind 50
+*** HOLE CARDS ***
+Dealt to testuser [Qh Qd]
+Player2: raises 650 to 700 and is all-in
+testuser: calls 700
+Player4: folds
+Player5: folds
+Player1: folds
+*** FLOP *** [9s 4h 2c]
+*** TURN *** [9s 4h 2c] [Jh]
+*** RIVER *** [9s 4h 2c Jh] [3d]
+*** SHOW DOWN ***
+Player2: shows [Ac Kd] (high card Ace)
+testuser: shows [Qh Qd] (a pair of Queens)
+testuser collected 1475 from pot
+Player2 finished the tournament
+*** SUMMARY ***
+Total pot 1475 | Rake 0
+Board [9s 4h 2c Jh 3d]
+Seat 1: Player1 (big blind) folded before Flop
+Seat 2: Player2 showed [Ac Kd] and lost with high card Ace
+Seat 3: testuser showed [Qh Qd] and won (1475) with a pair of Queens
+Seat 4: Player4 (button) folded before Flop
+Seat 5: Player5 (small blind) folded before Flop
+
