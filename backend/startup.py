@@ -64,31 +64,40 @@ def main():
     environment = os.getenv('ENVIRONMENT', 'development')
     
     if environment == 'production':
-        print("🌐 Iniciando servidor em modo produção com Gunicorn...")
+        print("🌐 Iniciando servidor em modo produção...")
         
-        # Configurações do Gunicorn para produção
-        gunicorn_cmd = [
-            "gunicorn",
-            "app.main:app",
-            "-w", "4",  # 4 workers
-            "-k", "uvicorn.workers.UvicornWorker",
-            "--bind", "0.0.0.0:8000",
-            "--timeout", "120",
-            "--keep-alive", "5",
-            "--max-requests", "1000",
-            "--max-requests-jitter", "100",
-            "--access-logfile", "logs/access.log",
-            "--error-logfile", "logs/error.log",
-            "--log-level", "info"
-        ]
-        
+        # Para Azure App Service, usar configuração mais simples
+        # Verificar se Gunicorn está disponível
         try:
+            subprocess.run(["gunicorn", "--version"], check=True, capture_output=True)
+            print("✅ Gunicorn disponível, usando Gunicorn...")
+            
+            # Configurações simplificadas do Gunicorn para Azure
+            gunicorn_cmd = [
+                "gunicorn",
+                "app.main:app",
+                "-w", "1",  # 1 worker para evitar problemas de memória
+                "-k", "uvicorn.workers.UvicornWorker",
+                "--bind", "0.0.0.0:8000",
+                "--timeout", "300",  # Timeout maior para Azure
+                "--log-level", "info",
+                "--access-logfile", "-",  # Log para stdout
+                "--error-logfile", "-"   # Log para stderr
+            ]
+            
             subprocess.run(gunicorn_cmd, check=True)
-        except KeyboardInterrupt:
-            print("\n🛑 Servidor interrompido pelo usuário")
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Erro ao iniciar servidor: {e}")
-            sys.exit(1)
+            
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            print("⚠️  Gunicorn não disponível, usando Uvicorn...")
+            
+            # Fallback para Uvicorn se Gunicorn falhar
+            subprocess.run([
+                "uvicorn", 
+                "app.main:app", 
+                "--host", "0.0.0.0", 
+                "--port", "8000",
+                "--log-level", "info"
+            ], check=True)
     
     else:
         print("🔧 Iniciando servidor em modo desenvolvimento...")
@@ -104,5 +113,14 @@ def main():
             print("\n🛑 Servidor interrompido pelo usuário")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n🛑 Servidor interrompido pelo usuário")
+        sys.exit(0)
+    except Exception as e:
+        print(f"❌ Erro fatal: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
