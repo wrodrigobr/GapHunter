@@ -28,7 +28,10 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def get_user(db: Session, username: str):
-    return db.query(User).filter(User.username == username).first()
+    # Procurar por username ou email
+    return db.query(User).filter(
+        (User.username == username) | (User.email == username)
+    ).first()
 
 def authenticate_user(db: Session, username: str, password: str):
     user = get_user(db, username)

@@ -28,13 +28,13 @@
     <!-- Formulário de Login -->
     <form *ngIf="isLoginMode" (ngSubmit)="onLogin()" class="auth-form">
       <div class="form-group">
-        <label for="login-email">Email</label>
+        <label for="login-email">Email ou Username</label>
         <input 
-          type="email" 
+          type="text" 
           id="login-email"
           [(ngModel)]="loginData.email"
           name="email"
-          placeholder="seu@email.com"
+          placeholder="seu@email.com ou username"
           [disabled]="isLoading"
           required>
       </div>
