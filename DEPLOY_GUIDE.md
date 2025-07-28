@@ -1,418 +1,236 @@
-# 🚀 Guia de Deploy - GapHunter no Azure
+# 🚀 Guia de Deploy - GapHunter no Azure App Service
 
-Este documento fornece instruções completas para fazer o deploy da plataforma GapHunter no Microsoft Azure usando Container Apps e banco de dados PostgreSQL.
+## 📋 **Visão Geral**
 
-## 📋 Pré-requisitos
+Este guia mostra como fazer deploy da plataforma GapHunter no Azure usando **App Service**, a opção mais econômica e simples para MVPs.
 
-### 1. Ferramentas Necessárias
-- **Azure CLI** (versão 2.40+)
-- **Docker** (para builds locais opcionais)
-- **Git** (para versionamento)
-- **OpenSSL** (para geração de chaves)
+## 💰 **Custos Estimados**
 
-### 2. Contas e Credenciais
-- **Conta Azure** com permissões de administrador
-- **Chave da API OpenRouter** para funcionalidades de IA
-- **Domínio personalizado** (opcional)
+- **Azure Database for PostgreSQL**: B1ms (~$12/mês)
+- **App Service Plan**: B1 Basic (~$13/mês)
+- **Static Web App**: GRATUITO
+- **Total**: ~$25/mês
 
-### 3. Instalação do Azure CLI
+## 🎯 **Opções de Deploy**
 
-```bash
-# Ubuntu/Debian
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+### **Opção 1: Deploy Automático (GitHub Actions)**
+✅ **Recomendado** - Deploy automático a cada push
 
-# macOS
-brew install azure-cli
+### **Opção 2: Deploy Manual (Script)**
+⚙️ Para deploy único ou troubleshooting
 
-# Windows
-# Baixar de: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows
-```
+## 🚀 **Deploy Automático (GitHub Actions)**
 
-## 🏗️ Arquitetura da Solução
+### **Pré-requisitos**
+1. Conta no Azure com assinatura ativa
+2. Azure CLI instalado localmente
+3. Repositório GitHub (já configurado)
 
-### Componentes Azure
-- **Azure Container Apps**: Hospedagem de frontend e backend
-- **Azure Database for PostgreSQL**: Banco de dados principal
-- **Azure Container Registry**: Armazenamento de imagens Docker
-- **Azure Log Analytics**: Monitoramento e logs
-
-### Estrutura da Aplicação
-```
-gaphunter/
-├── backend/                 # API FastAPI
-│   ├── app/                # Código da aplicação
-│   ├── alembic/            # Migrações do banco
-│   ├── Dockerfile          # Imagem Docker
-│   ├── requirements-prod.txt
-│   └── startup.py          # Script de inicialização
-├── frontend/               # Interface React
-│   ├── src/                # Código fonte
-│   ├── dist/               # Build de produção
-│   ├── Dockerfile          # Imagem Docker
-│   └── nginx.conf          # Configuração do servidor
-├── docker-compose.yml      # Orquestração local
-├── azure-deploy.yml        # Configuração Azure
-└── deploy-azure.sh         # Script de deploy
-```
-
-## 🔧 Configuração Inicial
-
-### 1. Preparar Variáveis de Ambiente
-
-Crie um arquivo `.env.deploy` com suas configurações:
+### **Passo 1: Configurar Credenciais Azure**
 
 ```bash
-# Configurações Azure
-SUBSCRIPTION_ID="sua-subscription-id"
-RESOURCE_GROUP="gaphunter-rg"
-LOCATION="eastus"
-
-# Configurações da Aplicação
-OPENROUTER_API_KEY="sua-chave-openrouter"
-SECRET_KEY="sua-chave-secreta-super-segura"
-
-# Configurações do Banco
-DB_ADMIN_PASSWORD="senha-super-segura-do-banco"
-
-# Configurações de Email (opcional)
-SMTP_SERVER="smtp.gmail.com"
-SMTP_USERNAME="seu-email@gmail.com"
-SMTP_PASSWORD="sua-senha-de-app"
-```
-
-### 2. Login no Azure
-
-```bash
-# Fazer login
+# 1. Fazer login no Azure
 az login
 
-# Verificar subscription
-az account show
-
-# Definir subscription (se necessário)
-az account set --subscription "sua-subscription-id"
+# 2. Criar Service Principal
+az ad sp create-for-rbac \
+  --name "gaphunter-deploy" \
+  --role contributor \
+  --scopes /subscriptions/YOUR_SUBSCRIPTION_ID \
+  --sdk-auth
 ```
 
-## 🚀 Deploy Automático
+**Copie todo o JSON retornado!**
 
-### Opção 1: Script Automático (Recomendado)
+### **Passo 2: Configurar Secrets no GitHub**
 
+Acesse: `Settings > Secrets and variables > Actions > New repository secret`
+
+Adicione os seguintes secrets:
+
+1. **AZURE_CREDENTIALS**
+   ```json
+   {
+     "clientId": "xxx",
+     "clientSecret": "xxx",
+     "subscriptionId": "xxx",
+     "tenantId": "xxx"
+   }
+   ```
+
+2. **DB_ADMIN_PASSWORD**
+   ```
+   SuaSenhaSeguraDoPostgreSQL123!
+   ```
+
+3. **SECRET_KEY**
+   ```bash
+   # Gerar chave segura:
+   openssl rand -base64 32
+   ```
+
+4. **OPENROUTER_API_KEY**
+   ```
+   sk-or-v1-xxxxx
+   ```
+
+### **Passo 3: Executar Deploy**
+
+1. Faça qualquer push no repositório
+2. Acesse `Actions` no GitHub
+3. Acompanhe o progresso do deploy
+4. URLs serão exibidas no final
+
+## ⚙️ **Deploy Manual (Script)**
+
+### **Pré-requisitos**
 ```bash
-# Tornar o script executável
-chmod +x deploy-azure.sh
+# Instalar Azure CLI
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-# Executar deploy
+# Fazer login
+az login
+```
+
+### **Configurar Variáveis**
+```bash
+export DB_ADMIN_PASSWORD="SuaSenhaSegura123!"
+export SECRET_KEY="$(openssl rand -base64 32)"
+export OPENROUTER_API_KEY="sk-or-v1-xxxxx"
+```
+
+### **Executar Deploy**
+```bash
+chmod +x deploy-azure.sh
 ./deploy-azure.sh
 ```
 
-O script automaticamente:
-- Cria todos os recursos necessários
-- Faz build e push das imagens Docker
-- Configura banco de dados PostgreSQL
-- Deploya backend e frontend
-- Configura networking e SSL
+## 🔧 **Configurações Pós-Deploy**
 
-### Opção 2: Deploy Manual
+### **1. Verificar Aplicação**
+- Frontend: Acesse a URL do Static Web App
+- Backend: Acesse `/docs` para ver a API
+- Banco: Teste login/registro
 
-Se preferir controle total sobre cada etapa:
-
-#### 1. Criar Resource Group
+### **2. Configurar Domínio Personalizado (Opcional)**
 ```bash
-az group create \
-    --name gaphunter-rg \
-    --location eastus
+# Para o backend
+az webapp config hostname add \
+  --webapp-name gaphunter-backend \
+  --resource-group gaphunter-rg \
+  --hostname api.seudominio.com
+
+# Para o frontend (via portal Azure)
 ```
 
-#### 2. Criar Container Registry
+### **3. Configurar SSL (Automático)**
+- App Service: SSL automático com domínio personalizado
+- Static Web App: SSL sempre ativo
+
+### **4. Monitoramento**
 ```bash
-az acr create \
-    --resource-group gaphunter-rg \
-    --name gaphunterregistry \
-    --sku Basic \
-    --admin-enabled true
+# Habilitar Application Insights
+az webapp config appsettings set \
+  --resource-group gaphunter-rg \
+  --name gaphunter-backend \
+  --settings APPINSIGHTS_INSTRUMENTATIONKEY="xxx"
 ```
 
-#### 3. Build e Push das Imagens
+## 🛠️ **Troubleshooting**
+
+### **Problema: Backend não inicia**
+```bash
+# Verificar logs
+az webapp log tail \
+  --resource-group gaphunter-rg \
+  --name gaphunter-backend
+```
+
+### **Problema: Banco não conecta**
+```bash
+# Testar conexão
+az postgres flexible-server connect \
+  --name gaphunter-postgres \
+  --admin-user gaphunter \
+  --admin-password "SuaSenha"
+```
+
+### **Problema: Migrações não executam**
+```bash
+# Executar manualmente
+curl -X POST https://gaphunter-backend.azurewebsites.net/admin/migrate
+```
+
+## 📊 **Monitoramento e Logs**
+
+### **Logs do Backend**
+```bash
+az webapp log tail --name gaphunter-backend --resource-group gaphunter-rg
+```
+
+### **Métricas do Banco**
+```bash
+az postgres flexible-server show \
+  --name gaphunter-postgres \
+  --resource-group gaphunter-rg
+```
+
+### **Status dos Serviços**
 ```bash
 # Backend
-cd backend
-az acr build --registry gaphunterregistry --image gaphunter-backend:latest .
+curl https://gaphunter-backend.azurewebsites.net/health
 
 # Frontend
-cd ../frontend
-az acr build --registry gaphunterregistry --image gaphunter-frontend:latest .
-cd ..
+curl https://gaphunter-frontend-static.azurestaticapps.net
 ```
 
-#### 4. Criar Banco de Dados
-```bash
-az postgres flexible-server create \
-    --resource-group gaphunter-rg \
-    --name gaphunter-postgres-server \
-    --location eastus \
-    --admin-user gaphunteradmin \
-    --admin-password "SuaSenhaSegura123!" \
-    --sku-name Standard_B1ms \
-    --tier Burstable \
-    --storage-size 32 \
-    --version 15 \
-    --public-access 0.0.0.0
+## 🔄 **Atualizações**
 
-az postgres flexible-server db create \
-    --resource-group gaphunter-rg \
-    --server-name gaphunter-postgres-server \
-    --database-name gaphunter
+### **Automáticas (GitHub Actions)**
+- Qualquer push no repositório dispara deploy automático
+- Zero configuração adicional necessária
+
+### **Manuais**
+```bash
+# Re-executar script
+./deploy-azure.sh
+
+# Ou fazer push no GitHub
+git push origin master
 ```
 
-#### 5. Criar Container Apps Environment
+## 💡 **Dicas de Otimização**
+
+### **Reduzir Custos**
+1. **Usar Always On apenas em produção**
+2. **Configurar auto-scaling baseado em CPU**
+3. **Usar PostgreSQL Burstable para desenvolvimento**
+
+### **Melhorar Performance**
+1. **Habilitar CDN no Static Web App**
+2. **Configurar cache no App Service**
+3. **Usar Application Insights para monitoramento**
+
+## 🆘 **Suporte**
+
+### **Logs Importantes**
+- Backend: Azure App Service Logs
+- Frontend: Static Web App Logs
+- Banco: PostgreSQL Logs
+
+### **Comandos Úteis**
 ```bash
-az containerapp env create \
-    --name gaphunter-env \
-    --resource-group gaphunter-rg \
-    --location eastus
-```
+# Restart do backend
+az webapp restart --name gaphunter-backend --resource-group gaphunter-rg
 
-#### 6. Deploy do Backend
-```bash
-az containerapp create \
-    --name gaphunter-backend \
-    --resource-group gaphunter-rg \
-    --environment gaphunter-env \
-    --image gaphunterregistry.azurecr.io/gaphunter-backend:latest \
-    --registry-server gaphunterregistry.azurecr.io \
-    --target-port 8000 \
-    --ingress external \
-    --min-replicas 1 \
-    --max-replicas 10 \
-    --cpu 1.0 \
-    --memory 2Gi \
-    --secrets database-url="postgresql://gaphunteradmin:SuaSenhaSegura123!@gaphunter-postgres-server.postgres.database.azure.com:5432/gaphunter" \
-    --env-vars DATABASE_URL=secretref:database-url ENVIRONMENT=production
-```
+# Verificar configurações
+az webapp config appsettings list --name gaphunter-backend --resource-group gaphunter-rg
 
-#### 7. Deploy do Frontend
-```bash
-# Obter URL do backend
-BACKEND_URL=$(az containerapp show --name gaphunter-backend --resource-group gaphunter-rg --query "properties.configuration.ingress.fqdn" --output tsv)
-
-az containerapp create \
-    --name gaphunter-frontend \
-    --resource-group gaphunter-rg \
-    --environment gaphunter-env \
-    --image gaphunterregistry.azurecr.io/gaphunter-frontend:latest \
-    --registry-server gaphunterregistry.azurecr.io \
-    --target-port 80 \
-    --ingress external \
-    --min-replicas 1 \
-    --max-replicas 5 \
-    --cpu 0.5 \
-    --memory 1Gi \
-    --env-vars VITE_API_BASE_URL="https://$BACKEND_URL/api"
-```
-
-## 🔍 Verificação e Testes
-
-### 1. Verificar Status dos Containers
-```bash
-# Status do backend
-az containerapp show --name gaphunter-backend --resource-group gaphunter-rg --query "properties.provisioningState"
-
-# Status do frontend
-az containerapp show --name gaphunter-frontend --resource-group gaphunter-rg --query "properties.provisioningState"
-```
-
-### 2. Obter URLs da Aplicação
-```bash
-# URL do frontend
-FRONTEND_URL=$(az containerapp show --name gaphunter-frontend --resource-group gaphunter-rg --query "properties.configuration.ingress.fqdn" --output tsv)
-echo "Frontend: https://$FRONTEND_URL"
-
-# URL do backend
-BACKEND_URL=$(az containerapp show --name gaphunter-backend --resource-group gaphunter-rg --query "properties.configuration.ingress.fqdn" --output tsv)
-echo "Backend: https://$BACKEND_URL"
-echo "API Docs: https://$BACKEND_URL/docs"
-```
-
-### 3. Testar Endpoints
-```bash
-# Health check do backend
-curl https://$BACKEND_URL/health
-
-# Health check do frontend
-curl https://$FRONTEND_URL/health
-```
-
-## 📊 Monitoramento e Logs
-
-### 1. Visualizar Logs em Tempo Real
-```bash
-# Logs do backend
-az containerapp logs show --name gaphunter-backend --resource-group gaphunter-rg --follow
-
-# Logs do frontend
-az containerapp logs show --name gaphunter-frontend --resource-group gaphunter-rg --follow
-```
-
-### 2. Métricas de Performance
-```bash
-# Métricas do backend
-az containerapp show --name gaphunter-backend --resource-group gaphunter-rg --query "properties.template.scale"
-
-# Status das réplicas
-az containerapp replica list --name gaphunter-backend --resource-group gaphunter-rg
-```
-
-### 3. Configurar Alertas
-```bash
-# Criar alerta para alta utilização de CPU
-az monitor metrics alert create \
-    --name "GapHunter High CPU" \
-    --resource-group gaphunter-rg \
-    --scopes "/subscriptions/sua-subscription/resourceGroups/gaphunter-rg/providers/Microsoft.App/containerApps/gaphunter-backend" \
-    --condition "avg Percentage CPU > 80" \
-    --description "Alert when CPU usage is above 80%"
-```
-
-## 🔄 Atualizações e Manutenção
-
-### 1. Atualizar Aplicação
-```bash
-# Fazer novo build e push
-cd backend
-az acr build --registry gaphunterregistry --image gaphunter-backend:latest .
-
-# Atualizar container app
-az containerapp update \
-    --name gaphunter-backend \
-    --resource-group gaphunter-rg \
-    --image gaphunterregistry.azurecr.io/gaphunter-backend:latest
-```
-
-### 2. Executar Migrações do Banco
-```bash
-# Conectar ao container e executar migrações
-az containerapp exec \
-    --name gaphunter-backend \
-    --resource-group gaphunter-rg \
-    --command "alembic upgrade head"
-```
-
-### 3. Backup do Banco de Dados
-```bash
-# Criar backup
-az postgres flexible-server backup create \
-    --resource-group gaphunter-rg \
-    --server-name gaphunter-postgres-server \
-    --backup-name "backup-$(date +%Y%m%d)"
-```
-
-## 🔒 Segurança e SSL
-
-### 1. Configurar Domínio Personalizado
-```bash
-# Adicionar domínio personalizado
-az containerapp hostname add \
-    --hostname "app.gaphunter.com" \
-    --name gaphunter-frontend \
-    --resource-group gaphunter-rg
-```
-
-### 2. Configurar SSL/TLS
-```bash
-# Certificado gerenciado pelo Azure
-az containerapp hostname bind \
-    --hostname "app.gaphunter.com" \
-    --name gaphunter-frontend \
-    --resource-group gaphunter-rg \
-    --environment gaphunter-env
-```
-
-### 3. Configurar Firewall do Banco
-```bash
-# Permitir apenas Container Apps
-az postgres flexible-server firewall-rule create \
-    --resource-group gaphunter-rg \
-    --name gaphunter-postgres-server \
-    --rule-name "AllowContainerApps" \
-    --start-ip-address 0.0.0.0 \
-    --end-ip-address 255.255.255.255
-```
-
-## 💰 Estimativa de Custos
-
-### Recursos e Custos Mensais (USD)
-- **Container Apps**: ~$30-100 (dependendo do tráfego)
-- **PostgreSQL Flexible Server**: ~$25-50
-- **Container Registry**: ~$5
-- **Log Analytics**: ~$10-20
-- **Bandwidth**: ~$5-15
-
-**Total estimado**: $75-190/mês
-
-### Otimização de Custos
-- Use **Burstable tier** para banco de dados
-- Configure **auto-scaling** adequado
-- Monitore **métricas de utilização**
-- Use **reserved capacity** para workloads previsíveis
-
-## 🛠️ Solução de Problemas
-
-### 1. Container não inicia
-```bash
-# Verificar logs detalhados
-az containerapp logs show --name gaphunter-backend --resource-group gaphunter-rg --tail 100
-
-# Verificar configuração
-az containerapp show --name gaphunter-backend --resource-group gaphunter-rg
-```
-
-### 2. Erro de conexão com banco
-```bash
-# Testar conectividade
-az postgres flexible-server connect \
-    --name gaphunter-postgres-server \
-    --admin-user gaphunteradmin \
-    --database-name gaphunter
-```
-
-### 3. Problemas de SSL/HTTPS
-```bash
-# Verificar certificados
-az containerapp hostname list \
-    --name gaphunter-frontend \
-    --resource-group gaphunter-rg
-```
-
-### 4. Alto uso de recursos
-```bash
-# Verificar métricas
-az monitor metrics list \
-    --resource "/subscriptions/sua-subscription/resourceGroups/gaphunter-rg/providers/Microsoft.App/containerApps/gaphunter-backend" \
-    --metric "CpuPercentage,MemoryPercentage"
-```
-
-## 📞 Suporte e Recursos
-
-### Documentação Oficial
-- [Azure Container Apps](https://docs.microsoft.com/en-us/azure/container-apps/)
-- [Azure Database for PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/)
-- [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/)
-
-### Comandos Úteis
-```bash
-# Listar todos os recursos
-az resource list --resource-group gaphunter-rg --output table
-
-# Verificar custos
-az consumption usage list --top 10
-
-# Limpar recursos (CUIDADO!)
-az group delete --name gaphunter-rg --yes --no-wait
+# Backup do banco
+az postgres flexible-server backup list --name gaphunter-postgres --resource-group gaphunter-rg
 ```
 
 ---
 
-**🎉 Parabéns!** Sua aplicação GapHunter está agora rodando no Azure com alta disponibilidade, escalabilidade automática e monitoramento completo.
-
-Para suporte adicional, consulte a documentação oficial do Azure ou entre em contato com a equipe de desenvolvimento.
+**🎉 Sua plataforma GapHunter está pronta para produção com App Service!**
 

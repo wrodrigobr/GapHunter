@@ -1,188 +1,159 @@
-# 🎯 GapHunter - Plataforma de Análise de Poker
+# 🎯 GapHunter - Plataforma de Análise de Poker com IA
 
-Uma plataforma completa para análise de hand histories de poker com IA, identificação automática de gaps e sistema de coaching.
+> **Identifique gaps recorrentes no seu jogo e evolua com análises técnicas personalizadas**
 
-## 🚀 Deploy Rápido no Azure
+## 🚀 **Visão Geral**
 
-### Opção 1: GitHub Actions (Recomendado)
+O GapHunter é uma plataforma completa para análise de poker que utiliza Inteligência Artificial para identificar padrões problemáticos (gaps) no jogo dos usuários, oferecendo feedback técnico personalizado e acompanhamento de evolução.
+
+## ✨ **Funcionalidades Principais**
+
+### 🔍 **GapHunter Core**
+- **Análise automática** de hand histories do PokerStars
+- **Identificação de gaps recorrentes** com IA especializada
+- **Feedback técnico detalhado** baseado em GTO
+- **Sistema de severidade** para priorização de melhorias
+
+### 📊 **Performance Tracker**
+- **ROI e estatísticas** completas por período
+- **Gráficos de evolução** temporal
+- **Análise de ITM%** e volume de jogo
+- **Tracking de buy-ins e premiações**
+
+### 👨‍🏫 **Módulo para Coaches**
+- **Acompanhamento de alunos** com progresso detalhado
+- **Sistema de notas** categorizadas por prioridade
+- **Análise de gaps por aluno** com histórico
+- **Gestão de sessões** de coaching
+
+### 👁️‍🗨️ **GapHunter Vision**
+- **Análise de outros jogadores** (modo justo com reciprocidade)
+- **Configurações de privacidade** granulares
+- **Sistema de análises mútuas** entre jogadores
+
+### 💳 **Sistema de Assinatura**
+- **5 planos disponíveis**: Free, Basic, Pro, Coach, Premium
+- **Controle de acesso** por funcionalidade
+- **Gestão de upgrades** e downgrades
+
+### 🎯 **GapHunter Club**
+- **Programa de afiliados** com comissionamento
+- **Sistema de níveis** (Bronze, Silver, Gold, Diamond)
+- **Descontos progressivos** e benefícios exclusivos
+
+## 🛠️ **Tecnologias Utilizadas**
+
+### **Backend**
+- **FastAPI** - Framework web moderno e rápido
+- **SQLAlchemy** - ORM para banco de dados
+- **PostgreSQL** - Banco de dados principal
+- **Alembic** - Migrações de banco
+- **OpenRouter/Mistral** - IA para análise técnica
+
+### **Frontend**
+- **React** - Interface de usuário moderna
+- **Vite** - Build tool otimizado
+- **CSS Modules** - Estilização componentizada
+
+### **Deploy**
+- **Azure App Service** - Hospedagem do backend
+- **Azure Static Web Apps** - Hospedagem do frontend (GRATUITO)
+- **Azure Database for PostgreSQL** - Banco de dados gerenciado
+- **GitHub Actions** - CI/CD automático
+
+## 💰 **Custos de Infraestrutura**
+
+### **Configuração Otimizada**
+- **PostgreSQL Flexible Server**: B1ms (~$12/mês)
+- **App Service Plan**: B1 Basic (~$13/mês)
+- **Static Web App**: GRATUITO
+- **Total estimado**: ~$25/mês
+
+## 🚀 **Deploy Rápido**
+
+### **Opção 1: Deploy Automático (Recomendado)**
+1. Configure os secrets no GitHub:
+   - `AZURE_CREDENTIALS`
+   - `DB_ADMIN_PASSWORD`
+   - `SECRET_KEY`
+   - `OPENROUTER_API_KEY`
+2. Faça push no repositório
+3. Acompanhe o deploy nas GitHub Actions
+
+### **Opção 2: Deploy Manual**
 ```bash
-# 1. Configure os secrets no GitHub (ver GITHUB_ACTIONS_SETUP.md)
-# 2. Faça push no repositório
-git push origin master
-# 3. Deploy automático será executado
+# Configure as variáveis
+export DB_ADMIN_PASSWORD="SuaSenhaSegura123!"
+export SECRET_KEY="$(openssl rand -base64 32)"
+export OPENROUTER_API_KEY="sk-or-v1-xxxxx"
+
+# Execute o deploy
+chmod +x deploy-azure.sh
+./deploy-azure.sh
 ```
 
-### Opção 2: Script Manual
-```bash
-# Deploy econômico ($15-30/mês)
-chmod +x deploy-azure-budget.sh
-export OPENROUTER_API_KEY="sua-chave"
-./deploy-azure-budget.sh
-```
+## 📚 **Documentação**
 
-## 💰 Custos Otimizados
+- **[Guia de Deploy](DEPLOY_GUIDE.md)** - Deploy completo no Azure
+- **[GitHub Actions Setup](GITHUB_ACTIONS_DETAILED_GUIDE.md)** - Configuração de CI/CD
+- **[Comparação de Deploy](AZURE_DEPLOYMENT_COMPARISON.md)** - Container Apps vs App Service
 
-| Recurso | Configuração | Custo/mês |
-|---------|--------------|-----------|
-| Azure SQL Database | Basic (5 DTU) | ~$5 |
-| Container Apps Backend | 0.5 CPU, 1GB RAM | ~$8-12 |
-| Container Apps Frontend | 0.25 CPU, 0.5GB RAM | ~$2-5 |
-| Container Registry | Basic SKU | ~$5 |
-| **Total** | **Scale-to-zero ativo** | **$15-30** |
+## 🔧 **Desenvolvimento Local**
 
-## 🎯 Funcionalidades
+### **Pré-requisitos**
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL (ou SQLite para desenvolvimento)
 
-### ✅ Core Features
-- **GapHunter Core**: Identificação automática de gaps recorrentes
-- **Upload de Hand History**: Parser completo do PokerStars
-- **Análise de IA**: Integração com OpenRouter/Mistral
-- **Sistema de Usuários**: Autenticação JWT completa
-
-### ✅ ROI & Performance Tracker
-- **Análise Financeira**: Buy-ins, premiações, ROI
-- **Gráficos Temporais**: Evolução de performance
-- **Estatísticas ITM**: In-the-money percentage
-- **Adição Manual**: Resultados de torneios
-
-### ✅ Módulo para Coaches
-- **Perfis de Coach**: Especialidades e avaliações
-- **Gestão de Alunos**: Acompanhamento de progresso
-- **Sistema de Notas**: Categorizadas por prioridade
-- **Análise de Gaps**: Por aluno individual
-
-### ✅ GapHunter Vision (Modo Justo)
-- **Configurações de Privacidade**: Controle granular
-- **Análises Mútuas**: Sistema de reciprocidade
-- **Jogadores Públicos**: Lista com estatísticas
-- **Análise de Adversários**: Conhecidos de mesas regulares
-
-### ✅ Sistema de Assinatura
-- **5 Planos**: Free, Basic, Pro, Coach, Premium
-- **Controle de Acesso**: Por funcionalidade
-- **Pagamentos**: Sistema integrado
-- **Upgrades**: Automáticos por plano
-
-### ✅ GapHunter Club & Afiliados
-- **Sistema de Afiliados**: 30% regular, 50% influenciador
-- **4 Níveis**: Bronze, Silver, Gold, Diamond
-- **Sistema de Pontos**: Progressão automática
-- **Leaderboard**: Ranking dos membros
-- **Comissionamento**: Automático por indicação
-
-## 🏗️ Arquitetura
-
-### Backend (FastAPI)
-- **Framework**: FastAPI + SQLAlchemy
-- **Banco**: Azure SQL Database (Basic)
-- **IA**: OpenRouter/Mistral integration
-- **Auth**: JWT com refresh tokens
-
-### Frontend (React)
-- **Framework**: React + Vite
-- **UI**: Tailwind CSS + shadcn/ui
-- **State**: Context API
-- **Build**: Otimizado para produção
-
-### Infraestrutura
-- **Hosting**: Azure Container Apps
-- **Database**: Azure SQL Database
-- **Registry**: Azure Container Registry
-- **CI/CD**: GitHub Actions
-
-## 📚 Documentação
-
-- **[DEPLOY_BUDGET_GUIDE.md](DEPLOY_BUDGET_GUIDE.md)**: Guia completo de deploy econômico
-- **[GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md)**: Configuração de CI/CD
-- **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)**: Guia de deploy padrão
-- **[AZURE_DEPLOYMENT_SUMMARY.md](AZURE_DEPLOYMENT_SUMMARY.md)**: Resumo técnico
-
-## 🛠️ Desenvolvimento Local
-
-### Backend
+### **Backend**
 ```bash
 cd backend
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+cp .env.example .env  # Configure suas variáveis
+python startup.py
 ```
 
-### Frontend
+### **Frontend**
 ```bash
 cd frontend
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
-### Banco de Dados
-```bash
-# Migrações
-cd backend
-alembic upgrade head
-```
+## 🎯 **Como Usar**
 
-## 🔧 Configuração
+1. **Registre-se** na plataforma
+2. **Configure sua API key** da OpenRouter
+3. **Faça upload** de hand histories do PokerStars
+4. **Analise os gaps** identificados pela IA
+5. **Acompanhe sua evolução** com estatísticas detalhadas
 
-### Variáveis de Ambiente
-```bash
-# Backend (.env)
-DATABASE_URL=sqlite:///./gaphunter.db
-SECRET_KEY=sua-chave-secreta
-OPENROUTER_API_KEY=sua-chave-openrouter
+## 🤝 **Contribuição**
 
-# Frontend (.env)
-VITE_API_BASE_URL=http://localhost:8000/api
-```
+Contribuições são bem-vindas! Por favor:
 
-## 📊 Monitoramento
+1. Faça fork do projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Abra um Pull Request
 
-### Logs
-```bash
-# Backend logs
-az containerapp logs show --name gaphunter-backend --resource-group gaphunter-rg --follow
+## 📄 **Licença**
 
-# Frontend logs
-az containerapp logs show --name gaphunter-frontend --resource-group gaphunter-rg --follow
-```
+Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-### Custos
-```bash
-# Verificar gastos
-az consumption usage list --top 10
+## 🆘 **Suporte**
 
-# Configurar alertas
-az consumption budget create --budget-name "GapHunter-Budget" --amount 50
-```
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 🎯 Roadmap
-
-### Próximas Funcionalidades
-- [ ] Importação de outras plataformas (888poker, GGPoker)
-- [ ] IA ajustável por perfil de jogador
-- [ ] Modo demonstrativo público
-- [ ] Análise de evolução temporal
-- [ ] Sistema de notificações
-
-### Melhorias Técnicas
-- [ ] Testes automatizados
-- [ ] Monitoramento avançado
-- [ ] Cache Redis
-- [ ] CDN para assets
-- [ ] Backup automático
+- **Issues**: Reporte bugs ou solicite features
+- **Documentação**: Consulte os guias na pasta docs/
+- **Deploy**: Siga o [Guia de Deploy](DEPLOY_GUIDE.md)
 
 ---
 
-**🎉 GapHunter - Transformando dados em vitórias!**
+**🎉 Desenvolvido com ❤️ para a comunidade de poker**
 
-Para suporte ou dúvidas, abra uma issue no GitHub ou consulte a documentação completa.
+### **Links Úteis**
+- 🌐 **Demo**: [Em breve]
+- 📖 **Docs**: [Guias de Deploy](DEPLOY_GUIDE.md)
+- 🐛 **Issues**: [GitHub Issues](../../issues)
+- 💬 **Discussões**: [GitHub Discussions](../../discussions)
 
