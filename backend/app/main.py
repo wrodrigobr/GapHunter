@@ -53,6 +53,88 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+@app.post("/admin/migrate")
+async def run_migrations():
+    """Executa migrações do banco de dados"""
+    try:
+        import subprocess
+        import os
+        
+        # Mudar para diretório do backend se necessário
+        backend_dir = os.path.dirname(os.path.dirname(__file__))
+        original_dir = os.getcwd()
+        
+        try:
+            os.chdir(backend_dir)
+            
+            # Executar migrações do Alembic
+            result = subprocess.run(
+                ["alembic", "upgrade", "head"], 
+                capture_output=True, 
+                text=True, 
+                check=True
+            )
+            
+            return {
+                "status": "success",
+                "message": "Migrações executadas com sucesso",
+                "output": result.stdout
+            }
+            
+        finally:
+            os.chdir(original_dir)
+            
+    except subprocess.CalledProcessError as e:
+        return {
+            "status": "error",
+            "message": "Erro ao executar migrações",
+            "error": e.stderr,
+            "output": e.stdout
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": "Erro interno",
+            "error": str(e)
+        }
+
+@app.get("/admin/db-status")
+async def check_database_status():
+    """Verifica status do banco de dados"""
+    try:
+        from app.models.database import SessionLocal
+        
+        db = SessionLocal()
+        try:
+            # Teste simples de conexão
+            db.execute("SELECT 1")
+            
+            # Verificar se tabelas existem
+            tables_query = """
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'dbo'
+            """
+            result = db.execute(tables_query)
+            tables = [row[0] for row in result.fetchall()]
+            
+            return {
+                "status": "connected",
+                "message": "Banco de dados conectado",
+                "tables": tables,
+                "table_count": len(tables)
+            }
+            
+        finally:
+            db.close()
+            
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": "Erro de conexão com banco",
+            "error": str(e)
+        }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
