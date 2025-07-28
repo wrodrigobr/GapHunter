@@ -1,0 +1,141 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/images/logo_main.png" alt="GapHunter" class="logo">
+        <h1>GapHunter</h1>
+      </div>
+      
+      <div class="user-section">
+        <span class="welcome-text">Bem-vindo, {{ currentUser?.name }}</span>
+        <button class="logout-button" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🃏</div>
+        <div class="stat-content">
+          <h3>{{ hands.length }}</h3>
+          <p>Mãos Analisadas</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <h3>{{ getTotalGaps() }}</h3>
+          <p>Gaps Encontrados</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+          <h3>{{ getAverageGaps() }}</h3>
+          <p>Média de Gaps</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h2>Upload de Hand History</h2>
+      
+      <div 
+        class="upload-area"
+        [class.drag-over]="false"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+        
+        <div class="upload-content">
+          <div class="upload-icon">📁</div>
+          <h3>Arraste um arquivo ou clique para selecionar</h3>
+          <p>Formatos suportados: .txt, .log</p>
+          
+          <input 
+            type="file" 
+            id="file-input"
+            accept=".txt,.log"
+            (change)="onFileSelected($event)"
+            style="display: none;">
+          
+          <button 
+            class="select-file-button"
+            (click)="openFileDialog()"
+            [disabled]="isUploading">
+            Selecionar Arquivo
+          </button>
+        </div>
+      </div>
+
+      <!-- Selected File Info -->
+      <div *ngIf="selectedFile" class="selected-file">
+        <div class="file-info">
+          <span class="file-name">{{ selectedFile.name }}</span>
+          <span class="file-size">({{ (selectedFile.size / 1024).toFixed(1) }} KB)</span>
+        </div>
+        
+        <button 
+          class="upload-button"
+          (click)="uploadFile()"
+          [disabled]="isUploading">
+          <span *ngIf="!isUploading">Analisar Mão</span>
+          <span *ngIf="isUploading" class="loading">Analisando...</span>
+        </button>
+      </div>
+
+      <!-- Upload Message -->
+      <div *ngIf="uploadMessage" 
+           class="upload-message"
+           [class.success]="uploadMessage.includes('Sucesso')"
+           [class.error]="!uploadMessage.includes('Sucesso')">
+        {{ uploadMessage }}
+      </div>
+    </div>
+
+    <!-- Hands History -->
+    <div class="hands-section">
+      <h2>Histórico de Mãos</h2>
+      
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Carregando mãos...</p>
+      </div>
+
+      <div *ngIf="!isLoading && hands.length === 0" class="empty-state">
+        <div class="empty-icon">🎲</div>
+        <h3>Nenhuma mão analisada ainda</h3>
+        <p>Faça upload de um arquivo de hand history para começar</p>
+      </div>
+
+      <div *ngIf="!isLoading && hands.length > 0" class="hands-grid">
+        <div *ngFor="let hand of hands" class="hand-card">
+          <div class="hand-header">
+            <h4>{{ hand.filename }}</h4>
+            <span class="gaps-badge">{{ hand.gaps_count }} gaps</span>
+          </div>
+          
+          <div class="hand-meta">
+            <span class="hand-date">{{ formatDate(hand.created_at) }}</span>
+          </div>
+          
+          <div class="hand-preview">
+            {{ hand.content.substring(0, 100) }}...
+          </div>
+          
+          <div class="hand-actions">
+            <button class="view-button">Ver Detalhes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+

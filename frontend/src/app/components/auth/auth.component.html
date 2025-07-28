@@ -1,0 +1,116 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header com Logo -->
+    <div class="auth-header">
+      <img src="assets/images/logo_main.png" alt="GapHunter" class="logo">
+      <h1>GapHunter</h1>
+      <p>Análise Técnica de Poker</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="isLoginMode"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Login
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="!isLoginMode"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Registro
+      </button>
+    </div>
+
+    <!-- Formulário de Login -->
+    <form *ngIf="isLoginMode" (ngSubmit)="onLogin()" class="auth-form">
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input 
+          type="email" 
+          id="login-email"
+          [(ngModel)]="loginData.email"
+          name="email"
+          placeholder="seu@email.com"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Senha</label>
+        <input 
+          type="password" 
+          id="login-password"
+          [(ngModel)]="loginData.password"
+          name="password"
+          placeholder="••••••••"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <button 
+        type="submit" 
+        class="auth-button"
+        [disabled]="isLoading">
+        <span *ngIf="!isLoading">Entrar</span>
+        <span *ngIf="isLoading" class="loading">Entrando...</span>
+      </button>
+    </form>
+
+    <!-- Formulário de Registro -->
+    <form *ngIf="!isLoginMode" (ngSubmit)="onRegister()" class="auth-form">
+      <div class="form-group">
+        <label for="register-name">Nome</label>
+        <input 
+          type="text" 
+          id="register-name"
+          [(ngModel)]="registerData.name"
+          name="name"
+          placeholder="Seu nome"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="register-email">Email</label>
+        <input 
+          type="email" 
+          id="register-email"
+          [(ngModel)]="registerData.email"
+          name="email"
+          placeholder="seu@email.com"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="register-password">Senha</label>
+        <input 
+          type="password" 
+          id="register-password"
+          [(ngModel)]="registerData.password"
+          name="password"
+          placeholder="••••••••"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <button 
+        type="submit" 
+        class="auth-button"
+        [disabled]="isLoading">
+        <span *ngIf="!isLoading">Criar Conta</span>
+        <span *ngIf="isLoading" class="loading">Criando...</span>
+      </button>
+    </form>
+
+    <!-- Mensagem de Erro -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>
+
