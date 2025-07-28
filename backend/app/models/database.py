@@ -20,12 +20,13 @@ if DATABASE_URL.startswith("mssql") or DATABASE_URL.startswith("sqlserver"):
         pool_recycle=300,
         pool_size=5,
         max_overflow=10,
+        pool_timeout=30,
         echo=os.getenv("DEBUG", "False").lower() == "true",
         # Configurações específicas para SQL Server
         connect_args={
-            "driver": "ODBC Driver 18 for SQL Server",
-            "TrustServerCertificate": "yes",
-            "Encrypt": "yes"
+            "timeout": 30,
+            "login_timeout": 30,
+            "autocommit": True
         }
     )
 elif DATABASE_URL.startswith("postgresql"):
