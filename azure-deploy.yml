@@ -1,4 +1,4 @@
-# Azure Container Apps deployment configuration
+# Azure Container Apps deployment configuration - OTIMIZADO PARA CUSTO
 apiVersion: 2023-05-01
 location: East US
 resourceGroupName: gaphunter-rg
@@ -14,7 +14,7 @@ containerAppsEnvironment:
         customerId: ${LOG_ANALYTICS_WORKSPACE_ID}
         sharedKey: ${LOG_ANALYTICS_SHARED_KEY}
 
-# Backend Container App
+# Backend Container App (CONFIGURAÇÃO ECONÔMICA)
 backendApp:
   name: gaphunter-backend
   location: East US
@@ -49,8 +49,8 @@ backendApp:
             - name: ENVIRONMENT
               value: production
           resources:
-            cpu: 1.0
-            memory: 2Gi
+            cpu: 0.5  # Reduzido para economizar
+            memory: 1Gi  # Reduzido para economizar
           probes:
             - type: liveness
               httpGet:
@@ -65,15 +65,15 @@ backendApp:
               initialDelaySeconds: 10
               periodSeconds: 10
       scale:
-        minReplicas: 1
-        maxReplicas: 10
+        minReplicas: 0  # Scale-to-zero para economizar
+        maxReplicas: 3  # Reduzido para economizar
         rules:
           - name: http-scaler
             http:
               metadata:
-                concurrentRequests: '100'
+                concurrentRequests: '50'  # Reduzido para economizar
 
-# Frontend Container App
+# Frontend Container App (CONFIGURAÇÃO ECONÔMICA)
 frontendApp:
   name: gaphunter-frontend
   location: East US
@@ -95,8 +95,8 @@ frontendApp:
             - name: VITE_API_BASE_URL
               value: https://gaphunter-backend.${CONTAINER_APPS_DOMAIN}/api
           resources:
-            cpu: 0.5
-            memory: 1Gi
+            cpu: 0.25  # Reduzido para economizar
+            memory: 0.5Gi  # Reduzido para economizar
           probes:
             - type: liveness
               httpGet:
@@ -111,29 +111,27 @@ frontendApp:
               initialDelaySeconds: 5
               periodSeconds: 10
       scale:
-        minReplicas: 1
-        maxReplicas: 5
+        minReplicas: 0  # Scale-to-zero para economizar
+        maxReplicas: 2  # Reduzido para economizar
 
-# Database (Azure Database for PostgreSQL)
+# Database (Azure SQL Database - CONFIGURAÇÃO MAIS BARATA)
 database:
-  name: gaphunter-postgres
+  name: gaphunter-sql-server
   location: East US
   sku:
-    name: Standard_B1ms
-    tier: Burstable
+    name: Basic  # Tier mais barato
+    tier: Basic
+    capacity: 5  # DTUs mínimas
   properties:
-    administratorLogin: gaphunteradmin
+    administratorLogin: gaphunter
     administratorLoginPassword: ${DB_ADMIN_PASSWORD}
-    version: '15'
-    storage:
-      storageSizeGB: 32
-    backup:
-      backupRetentionDays: 7
-      geoRedundantBackup: Disabled
-    highAvailability:
-      mode: Disabled
-    network:
-      publicNetworkAccess: Enabled
-      delegatedSubnetResourceId: null
-      privateDnsZoneResourceId: null
+    version: '12.0'
+    maxSizeBytes: 2147483648  # 2GB (mínimo)
+    collation: SQL_Latin1_General_CP1_CI_AS
+    catalogCollation: SQL_Latin1_General_CP1_CI_AS
+    zoneRedundant: false  # Desabilitado para economizar
+    readScale: Disabled  # Desabilitado para economizar
+    requestedBackupStorageRedundancy: Local  # Local para economizar
+    isLedgerOn: false  # Desabilitado para economizar
+    maintenanceConfigurationId: /subscriptions/${SUBSCRIPTION_ID}/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default
 

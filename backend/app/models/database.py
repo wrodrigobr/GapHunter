@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
+import urllib.parse
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -11,28 +12,40 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./gaphunter.db")
 
 # Configurações específicas para diferentes bancos
-if DATABASE_URL.startswith("postgresql"):
-    # PostgreSQL (Azure Database for PostgreSQL)
+if DATABASE_URL.startswith("mssql") or DATABASE_URL.startswith("sqlserver"):
+    # Azure SQL Database - Configuração otimizada para custo
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        pool_size=5,  # Reduzido para economizar conexões
+        max_overflow=10,  # Reduzido para economizar recursos
+        echo=os.getenv("DEBUG", "False").lower() == "true",
+        connect_args={
+            "driver": "ODBC Driver 18 for SQL Server",
+            "TrustServerCertificate": "yes",
+            "Connection Timeout": 30,
+            "Command Timeout": 30
+        }
+    )
+elif DATABASE_URL.startswith("postgresql"):
+    # PostgreSQL (fallback)
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
         pool_recycle=300,
+        pool_size=5,
+        max_overflow=10,
         echo=os.getenv("DEBUG", "False").lower() == "true"
     )
 elif DATABASE_URL.startswith("mysql"):
-    # MySQL
+    # MySQL (fallback)
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
         pool_recycle=3600,
-        echo=os.getenv("DEBUG", "False").lower() == "true"
-    )
-elif DATABASE_URL.startswith("mssql") or DATABASE_URL.startswith("sqlserver"):
-    # SQL Server (Azure SQL Database)
-    engine = create_engine(
-        DATABASE_URL,
-        pool_pre_ping=True,
-        pool_recycle=3600,
+        pool_size=5,
+        max_overflow=10,
         echo=os.getenv("DEBUG", "False").lower() == "true"
     )
 else:
