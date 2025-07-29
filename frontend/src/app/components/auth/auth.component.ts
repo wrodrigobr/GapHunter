@@ -24,6 +24,7 @@ export class AuthComponent {
   registerData: RegisterRequest = {
     username: '',
     full_name: '',
+    nickname: '',
     email: '',
     password: '',
     poker_experience: '',
@@ -55,7 +56,7 @@ export class AuthComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.notificationService.success('Login realizado!', `Bem-vindo de volta, ${response.user.full_name}`);
+        this.notificationService.success('Login realizado!', `Bem-vindo de volta, ${response.user.nickname}!`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
@@ -66,7 +67,7 @@ export class AuthComponent {
   }
 
   onRegister() {
-    if (!this.registerData.username || !this.registerData.full_name || !this.registerData.email || !this.registerData.password) {
+    if (!this.registerData.username || !this.registerData.full_name || !this.registerData.nickname || !this.registerData.email || !this.registerData.password) {
       this.notificationService.warning('Campos obrigatórios', 'Por favor, preencha todos os campos obrigatórios');
       return;
     }
@@ -81,7 +82,7 @@ export class AuthComponent {
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.notificationService.success('Conta criada!', `Bem-vindo ao GapHunter, ${response.user.full_name}`);
+        this.notificationService.success('Conta criada!', `Bem-vindo ao GapHunter, ${response.user.nickname}!`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {

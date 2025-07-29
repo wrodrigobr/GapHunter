@@ -36,6 +36,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         username=user.username,
         email=user.email,
         full_name=user.full_name,
+        nickname=user.nickname,
         hashed_password=hashed_password,
         poker_experience=user.poker_experience,
         preferred_games=user.preferred_games,

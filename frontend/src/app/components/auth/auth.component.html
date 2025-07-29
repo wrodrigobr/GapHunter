@@ -80,16 +80,28 @@
           </div>
 
           <div class="form-group">
-            <label for="register-fullname">Nome Completo *</label>
+            <label for="register-nickname">Apelido *</label>
             <input 
               type="text" 
-              id="register-fullname"
-              [(ngModel)]="registerData.full_name"
-              name="full_name"
-              placeholder="Seu nome completo"
+              id="register-nickname"
+              [(ngModel)]="registerData.nickname"
+              name="nickname"
+              placeholder="Seu apelido"
               [disabled]="isLoading"
               required>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-fullname">Nome Completo *</label>
+          <input 
+            type="text" 
+            id="register-fullname"
+            [(ngModel)]="registerData.full_name"
+            name="full_name"
+            placeholder="Seu nome completo"
+            [disabled]="isLoading"
+            required>
         </div>
 
         <div class="form-group">

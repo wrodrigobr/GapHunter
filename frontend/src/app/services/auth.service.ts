@@ -7,6 +7,7 @@ export interface User {
   id: number;
   username: string;
   full_name: string;
+  nickname: string;
   email: string;
 }
 
@@ -23,6 +24,7 @@ export interface LoginRequest {
 export interface RegisterRequest {
   username: string;
   full_name: string;
+  nickname: string;
   email: string;
   password: string;
   // Informações específicas de poker

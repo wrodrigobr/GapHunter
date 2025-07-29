@@ -8,7 +8,7 @@
       </div>
       
       <div class="user-section">
-        <span class="welcome-text">Bem-vindo, {{ currentUser?.full_name }}</span>
+        <span class="welcome-text">Bem-vindo, {{ currentUser?.nickname }}!</span>
         <button class="logout-button" (click)="logout()">Sair</button>
       </div>
     </div>
@@ -86,7 +86,7 @@
           class="upload-button"
           (click)="uploadFile()"
           [disabled]="isUploading">
-          <span *ngIf="!isUploading">Analisar Mão</span>
+          <span *ngIf="!isUploading">Analisar Mãos</span>
           <span *ngIf="isUploading" class="loading">Analisando...</span>
         </button>
       </div>
