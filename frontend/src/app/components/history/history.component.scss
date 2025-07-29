@@ -262,12 +262,21 @@
   .suit-red { 
     color: #dc2626; 
     font-size: 1.1em;
+    background: #000000;
   } // Hearts e Diamonds
   .suit-black { 
     color: #1f2937; 
     font-size: 1.1em;
+    background: #ff0000;
   } // Spades e Clubs
 }
+
+ .cards-badge, .board-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #ffffff;
+    }
 
 // Botões
 .btn-analysis {

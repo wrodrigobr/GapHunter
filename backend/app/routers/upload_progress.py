@@ -7,6 +7,7 @@ import asyncio
 import uuid
 from datetime import datetime
 
+
 from app.models.database import get_db
 from app.models.user import User
 from app.models.hand import Hand
@@ -15,10 +16,12 @@ from app.models.schemas import UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
 from app.services.ai_service import AIAnalysisService
+from app.services.local_analysis_service import LocalAnalysisService
 
 router = APIRouter()
 parser = PokerStarsParser()
 ai_service = AIAnalysisService()
+local_service = LocalAnalysisService()
 
 # Armazenar progresso de uploads em memória (em produção, usar Redis)
 upload_progress: Dict[str, Dict[str, Any]] = {}
@@ -177,6 +180,10 @@ async def process_upload_background(
                                 print(f"❌ Erro ao criar torneio {pokerstars_tournament_id}: {e}")
                                 tournament_db_id = None
                 
+
+                # Análise local
+                local_analysis = local_service.analyze_hand_locally(hand_data)
+                
                 # Análise básica (sem IA por enquanto para debug)
                 ai_analysis = f"""
 ANÁLISE BÁSICA:
@@ -204,7 +211,8 @@ Esta é uma análise básica para debug.
                     bet_amount=hand_data.get('bet_amount'),
                     board_cards=hand_data.get('board_cards'),
                     raw_hand=hand_data.get('raw_hand', ''),
-                    ai_analysis=ai_analysis
+                    ai_analysis=ai_analysis,
+                    local_analysis=local_analysis
                 )
                 
                 db.add(db_hand)
