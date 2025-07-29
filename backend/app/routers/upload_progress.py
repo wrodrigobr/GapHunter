@@ -10,6 +10,7 @@ from datetime import datetime
 from app.models.database import get_db
 from app.models.user import User
 from app.models.hand import Hand
+from app.models.tournament import Tournament
 from app.models.schemas import UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
@@ -109,6 +110,7 @@ async def process_upload_background(
         print(f"📊 Iniciando processamento de {total_hands} mãos")
         
         processed_hands = []
+        tournaments_cache = {}  # Cache para evitar múltiplas consultas
         
         for i, hand_data in enumerate(parsed_hands):
             try:
@@ -133,22 +135,47 @@ async def process_upload_background(
                     continue
                 
                 # Garantir valores padrão para campos obrigatórios
-                hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{user_id}"
-                tournament_id = hand_data.get('tournament_id')
-                
-                # SOLUÇÃO TEMPORÁRIA: Tratar tournament_id que excede limite de int
-                # SQL Server int máximo: 2,147,483,647
-                if tournament_id:
-                    try:
-                        tournament_id_int = int(tournament_id)
-                        if tournament_id_int > 2147483647:
-                            # Se muito grande, usar None (será armazenado no pokerstars_tournament_id)
-                            print(f"⚠️ Tournament ID {tournament_id} muito grande para int, usando None")
-                            tournament_id = None
-                        else:
-                            tournament_id = tournament_id_int
-                    except (ValueError, TypeError):
-                        tournament_id = None
+            hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{user_id}"
+            pokerstars_tournament_id = hand_data.get('tournament_id')
+            
+            # Buscar ou criar torneio
+            tournament_db_id = None
+            if pokerstars_tournament_id:
+                # Usar cache para evitar múltiplas consultas do mesmo torneio
+                if pokerstars_tournament_id in tournaments_cache:
+                    tournament_db_id = tournaments_cache[pokerstars_tournament_id]
+                else:
+                    # Buscar torneio existente
+                    existing_tournament = db.query(Tournament).filter(
+                        Tournament.user_id == user_id,
+                        Tournament.tournament_id == pokerstars_tournament_id
+                    ).first()
+                    
+                    if existing_tournament:
+                        tournament_db_id = existing_tournament.id
+                        tournaments_cache[pokerstars_tournament_id] = tournament_db_id
+                    else:
+                        # Criar novo torneio
+                        try:
+                            new_tournament = Tournament(
+                                user_id=user_id,
+                                tournament_id=pokerstars_tournament_id,
+                                name=f"Torneio {pokerstars_tournament_id}",
+                                buy_in=0.0,
+                                date_played=hand_data.get('date_played') or datetime.now(),
+                                platform="PokerStars"
+                            )
+                            
+                            db.add(new_tournament)
+                            db.flush()  # Para obter o ID sem fazer commit
+                            
+                            tournament_db_id = new_tournament.id
+                            tournaments_cache[pokerstars_tournament_id] = tournament_db_id
+                            print(f"✅ Torneio {pokerstars_tournament_id} criado com ID {tournament_db_id}")
+                            
+                        except Exception as e:
+                            print(f"❌ Erro ao criar torneio {pokerstars_tournament_id}: {e}")
+                            tournament_db_id = None
                 
                 # Análise básica (sem IA por enquanto para debug)
                 ai_analysis = f"""
@@ -165,8 +192,8 @@ Esta é uma análise básica para debug.
                 db_hand = Hand(
                     user_id=user_id,
                     hand_id=hand_id,
-                    tournament_id=tournament_id,
-                    pokerstars_tournament_id=hand_data.get('tournament_id'),  # Valor original como string
+                    tournament_id=tournament_db_id,  # FK para tabela tournaments
+                    pokerstars_tournament_id=pokerstars_tournament_id,  # ID original do PokerStars
                     table_name=hand_data.get('table_name'),
                     date_played=hand_data.get('date_played') or datetime.now(),
                     hero_name=hand_data.get('hero_name'),

@@ -7,11 +7,11 @@ class Hand(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    tournament_id = Column(String(50), nullable=True)  # ID do torneio como string
+    tournament_id = Column(Integer, ForeignKey("tournaments.id"), nullable=True)  # FK para tabela tournaments
     hand_id = Column(String(50), nullable=False)  # ID da mão no arquivo
     
     # Dados do PokerStars
-    pokerstars_tournament_id = Column(String(50))
+    pokerstars_tournament_id = Column(String(50))  # ID original do PokerStars
     table_name = Column(String(100))
     date_played = Column(DateTime)
     hero_name = Column(String(50))
@@ -28,4 +28,5 @@ class Hand(Base):
     # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
     # Será reativado após correção dos relacionamentos
     # user = relationship("User", back_populates="hands")
+    # tournament = relationship("Tournament", back_populates="hands")
 

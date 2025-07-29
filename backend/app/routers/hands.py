@@ -8,6 +8,7 @@ import os
 from app.models.database import get_db
 from app.models.user import User
 from app.models.hand import Hand
+from app.models.tournament import Tournament
 from app.models.schemas import Hand as HandSchema, UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
@@ -16,6 +17,43 @@ from app.services.ai_service import AIAnalysisService
 router = APIRouter()
 parser = PokerStarsParser()
 ai_service = AIAnalysisService()
+
+def get_or_create_tournament(db: Session, user_id: int, tournament_data: dict) -> Optional[Tournament]:
+    """Busca ou cria um torneio na tabela tournaments"""
+    
+    pokerstars_tournament_id = tournament_data.get('tournament_id')
+    if not pokerstars_tournament_id:
+        return None
+    
+    # Buscar torneio existente
+    existing_tournament = db.query(Tournament).filter(
+        Tournament.user_id == user_id,
+        Tournament.tournament_id == pokerstars_tournament_id
+    ).first()
+    
+    if existing_tournament:
+        return existing_tournament
+    
+    # Criar novo torneio
+    try:
+        new_tournament = Tournament(
+            user_id=user_id,
+            tournament_id=pokerstars_tournament_id,
+            name=f"Torneio {pokerstars_tournament_id}",
+            buy_in=0.0,  # Será extraído posteriormente se disponível
+            date_played=tournament_data.get('date_played') or datetime.now(),
+            platform="PokerStars"
+        )
+        
+        db.add(new_tournament)
+        db.flush()  # Para obter o ID sem fazer commit
+        
+        print(f"✅ Torneio {pokerstars_tournament_id} criado com ID {new_tournament.id}")
+        return new_tournament
+        
+    except Exception as e:
+        print(f"❌ Erro ao criar torneio {pokerstars_tournament_id}: {e}")
+        return None
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_hand_history(
@@ -45,6 +83,7 @@ async def upload_hand_history(
             raise HTTPException(status_code=400, detail="Nenhuma mão válida encontrada no arquivo")
         
         processed_hands = []
+        tournaments_cache = {}  # Cache para evitar múltiplas consultas
         
         for i, hand_data in enumerate(parsed_hands):
             print(f"📊 Processando mão {i+1}: hand_id={hand_data.get('hand_id')}")
@@ -61,21 +100,19 @@ async def upload_hand_history(
             
             # Garantir valores padrão para campos obrigatórios
             hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{current_user.id}"
-            tournament_id = hand_data.get('tournament_id')
+            pokerstars_tournament_id = hand_data.get('tournament_id')
             
-            # SOLUÇÃO TEMPORÁRIA: Tratar tournament_id que excede limite de int
-            # SQL Server int máximo: 2,147,483,647
-            if tournament_id:
-                try:
-                    tournament_id_int = int(tournament_id)
-                    if tournament_id_int > 2147483647:
-                        # Se muito grande, usar None (será armazenado no pokerstars_tournament_id)
-                        print(f"⚠️ Tournament ID {tournament_id} muito grande para int, usando None")
-                        tournament_id = None
-                    else:
-                        tournament_id = tournament_id_int
-                except (ValueError, TypeError):
-                    tournament_id = None
+            # Buscar ou criar torneio
+            tournament_db_id = None
+            if pokerstars_tournament_id:
+                # Usar cache para evitar múltiplas consultas do mesmo torneio
+                if pokerstars_tournament_id in tournaments_cache:
+                    tournament_db_id = tournaments_cache[pokerstars_tournament_id]
+                else:
+                    tournament = get_or_create_tournament(db, current_user.id, hand_data)
+                    if tournament:
+                        tournament_db_id = tournament.id
+                        tournaments_cache[pokerstars_tournament_id] = tournament_db_id
             
             # Analisar mão com IA (ou análise básica se IA não disponível)
             try:
@@ -103,9 +140,9 @@ Para análise mais detalhada, configure a integração com OpenRouter.
             # Criar registro no banco
             db_hand = Hand(
                 user_id=current_user.id,
+                tournament_id=tournament_db_id,  # FK para tabela tournaments
                 hand_id=hand_id,
-                tournament_id=tournament_id,
-                pokerstars_tournament_id=hand_data.get('tournament_id'),  # Valor original como string
+                pokerstars_tournament_id=pokerstars_tournament_id,  # ID original do PokerStars
                 table_name=hand_data.get('table_name'),
                 date_played=hand_data.get('date_played') or datetime.now(),
                 hero_name=hand_data.get('hero_name'),
@@ -121,7 +158,7 @@ Para análise mais detalhada, configure a integração com OpenRouter.
             
             db.add(db_hand)
             processed_hands.append(db_hand)
-            print(f"✅ Mão {hand_id} adicionada ao banco")
+            print(f"✅ Mão {hand_id} adicionada ao banco (torneio_id: {tournament_db_id})")
         
         db.commit()
         
