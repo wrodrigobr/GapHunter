@@ -69,20 +69,39 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Login do usuário"""
-    user = authenticate_user(db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Username ou senha incorretos",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        print(f"🚀 Iniciando login para: {form_data.username}")
+        
+        user = authenticate_user(db, form_data.username, form_data.password)
+        if not user:
+            print(f"❌ Falha na autenticação para: {form_data.username}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Username ou senha incorretos",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        print(f"✅ Usuário autenticado: {user.username}")
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.username}, expires_delta=access_token_expires
         )
-    
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}
+        
+        print(f"🎫 Token criado para: {user.username}")
+        return {"access_token": access_token, "token_type": "bearer"}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (como 401)
+        raise
+    except Exception as e:
+        print(f"💥 ERRO INTERNO no login: {str(e)}")
+        print(f"💥 Tipo do erro: {type(e).__name__}")
+        import traceback
+        print(f"💥 Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro interno do servidor: {str(e)}"
+        )
 
 @router.get("/me", response_model=UserSchema)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):

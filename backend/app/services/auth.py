@@ -28,18 +28,35 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def get_user(db: Session, username: str):
-    # Procurar por username ou email
-    return db.query(User).filter(
-        (User.username == username) | (User.email == username)
-    ).first()
+    try:
+        # Procurar por username ou email
+        user = db.query(User).filter(
+            (User.username == username) | (User.email == username)
+        ).first()
+        print(f"🔍 Buscando usuário: {username} - Encontrado: {'Sim' if user else 'Não'}")
+        return user
+    except Exception as e:
+        print(f"❌ Erro ao buscar usuário {username}: {str(e)}")
+        return None
 
 def authenticate_user(db: Session, username: str, password: str):
-    user = get_user(db, username)
-    if not user:
+    try:
+        print(f"🔐 Tentativa de autenticação para: {username}")
+        user = get_user(db, username)
+        if not user:
+            print(f"❌ Usuário {username} não encontrado")
+            return False
+        
+        print(f"✅ Usuário {username} encontrado, verificando senha...")
+        if not verify_password(password, user.hashed_password):
+            print(f"❌ Senha incorreta para usuário {username}")
+            return False
+        
+        print(f"✅ Autenticação bem-sucedida para usuário {username}")
+        return user
+    except Exception as e:
+        print(f"❌ Erro durante autenticação de {username}: {str(e)}")
         return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
