@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv
 
-from app.routers import auth, hands, users, gaps, performance, coaching
+from app.routers import auth, hands, upload_progress, users, gaps, performance, coaching
 from app.routers import subscription as subscription_router
 from app.models.database import engine, Base
 
@@ -40,6 +40,7 @@ os.makedirs("uploads", exist_ok=True)
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(hands.router, prefix="/api/hands", tags=["hands"])
+app.include_router(upload_progress.router, prefix="/api/upload", tags=["upload"])
 app.include_router(gaps.router, prefix="/api/gaps", tags=["gaps"])
 app.include_router(performance.router, prefix="/api/performance", tags=["performance"])
 app.include_router(coaching.router, prefix="/api/coaching", tags=["coaching"])

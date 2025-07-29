@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { ApiService, Hand } from '../../services/api.service';
+import { UploadService } from '../../services/upload.service';
+import { NotificationService } from '../../services/notification.service';
+import { UploadProgressComponent } from '../upload-progress/upload-progress.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, UploadProgressComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -23,6 +26,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private apiService: ApiService,
+    private uploadService: UploadService,
+    private notificationService: NotificationService,
     private router: Router
   ) {}
 
@@ -54,8 +59,13 @@ export class DashboardComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
-      this.uploadMessage = '';
+      if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        this.selectedFile = file;
+        this.uploadMessage = `Arquivo selecionado: ${file.name}`;
+      } else {
+        this.uploadMessage = 'Por favor, selecione um arquivo .txt';
+        this.selectedFile = null;
+      }
     }
   }
 
@@ -80,35 +90,71 @@ export class DashboardComponent implements OnInit {
     
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
-      this.selectedFile = files[0];
-      this.uploadMessage = '';
+      const file = files[0];
+      if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        this.selectedFile = file;
+        this.uploadMessage = `Arquivo selecionado: ${file.name}`;
+      } else {
+        this.uploadMessage = 'Por favor, selecione um arquivo .txt';
+        this.selectedFile = null;
+      }
     }
   }
 
   uploadFile() {
     if (!this.selectedFile) {
-      this.uploadMessage = 'Por favor, selecione um arquivo';
+      this.notificationService.error('Por favor, selecione um arquivo');
       return;
     }
 
     console.log('📁 Iniciando upload do arquivo:', this.selectedFile.name);
-    console.log('🔐 Token atual:', this.authService.getToken() ? 'PRESENTE' : 'AUSENTE');
 
     this.isUploading = true;
-    this.uploadMessage = '';
+    this.uploadMessage = 'Iniciando upload...';
 
-    this.apiService.uploadHand(this.selectedFile).subscribe({
+    this.uploadService.uploadFile(this.selectedFile).subscribe({
       next: (response) => {
-        console.log('✅ Upload bem-sucedido:', response);
-        this.isUploading = false;
-        this.uploadMessage = `Sucesso! ${response.gaps_found} gaps encontrados`;
+        console.log('✅ Upload iniciado:', response);
+        this.notificationService.info('Upload iniciado! Acompanhe o progresso.');
+        
+        // Iniciar tracking de progresso usando Server-Sent Events
+        this.uploadService.startProgressTrackingSSE(response.upload_id);
+        
+        // Limpar seleção de arquivo
         this.selectedFile = null;
-        this.loadHands(); // Recarregar lista de mãos
+        this.uploadMessage = '';
+        this.isUploading = false;
+        
+        // Escutar conclusão do upload
+        this.uploadService.progress$.subscribe(progress => {
+          if (progress?.completed && progress.result) {
+            this.notificationService.success(
+              `Upload concluído! ${progress.result.hands_processed} mãos processadas.`
+            );
+            
+            // Recarregar dados
+            this.loadHands();
+          } else if (progress?.status === 'error') {
+            this.notificationService.error(
+              progress.message || 'Erro durante o upload'
+            );
+          }
+        });
       },
       error: (error) => {
         console.error('❌ Erro no upload:', error);
         this.isUploading = false;
-        this.uploadMessage = error;
+        this.uploadMessage = '';
+        
+        let errorMessage = 'Erro ao fazer upload do arquivo';
+        
+        if (error.status === 0) {
+          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+        
+        this.notificationService.error(errorMessage);
       }
     });
   }
