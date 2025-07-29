@@ -16,7 +16,7 @@ from app.services.auth import (
 
 router = APIRouter()
 
-@router.post("/register", response_model=UserSchema)
+@router.post("/register", response_model=Token)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     """Registrar novo usuário"""
     # Verificar se usuário já existe
@@ -49,7 +49,13 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     
-    return db_user
+    # Criar token de acesso para o usuário recém-criado
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": db_user.username}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

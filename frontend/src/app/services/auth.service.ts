@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 
 export interface User {
   id: number;
-  name: string;
+  username: string;
+  full_name: string;
   email: string;
+}
+
+export interface Token {
+  access_token: string;
+  token_type: string;
 }
 
 export interface LoginRequest {
@@ -68,24 +74,50 @@ export class AuthService {
     formData.append('username', credentials.email);
     formData.append('password', credentials.password);
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, formData)
+    return this.http.post<Token>(`${this.apiUrl}/auth/login`, formData)
       .pipe(
-        map(response => {
-          this.setToken(response.access_token);
-          this.currentUserSubject.next(response.user);
-          return response;
+        switchMap(tokenResponse => {
+          // Salvar token
+          this.setToken(tokenResponse.access_token);
+          
+          // Buscar dados do usuário
+          return this.http.get<User>(`${this.apiUrl}/auth/me`, {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+          }).pipe(
+            map(user => {
+              this.currentUserSubject.next(user);
+              return {
+                access_token: tokenResponse.access_token,
+                token_type: tokenResponse.token_type,
+                user: user
+              };
+            })
+          );
         }),
         catchError(this.handleError)
       );
   }
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, userData)
+    return this.http.post<Token>(`${this.apiUrl}/auth/register`, userData)
       .pipe(
-        map(response => {
-          this.setToken(response.access_token);
-          this.currentUserSubject.next(response.user);
-          return response;
+        switchMap(tokenResponse => {
+          // Salvar token
+          this.setToken(tokenResponse.access_token);
+          
+          // Buscar dados do usuário
+          return this.http.get<User>(`${this.apiUrl}/auth/me`, {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+          }).pipe(
+            map(user => {
+              this.currentUserSubject.next(user);
+              return {
+                access_token: tokenResponse.access_token,
+                token_type: tokenResponse.token_type,
+                user: user
+              };
+            })
+          );
         }),
         catchError(this.handleError)
       );

@@ -55,7 +55,7 @@ export class AuthComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.notificationService.success('Login realizado!', `Bem-vindo, ${response.user.name}`);
+        this.notificationService.success('Login realizado!', `Bem-vindo de volta, ${response.user.full_name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
@@ -81,7 +81,7 @@ export class AuthComponent {
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.notificationService.success('Conta criada!', `Bem-vindo ao GapHunter, ${response.user.name}`);
+        this.notificationService.success('Conta criada!', `Bem-vindo ao GapHunter, ${response.user.full_name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
