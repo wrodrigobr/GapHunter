@@ -16,9 +16,11 @@ interface Hand {
   hero_position?: string;
   hero_cards?: string;
   hero_action?: string;
+  hero_stack?: number;
   pot_size?: number;
   bet_amount?: number;
   board_cards?: string;
+  local_analysis?: string;
   ai_analysis?: string;
   created_at: string;
 }

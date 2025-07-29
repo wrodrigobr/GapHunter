@@ -58,18 +58,22 @@ class AIAnalysisService:
 Você é um coach profissional de poker especializado em torneios (MTTs) e estratégia GTO. Analise esta mão de poker e forneça feedback técnico detalhado.
 
 INFORMAÇÕES DA MÃO:
-- ID da Mão: {hand_data.get('hand_id', 'N/A')}
-- Torneio: {hand_data.get('tournament_id', 'N/A')}
-- Mesa: {hand_data.get('table_name', 'N/A')}
-- Herói: {hand_data.get('hero_name', 'N/A')}
-- Posição: {hand_data.get('hero_position', 'N/A')}
-- Cartas do Herói: {hand_data.get('hero_cards', 'N/A')}
-- Ação Principal: {hand_data.get('hero_action', 'N/A')}
-- Tamanho do Pot: {hand_data.get('pot_size', 'N/A')}
-- Board: {hand_data.get('board_cards', 'N/A')}
+- ID da Mão: {hand_data.get("hand_id", "N/A")}
+- Torneio: {hand_data.get("tournament_id", "N/A")}
+- Mesa: {hand_data.get("table_name", "N/A")}
+- Herói: {hand_data.get("hero_name", "N/A")}
+- Posição: {hand_data.get("hero_position", "N/A")}
+- Cartas do Herói: {hand_data.get("hero_cards", "N/A")}
+- Ação Principal: {hand_data.get("hero_action", "N/A")}
+- Stack do Herói: {hand_data.get("hero_stack", "N/A")}
+- Tamanho do Pot: {hand_data.get("pot_size", "N/A")}
+- Board: {hand_data.get("board_cards", "N/A")}
 
 HAND HISTORY COMPLETA:
-{hand_data.get('raw_hand', '')}
+{hand_data.get("raw_hand", "")}
+
+ANÁLISE LOCAL (gerada pelo sistema):
+{hand_data.get("local_analysis", "N/A")}
 
 ANÁLISE SOLICITADA:
 

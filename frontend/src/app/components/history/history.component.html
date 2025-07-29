@@ -230,11 +230,20 @@
               <span class="label">Ação:</span>
               <span class="value">{{selectedHand.hero_action || '-'}}</span>
             </div>
+            <div class="info-item">
+              <span class="label">Stack:</span>
+              <span class="value">{{selectedHand.hero_stack || '-'}}</span>
+            </div>
           </div>
           
+          <h4>📝 Análise Local</h4>
+          <div class="analysis-content">
+            <pre>{{selectedHand.local_analysis || 'Análise local não disponível'}}</pre>
+          </div>
+
           <h4>🤖 Análise da IA</h4>
           <div class="analysis-content">
-            <pre>{{selectedHand.ai_analysis || 'Análise não disponível'}}</pre>
+            <pre>{{selectedHand.ai_analysis || 'Análise da IA não disponível'}}</pre>
           </div>
         </div>
       </div>

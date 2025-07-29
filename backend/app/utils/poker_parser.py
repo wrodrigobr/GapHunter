@@ -18,6 +18,7 @@ class PokerStarsParser:
         self.pot_pattern = r"Total pote (\d+)"
         self.board_pattern = r"Mesa \[([^\]]+)\]"
         self.button_pattern = r"Lugar #(\d+) é o botão"
+        self.hero_stack_pattern = r"^Lugar \d+: {hero_name} \((\d+) em fichas\)"
 
     def parse_file(self, content: str) -> List[Dict]:
         """Parse um arquivo de hand history e retorna lista de mãos"""
@@ -58,8 +59,7 @@ class PokerStarsParser:
     def _parse_single_hand(self, hand_text: str) -> Optional[Dict]:
         """Parse uma única mão de poker"""
         try:
-            logger.debug(f"Parsing hand text (primeiros 200 chars): {hand_text[:200]}...")
-            
+            logger.debug(f"Parsing hand text (primeiros 200 chars): {hand_text[:200]}")
             hand_data = {
                 'raw_hand': hand_text,
                 'hand_id': self._extract_hand_id(hand_text),
@@ -70,16 +70,11 @@ class PokerStarsParser:
                 'hero_position': None,
                 'hero_cards': None,
                 'hero_action': None,
+                'hero_stack': None, # Será preenchido por _extract_hero_info
                 'pot_size': self._extract_pot_size(hand_text),
                 'bet_amount': None,
                 'board_cards': self._extract_board_cards(hand_text)
             }
-
-            # Log dos dados extraídos
-            logger.debug(f"Dados extraídos: hand_id={hand_data['hand_id']}, "
-                        f"tournament_id={hand_data['tournament_id']}, "
-                        f"table_name={hand_data['table_name']}")
-
             # Extrair informações do herói
             hero_info = self._extract_hero_info(hand_text)
             if hero_info:
@@ -216,3 +211,23 @@ class PokerStarsParser:
         
         return last_action
 
+
+
+    def _extract_hero_stack(self, text: str, hero_name: str) -> Optional[float]:
+        """Extrai o stack inicial do herói na mão"""
+        if not hero_name:
+            return None
+        
+        # O padrão precisa ser formatado com o nome do herói
+        pattern = self.hero_stack_pattern.format(hero_name=re.escape(hero_name))
+        match = re.search(pattern, text)
+        if match:
+            try:
+                stack = float(match.group(1))
+                logger.debug(f"Stack do herói extraído: {stack}")
+                return stack
+            except ValueError:
+                logger.warning(f"Não foi possível converter o stack para float: {match.group(1)}")
+                return None
+        logger.debug(f"Stack do herói não encontrado para {hero_name}")
+        return None

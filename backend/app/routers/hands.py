@@ -14,10 +14,12 @@ from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
 from app.utils.advanced_poker_parser import parse_hand_for_table_replay
 from app.services.ai_service import AIAnalysisService
+from app.services.local_analysis_service import LocalAnalysisService
 
 router = APIRouter()
 parser = PokerStarsParser()
 ai_service = AIAnalysisService()
+local_analysis_service = LocalAnalysisService()
 
 def get_or_create_tournament(db: Session, user_id: int, tournament_data: dict) -> Optional[Tournament]:
     """Busca ou cria um torneio na tabela tournaments"""
@@ -116,6 +118,7 @@ async def upload_hand_history(
                         tournaments_cache[pokerstars_tournament_id] = tournament_db_id
             
             # Analisar mão com IA (ou análise básica se IA não disponível)
+            local_analysis = await local_analysis_service.analyze_hand_locally(hand_data)
             try:
                 ai_analysis = await ai_service.analyze_hand(hand_data)
             except Exception as e:
@@ -123,9 +126,9 @@ async def upload_hand_history(
                 ai_analysis = f"""
 ANÁLISE BÁSICA (IA indisponível):
 
-Posição: {hand_data.get('hero_position', 'Desconhecida')}
-Cartas: {hand_data.get('hero_cards', 'Não identificadas')}
-Ação: {hand_data.get('hero_action', 'Não identificada')}
+Posição: {hand_data.get("hero_position", "Desconhecida")}
+Cartas: {hand_data.get("hero_cards", "Não identificadas")}
+Ação: {hand_data.get("hero_action", "Não identificada")}
 
 Esta é uma análise básica. Para análise completa com IA, verifique a configuração da API.
 
@@ -144,16 +147,18 @@ Para análise mais detalhada, configure a integração com OpenRouter.
                 tournament_id=tournament_db_id,  # FK para tabela tournaments
                 hand_id=hand_id,
                 pokerstars_tournament_id=pokerstars_tournament_id,  # ID original do PokerStars
-                table_name=hand_data.get('table_name'),
-                date_played=hand_data.get('date_played') or datetime.now(),
-                hero_name=hand_data.get('hero_name'),
-                hero_position=hand_data.get('hero_position'),
-                hero_cards=hand_data.get('hero_cards'),
-                hero_action=hand_data.get('hero_action'),
-                pot_size=hand_data.get('pot_size'),
-                bet_amount=hand_data.get('bet_amount'),
-                board_cards=hand_data.get('board_cards'),
-                raw_hand=hand_data.get('raw_hand', ''),
+                table_name=hand_data.get("table_name"),
+                date_played=hand_data.get("date_played") or datetime.now(),
+                hero_name=hand_data.get("hero_name"),
+                hero_position=hand_data.get("hero_position"),
+                hero_cards=hand_data.get("hero_cards"),
+                hero_action=hand_data.get("hero_action"),
+                hero_stack=hand_data.get("hero_stack"),
+                pot_size=hand_data.get("pot_size"),
+                bet_amount=hand_data.get("bet_amount"),
+                board_cards=hand_data.get("board_cards"),
+                raw_hand=hand_data.get("raw_hand", ""),
+                local_analysis=local_analysis,
                 ai_analysis=ai_analysis
             )
             

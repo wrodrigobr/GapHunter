@@ -22,6 +22,7 @@ class Hand(Base):
     bet_amount = Column(Float)
     board_cards = Column(String(20))
     raw_hand = Column(Text)  # Texto original da mão
+    local_analysis = Column(Text) # Análise local da mão
     ai_analysis = Column(Text)  # Análise da IA
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

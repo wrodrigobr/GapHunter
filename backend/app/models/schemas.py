@@ -56,10 +56,12 @@ class HandBase(BaseModel):
     hero_position: Optional[str] = None
     hero_cards: Optional[str] = None
     hero_action: Optional[str] = None
+    hero_stack: Optional[float] = None
     pot_size: Optional[float] = None
     bet_amount: Optional[float] = None
     board_cards: Optional[str] = None
     raw_hand: str
+    local_analysis: Optional[str] = None
     ai_analysis: Optional[str] = None
 
 class HandCreate(HandBase):
