@@ -119,10 +119,9 @@
       <div class="action-status" *ngIf="player.is_active">
         <div class="action-indicator"></div>
       </div>
-
     </div>
-
   </div>
+  
 
   <!-- Controles de Navegação -->
   <div class="table-controls">
@@ -195,28 +194,37 @@
 
   </div>
 
+  
+    <!-- Análise da Ação Atual -->
+    <div class="action-analysis" *ngIf="getCurrentAction() as action">
+      <h4>Análise da Ação</h4>
+      <div class="analysis-content">
+        <p><strong>{{ action.player }}</strong> {{ getActionDescription(action) }}</p>
+        <div class="analysis-details">
+          <span>Posição: {{ getPlayerPositionName(action.player) }}</span>
+          <span *ngIf="action.amount > 0">Valor: {{ formatStack(action.amount) }}</span>
+          <span>Street: {{ currentStreet }}</span>
+        </div>
+        
+        <!-- Análise específica se for o herói -->
+        <div class="hero-analysis" *ngIf="action.player === handReplay?.hero_name">
+          <div class="analysis-badge hero">🎯 Ação do Herói</div>
+          <p>Esta é uma ação sua. Analise se foi a melhor decisão considerando:</p>
+          <ul>
+            <li>Força das suas cartas</li>
+            <li>Posição na mesa</li>
+            <li>Tamanho do pot</li>
+            <li>Padrões dos oponentes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   <!-- Análise da Ação Atual -->
-  <div class="action-analysis" *ngIf="getCurrentAction() as action">
+  <div class="hand-analysis">
     <h4>Análise da Ação</h4>
     <div class="analysis-content">
-      <p><strong>{{ action.player }}</strong> {{ getActionDescription(action) }}</p>
-      <div class="analysis-details">
-        <span>Posição: {{ getPlayerPositionName(action.player) }}</span>
-        <span *ngIf="action.amount > 0">Valor: {{ formatStack(action.amount) }}</span>
-        <span>Street: {{ currentStreet }}</span>
-      </div>
-      
-      <!-- Análise específica se for o herói -->
-      <div class="hero-analysis" *ngIf="action.player === handReplay?.hero_name">
-        <div class="analysis-badge hero">🎯 Ação do Herói</div>
-        <p>Esta é uma ação sua. Analise se foi a melhor decisão considerando:</p>
-        <ul>
-          <li>Força das suas cartas</li>
-          <li>Posição na mesa</li>
-          <li>Tamanho do pot</li>
-          <li>Padrões dos oponentes</li>
-        </ul>
-      </div>
+      <pre>{{ handReplay?.local_analysis }}</pre>
     </div>
   </div>
 

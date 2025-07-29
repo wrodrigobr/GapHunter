@@ -1,0 +1,14 @@
+{
+  "deep_stack": {
+    "UTGvsMP": ["AA", "KK", "QQ", "AKs"],
+    "UTGvsCO": ["AA", "KK", "QQ", "JJ", "AKs", "AQs"],
+    "MPvsCO": ["AA", "KK", "QQ", "JJ", "TT", "AKs", "AQs", "KQs"],
+    "COvsBTN": ["AA", "KK", "QQ", "JJ", "TT", "99", "AKs", "AQs", "KQs", "AJs"]
+  },
+  "mid_stack": {
+    "UTGvsMP": ["AA", "KK", "QQ", "AKs"],
+    "UTGvsCO": ["AA", "KK", "QQ", "JJ", "AKs"],
+    "MPvsCO": ["AA", "KK", "QQ", "JJ", "TT", "AKs", "AQs"],
+    "COvsBTN": ["AA", "KK", "QQ", "JJ", "TT", "99", "AKs", "AQs", "KQs"]
+  }
+}

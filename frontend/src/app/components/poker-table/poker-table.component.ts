@@ -43,6 +43,7 @@ interface HandReplay {
   streets: GameStreet[];
   hero_name: string;
   hero_cards: string[];  // Mudado de string para array
+  local_analysis?: string;
 }
 
 @Component({

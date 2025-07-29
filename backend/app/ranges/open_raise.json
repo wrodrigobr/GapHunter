@@ -1,0 +1,20 @@
+{
+  "deep_stack": {
+    "UTG": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "AKs", "AQs", "AKo"],
+    "MP": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "AKs", "AQs", "AJs", "KQs", "AKo", "AQo"],
+    "CO": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "AKs", "AQs", "AJs", "ATs", "KQs", "KJs", "QJs", "JTs", "T9s", "98s", "AKo", "AQo", "AJo"],
+    "BTN": ["Qualquer par", "Todos broadways", "A2s-A5s", "K9s+", "Q9s+", "J9s+", "T9s", "98s", "87s", "76s", "65s", "A2o+", "KTo+", "QTo+", "JTo"]
+  },
+  "mid_stack": {
+    "UTG": ["AA", "KK", "QQ", "JJ", "TT", "99", "AKs", "AQs", "AKo"],
+    "MP": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "AKs", "AQs", "AJs", "KQs", "AKo", "AQo"],
+    "CO": ["AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "AKs", "AQs", "AJs", "ATs", "KQs", "KJs", "QJs", "JTs", "T9s", "AKo", "AQo", "AJo"],
+    "BTN": ["Qualquer par", "Todos broadways", "A2s+", "K9s+", "Q9s+", "J9s+", "T9s", "98s", "87s", "76s", "65s", "A2o+", "KTo+", "QTo+", "JTo"]
+  },
+  "short_stack": {
+    "UTG": ["AA", "KK", "QQ", "JJ", "AKs", "AKo"],
+    "MP": ["AA", "KK", "QQ", "JJ", "TT", "AKs", "AQs", "AKo"],
+    "CO": ["AA", "KK", "QQ", "JJ", "TT", "99", "AKs", "AQs", "AJs", "AKo", "AQo"],
+    "BTN": ["Qualquer par", "Todos broadways", "A2s+", "K9s+", "Q9s+", "J9s+", "T9s", "98s", "A2o+", "KTo+", "QTo+", "JTo"]
+  }
+}
