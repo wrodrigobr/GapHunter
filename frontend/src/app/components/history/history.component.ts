@@ -416,21 +416,6 @@ export class HistoryComponent implements OnInit {
     return pages;
   }
 
-  formatCards(cards: string): string {
-    if (!cards) return '';
-    
-    return cards.replace(/([AKQJT98765432])([shdc])/g, (match, rank, suit) => {
-      const suitIcons: { [key: string]: string } = {
-        's': '♠',
-        'h': '♥',
-        'd': '♦',
-        'c': '♣'
-      };
-      
-      return rank + suitIcons[suit];
-    });
-  }
-
   getCardClass(card: string): string {
     if (!card) return '';
     

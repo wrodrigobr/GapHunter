@@ -345,6 +345,16 @@ export class PokerTableFullscreenComponent implements OnInit {
     return classes;
   }
 
+  getCardClass(card: string): string {
+    if (!card) return '';
+    
+    const suit = card.slice(-1);
+    if (suit === 'h' || suit === 'd') {
+      return 'red-suit';
+    }
+    return 'black-suit';
+  }
+
   closeFullscreen() {
     window.close();
   }
