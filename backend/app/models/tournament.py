@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.models.database import Base
 
 class Tournament(Base):
@@ -24,9 +23,10 @@ class Tournament(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # Relacionamentos
-    user = relationship("User", back_populates="tournaments")
-    hands = relationship("Hand", back_populates="tournament")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # user = relationship("User", back_populates="tournaments")
+    # hands = relationship("Hand", back_populates="tournament")
 
 class PerformanceStats(Base):
     __tablename__ = "performance_stats"
@@ -66,6 +66,7 @@ class PerformanceStats(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamento
-    user = relationship("User", back_populates="performance_stats")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="performance_stats")
 
