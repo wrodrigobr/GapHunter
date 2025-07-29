@@ -10,7 +10,7 @@ class User(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=False)
-    nickname = Column(String(50), nullable=False)  # Apelido do jogador
+    nickname = Column(String(50), nullable=True)  # Apelido do jogador (temporariamente nullable)
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     

@@ -32,19 +32,27 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     
     # Criar novo usuário
     hashed_password = get_password_hash(user.password)
-    db_user = User(
-        username=user.username,
-        email=user.email,
-        full_name=user.full_name,
-        nickname=user.nickname,
-        hashed_password=hashed_password,
-        poker_experience=user.poker_experience,
-        preferred_games=user.preferred_games,
-        main_stakes=user.main_stakes,
-        poker_goals=user.poker_goals,
-        country=user.country,
-        timezone=user.timezone
-    )
+    
+    # SOLUÇÃO TEMPORÁRIA: Tratar campo nickname que pode não existir no banco
+    user_data = {
+        "username": user.username,
+        "email": user.email,
+        "full_name": user.full_name,
+        "hashed_password": hashed_password,
+        "poker_experience": user.poker_experience,
+        "preferred_games": user.preferred_games,
+        "main_stakes": user.main_stakes,
+        "poker_goals": user.poker_goals,
+        "country": user.country,
+        "timezone": user.timezone
+    }
+    
+    # Adicionar nickname apenas se o campo existir no banco
+    try:
+        db_user = User(**user_data, nickname=user.nickname)
+    except Exception as e:
+        print(f"⚠️ Campo nickname não existe no banco, criando sem ele: {e}")
+        db_user = User(**user_data)
     
     db.add(db_user)
     db.commit()
