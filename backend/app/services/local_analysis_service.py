@@ -1,126 +1,84 @@
-import json
 from typing import Dict, Any
-
 
 class LocalAnalysisService:
     def __init__(self):
-        # Carrega todos os ranges na memória
-        with open("ranges/open_raise.json") as f:
-            self.open_raise_ranges = json.load(f)
-
-        with open("ranges/push_fold.json") as f:
-            self.push_fold_ranges = json.load(f)
-
-        with open("ranges/3bet.json") as f:
-            self.three_bet_ranges = json.load(f)
-
-    def get_stack_category(self, stack: float) -> str:
-        """
-        Retorna categoria de stack: short_stack, mid_stack ou deep_stack.
-        """
-        if stack <= 15:
-            return "short_stack"
-        elif stack <= 30:
-            return "mid_stack"
-        else:
-            return "deep_stack"
-
-    def get_push_fold_level(self, stack: float) -> str:
-        """
-        Retorna nível push/fold (8bb, 10bb).
-        """
-        if stack <= 8:
-            return "8bb"
-        elif stack <= 10:
-            return "10bb"
-        return "10bb"
+        pass
 
     async def analyze_hand_locally(self, hand_data: Dict[str, Any]) -> str:
-        """
-        Realiza análise local baseada em ranges ABC Poker + stack + posição.
-        Retorna texto pronto para ser gravado no banco.
-        """
-        hero_position = hand_data.get("hero_position", "UTG").upper()
-        hero_cards = hand_data.get("hero_cards", "").replace(" ", "").upper()
-        hero_action = hand_data.get("hero_action", "").lower()
-        hero_stack = hand_data.get("hero_stack", 0)
-        pot_size = hand_data.get("pot_size", 0)
+        """Análise local mais detalhada."""
 
-        # ====== Categoria do stack
-        stack_cat = self.get_stack_category(hero_stack)
-        push_fold_level = self.get_push_fold_level(hero_stack)
+        hero_position = hand_data.get("hero_position", "Desconhecida")
+        hero_cards = hand_data.get("hero_cards", "Não identificadas")
+        hero_action = hand_data.get("hero_action", "Não identificada")
+        hero_stack = hand_data.get("hero_stack")
+        pot_size = hand_data.get("pot_size")
 
-        # ====== Ranges
-        open_range = self.open_raise_ranges.get(stack_cat, {}).get(hero_position, [])
-        push_fold_range = self.push_fold_ranges.get(push_fold_level, {}).get(hero_position, [])
-
-        # ====== Diagnóstico
-        in_open_range = hero_cards in open_range
-        in_push_fold_range = hero_cards in push_fold_range
-
-        range_comment = ""
-        if hero_stack <= 15:
-            if in_push_fold_range:
-                range_comment = "✅ Mão dentro do range de push/fold."
+        # Regra simplificada para stack
+        stack_comment = ""
+        if hero_stack is not None:
+            if hero_stack < 10:
+                stack_comment = "Stack curto: situação de push/fold."
+            elif hero_stack < 30:
+                stack_comment = "Stack médio: é possível abrir mais mãos, mas cuidado com all-ins."
             else:
-                range_comment = "⚠️ Mão fora do range push/fold — ajuste necessário."
-        else:
-            if in_open_range:
-                range_comment = "✅ Mão dentro do range de open raise."
-            else:
-                range_comment = "⚠️ Mão fora do range open raise para essa posição."
+                stack_comment = "Stack confortável: margem para jogadas pós-flop."
 
-        # ====== Coerência posição + ação
+        # Verifica coerência posição x ação
         position_action_comment = ""
-        if hero_position in ["UTG", "UTG+1", "MP", "EARLY"]:
-            if hero_action in ["call", "limp"]:
-                position_action_comment = "⚠️ Jogada passiva em posição inicial é geralmente ruim. Prefira raise ou fold."
-            elif hero_action == "raise":
-                position_action_comment = "✅ Ação agressiva é coerente com posição inicial, contanto que respeite range tight."
-        elif hero_position in ["CO", "BTN", "LATE"]:
-            if hero_action == "raise":
-                position_action_comment = "✅ Agressividade correta em posição final."
-            elif hero_action == "call":
-                position_action_comment = "🟢 Call pode ser ok em posição final, avalie odds e adversários."
+        if hero_position.lower() in ["early", "utg", "utg+1"]:
+            if hero_action.lower() in ["call", "limp"]:
+                position_action_comment = "Jogada passiva em posição inicial pode ser ruim. Prefira abrir raise ou fold."
+            elif hero_action.lower() in ["raise"]:
+                position_action_comment = "Ação agressiva em posição inicial é ok, desde que o range seja tight."
+        elif hero_position.lower() in ["late", "button", "cutoff"]:
+            if hero_action.lower() in ["raise"]:
+                position_action_comment = "Boa agressividade em posição final."
+            elif hero_action.lower() in ["call"]:
+                position_action_comment = "Call em posição final é aceitável, mas avalie odds e agressividade."
 
-        # ====== Diagnóstico final
-        decision = "Inconclusivo"
-        explanation = "Análise geral sugere cautela."
+        # Avalia força pré-flop se possível (super simplificado)
+        hand_strength_comment = ""
+        if hero_cards != "Não identificadas":
+            strong_hands = ["AA", "KK", "QQ", "AK", "JJ", "AQ"]
+            if any(strong in hero_cards.replace(" ", "") for strong in strong_hands):
+                hand_strength_comment = "Mão forte pré-flop."
+            else:
+                hand_strength_comment = "Mão de força média/baixa — jogue com cautela."
 
-        if hero_stack <= 15 and hero_action == "all-in":
-            decision = "👍 Decisão correta"
-            explanation = "All-in com stack curto é coerente na estratégia push/fold."
-        elif in_open_range and hero_action == "raise":
-            decision = "👍 Decisão correta"
-            explanation = "Raise com mão dentro do range é ok."
-        elif not in_open_range and hero_action == "raise":
-            decision = "⚠️ Ação agressiva fora do range sugerido."
-            explanation = "Avalie se a jogada não é loose demais."
-        elif hero_action == "call" and hero_position in ["UTG", "UTG+1", "MP"]:
-            decision = "⚠️ Jogada questionável"
-            explanation = "Call fora de posição com stack médio/grande pode ser fraco."
+        # Diagnóstico final (exemplo simples)
+        decision_ok = "Inconclusivo"
+        explanation = ""
 
-        # ====== Monta texto final
+        if "Mão forte" in hand_strength_comment and "raise" in hero_action.lower():
+            decision_ok = "Decisão correta"
+            explanation = "Ação agressiva com mão forte está de acordo com estratégia."
+        elif "Mão de força média" in hand_strength_comment and hero_action.lower() == "call":
+            decision_ok = "Aceitável"
+            explanation = "Call com mão média pode ser ok, mas depende de posição e tamanho de stack."
+        elif "Jogada passiva" in position_action_comment:
+            decision_ok = "Questionável"
+            explanation = "Jogada passiva fora de posição com mão média geralmente não é lucrativa."
+
         analysis_text = f"""
-🧩 ANÁLISE LOCAL — Poker Replay
+ANÁLISE LOCAL DETALHADA
 
-📌 Posição: {hero_position}
-📌 Cartas: {hero_cards}
-📌 Ação: {hero_action}
-📌 Stack: {hero_stack} BB
-📌 Pote: {pot_size}
+Posição do Herói: {hero_position}
+Cartas do Herói: {hero_cards}
+Ação do Herói: {hero_action}
+Stack do Herói: {hero_stack}
+Tamanho do Pote: {pot_size}
 
-➡️ STACK: {stack_cat}
-➡️ RANGE: {range_comment}
-➡️ POSIÇÃO/AÇÃO: {position_action_comment}
+👉 STACK: {stack_comment}
+👉 POSIÇÃO vs AÇÃO: {position_action_comment}
+👉 FORÇA DA MÃO: {hand_strength_comment}
 
-✅ DIAGNÓSTICO: {decision}
+📌 DIAGNÓSTICO: {decision_ok}
 💡 EXPLICAÇÃO: {explanation}
 
-Sugestão:
-- Respeite ranges por posição e stack.
+RECOMENDAÇÃO GERAL:
+- Avalie o range da mão para sua posição.
 - Prefira agressividade em posições finais.
-- Ajuste ranges conforme o cenário do torneio.
-        """.strip()
+- Evite jogadas marginais em posições iniciais.
+"""
 
         return analysis_text
