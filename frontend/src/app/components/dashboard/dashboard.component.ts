@@ -117,20 +117,35 @@ export class DashboardComponent implements OnInit {
     this.isUploading = true;
     this.uploadMessage = 'Iniciando upload...';
 
-    // Usar upload direto em vez do sistema de progresso por enquanto
-    this.apiService.uploadHand(this.selectedFile).subscribe({
+    // Usar sistema de progresso com popup
+    this.uploadService.uploadFile(this.selectedFile).subscribe({
       next: (response) => {
-        console.log('✅ Upload concluído:', response);
-        this.isUploading = false;
-        this.uploadMessage = '';
+        console.log('✅ Upload iniciado:', response);
+        this.notificationService.info('Upload iniciado! Acompanhe o progresso.');
+        
+        // Iniciar tracking de progresso usando Server-Sent Events
+        this.uploadService.startProgressTrackingSSE(response.upload_id);
+        
+        // Limpar seleção de arquivo
         this.selectedFile = null;
+        this.uploadMessage = '';
+        this.isUploading = false;
         
-        this.notificationService.success(
-          `Upload concluído! ${response.hands_processed} mãos processadas.`
-        );
-        
-        // Recarregar dados do dashboard
-        this.loadDashboardData();
+        // Escutar conclusão do upload
+        this.uploadService.progress$.subscribe(progress => {
+          if (progress?.completed && progress.result) {
+            this.notificationService.success(
+              `Upload concluído! ${progress.result.hands_processed} mãos processadas.`
+            );
+            
+            // Recarregar dados do dashboard
+            this.loadDashboardData();
+          } else if (progress?.status === 'error') {
+            this.notificationService.error(
+              progress.message || 'Erro durante o upload'
+            );
+          }
+        });
       },
       error: (error) => {
         console.error('❌ Erro no upload:', error);
