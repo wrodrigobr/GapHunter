@@ -62,6 +62,20 @@ async def upload_hand_history(
             hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{current_user.id}"
             tournament_id = hand_data.get('tournament_id')
             
+            # SOLUÇÃO TEMPORÁRIA: Tratar tournament_id que excede limite de int
+            # SQL Server int máximo: 2,147,483,647
+            if tournament_id:
+                try:
+                    tournament_id_int = int(tournament_id)
+                    if tournament_id_int > 2147483647:
+                        # Se muito grande, usar None (será armazenado no pokerstars_tournament_id)
+                        print(f"⚠️ Tournament ID {tournament_id} muito grande para int, usando None")
+                        tournament_id = None
+                    else:
+                        tournament_id = tournament_id_int
+                except (ValueError, TypeError):
+                    tournament_id = None
+            
             # Analisar mão com IA (ou análise básica se IA não disponível)
             try:
                 ai_analysis = await ai_service.analyze_hand(hand_data)
@@ -90,6 +104,7 @@ Para análise mais detalhada, configure a integração com OpenRouter.
                 user_id=current_user.id,
                 hand_id=hand_id,
                 tournament_id=tournament_id,
+                pokerstars_tournament_id=hand_data.get('tournament_id'),  # Valor original como string
                 table_name=hand_data.get('table_name'),
                 date_played=hand_data.get('date_played') or datetime.now(),
                 hero_name=hand_data.get('hero_name'),
