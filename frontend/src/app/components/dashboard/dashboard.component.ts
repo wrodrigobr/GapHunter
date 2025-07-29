@@ -172,9 +172,7 @@ export class DashboardComponent implements OnInit {
   }
 
   viewAllHands() {
-    // TODO: Implementar página de histórico completo
-    console.log('Ver todas as mãos');
-    this.notificationService.info('Página de histórico completo - Em desenvolvimento');
+    this.router.navigate(['/history']);
   }
 
   logout() {

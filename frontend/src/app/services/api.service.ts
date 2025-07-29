@@ -12,6 +12,13 @@ export interface Hand {
   date_played: string;
   ai_analysis?: string;
   has_gap?: boolean;
+  created_at: string;
+  pokerstars_tournament_id?: string;
+  table_name?: string;
+  hero_name?: string;
+  pot_size?: number;
+  bet_amount?: number;
+  board_cards?: string;
 }
 
 export interface UserStats {
@@ -73,6 +80,40 @@ export class ApiService {
   // Verificar status da API
   getApiStatus(): Observable<any> {
     return this.http.get(`${this.apiUrl}/`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Histórico de mãos com filtros
+  getMyHands(params: any): Observable<Hand[]> {
+    const queryParams = new URLSearchParams();
+    
+    Object.keys(params).forEach(key => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        queryParams.append(key, params[key].toString());
+      }
+    });
+
+    return this.http.get<Hand[]>(`${this.apiUrl}/hands/history/my-hands?${queryParams}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Contagem de mãos com filtros
+  getMyHandsCount(filters: any): Observable<{total: number}> {
+    const queryParams = new URLSearchParams();
+    
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+        queryParams.append(key, filters[key].toString());
+      }
+    });
+
+    return this.http.get<{total: number}>(`${this.apiUrl}/hands/history/my-hands/count?${queryParams}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Opções de filtros
+  getFilterOptions(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hands/history/filters/options`)
       .pipe(catchError(this.handleError));
   }
 

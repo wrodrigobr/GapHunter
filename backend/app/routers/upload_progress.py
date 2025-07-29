@@ -135,47 +135,47 @@ async def process_upload_background(
                     continue
                 
                 # Garantir valores padrão para campos obrigatórios
-            hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{user_id}"
-            pokerstars_tournament_id = hand_data.get('tournament_id')
-            
-            # Buscar ou criar torneio
-            tournament_db_id = None
-            if pokerstars_tournament_id:
-                # Usar cache para evitar múltiplas consultas do mesmo torneio
-                if pokerstars_tournament_id in tournaments_cache:
-                    tournament_db_id = tournaments_cache[pokerstars_tournament_id]
-                else:
-                    # Buscar torneio existente
-                    existing_tournament = db.query(Tournament).filter(
-                        Tournament.user_id == user_id,
-                        Tournament.tournament_id == pokerstars_tournament_id
-                    ).first()
-                    
-                    if existing_tournament:
-                        tournament_db_id = existing_tournament.id
-                        tournaments_cache[pokerstars_tournament_id] = tournament_db_id
+                hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{user_id}"
+                pokerstars_tournament_id = hand_data.get('tournament_id')
+                
+                # Buscar ou criar torneio
+                tournament_db_id = None
+                if pokerstars_tournament_id:
+                    # Usar cache para evitar múltiplas consultas do mesmo torneio
+                    if pokerstars_tournament_id in tournaments_cache:
+                        tournament_db_id = tournaments_cache[pokerstars_tournament_id]
                     else:
-                        # Criar novo torneio
-                        try:
-                            new_tournament = Tournament(
-                                user_id=user_id,
-                                tournament_id=pokerstars_tournament_id,
-                                name=f"Torneio {pokerstars_tournament_id}",
-                                buy_in=0.0,
-                                date_played=hand_data.get('date_played') or datetime.now(),
-                                platform="PokerStars"
-                            )
-                            
-                            db.add(new_tournament)
-                            db.flush()  # Para obter o ID sem fazer commit
-                            
-                            tournament_db_id = new_tournament.id
+                        # Buscar torneio existente
+                        existing_tournament = db.query(Tournament).filter(
+                            Tournament.user_id == user_id,
+                            Tournament.tournament_id == pokerstars_tournament_id
+                        ).first()
+                        
+                        if existing_tournament:
+                            tournament_db_id = existing_tournament.id
                             tournaments_cache[pokerstars_tournament_id] = tournament_db_id
-                            print(f"✅ Torneio {pokerstars_tournament_id} criado com ID {tournament_db_id}")
-                            
-                        except Exception as e:
-                            print(f"❌ Erro ao criar torneio {pokerstars_tournament_id}: {e}")
-                            tournament_db_id = None
+                        else:
+                            # Criar novo torneio
+                            try:
+                                new_tournament = Tournament(
+                                    user_id=user_id,
+                                    tournament_id=pokerstars_tournament_id,
+                                    name=f"Torneio {pokerstars_tournament_id}",
+                                    buy_in=0.0,
+                                    date_played=hand_data.get('date_played') or datetime.now(),
+                                    platform="PokerStars"
+                                )
+                                
+                                db.add(new_tournament)
+                                db.flush()  # Para obter o ID sem fazer commit
+                                
+                                tournament_db_id = new_tournament.id
+                                tournaments_cache[pokerstars_tournament_id] = tournament_db_id
+                                print(f"✅ Torneio {pokerstars_tournament_id} criado com ID {tournament_db_id}")
+                                
+                            except Exception as e:
+                                print(f"❌ Erro ao criar torneio {pokerstars_tournament_id}: {e}")
+                                tournament_db_id = None
                 
                 # Análise básica (sem IA por enquanto para debug)
                 ai_analysis = f"""

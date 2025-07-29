@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from typing import List, Optional
 from datetime import datetime
 import os
@@ -243,15 +243,176 @@ async def get_user_stats(
 async def get_my_hands(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    order_by: str = Query("date_asc", regex="^(date_asc|date_desc|created_asc|created_desc)$"),
+    gap_filter: Optional[str] = Query(None, regex="^(all|ok|gap|error)$"),
+    position_filter: Optional[str] = Query(None),
+    action_filter: Optional[str] = Query(None),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Obter histórico de mãos do usuário"""
-    hands = db.query(Hand).filter(
-        Hand.user_id == current_user.id
-    ).order_by(Hand.created_at.desc()).offset(skip).limit(limit).all()
+    """Obter histórico de mãos do usuário com filtros e ordenação"""
+    
+    # Query base
+    query = db.query(Hand).filter(Hand.user_id == current_user.id)
+    
+    # Filtro por gap
+    if gap_filter and gap_filter != "all":
+        if gap_filter == "ok":
+            # Mãos sem gaps (análise não contém palavras de erro)
+            query = query.filter(
+                ~Hand.ai_analysis.ilike('%gap%'),
+                ~Hand.ai_analysis.ilike('%erro%'),
+                ~Hand.ai_analysis.ilike('%error%'),
+                ~Hand.ai_analysis.ilike('%mistake%')
+            )
+        elif gap_filter == "gap":
+            # Mãos com gaps (análise contém palavras de gap)
+            query = query.filter(
+                Hand.ai_analysis.ilike('%gap%')
+            )
+        elif gap_filter == "error":
+            # Mãos com erros (análise contém palavras de erro)
+            query = query.filter(
+                or_(
+                    Hand.ai_analysis.ilike('%erro%'),
+                    Hand.ai_analysis.ilike('%error%'),
+                    Hand.ai_analysis.ilike('%mistake%')
+                )
+            )
+    
+    # Filtro por posição
+    if position_filter:
+        query = query.filter(Hand.hero_position == position_filter)
+    
+    # Filtro por ação
+    if action_filter:
+        query = query.filter(Hand.hero_action == action_filter)
+    
+    # Filtro por data
+    if date_from:
+        try:
+            date_from_obj = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            query = query.filter(Hand.date_played >= date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            query = query.filter(Hand.date_played <= date_to_obj)
+        except ValueError:
+            pass
+    
+    # Ordenação
+    if order_by == "date_asc":
+        query = query.order_by(Hand.date_played.asc())
+    elif order_by == "date_desc":
+        query = query.order_by(Hand.date_played.desc())
+    elif order_by == "created_asc":
+        query = query.order_by(Hand.created_at.asc())
+    elif order_by == "created_desc":
+        query = query.order_by(Hand.created_at.desc())
+    
+    # Aplicar paginação
+    hands = query.offset(skip).limit(limit).all()
     
     return hands
+
+@router.get("/history/my-hands/count")
+async def get_my_hands_count(
+    gap_filter: Optional[str] = Query(None, regex="^(all|ok|gap|error)$"),
+    position_filter: Optional[str] = Query(None),
+    action_filter: Optional[str] = Query(None),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Obter contagem total de mãos com filtros aplicados"""
+    
+    # Query base
+    query = db.query(func.count(Hand.id)).filter(Hand.user_id == current_user.id)
+    
+    # Aplicar os mesmos filtros do endpoint principal
+    if gap_filter and gap_filter != "all":
+        if gap_filter == "ok":
+            query = query.filter(
+                ~Hand.ai_analysis.ilike('%gap%'),
+                ~Hand.ai_analysis.ilike('%erro%'),
+                ~Hand.ai_analysis.ilike('%error%'),
+                ~Hand.ai_analysis.ilike('%mistake%')
+            )
+        elif gap_filter == "gap":
+            query = query.filter(Hand.ai_analysis.ilike('%gap%'))
+        elif gap_filter == "error":
+            query = query.filter(
+                or_(
+                    Hand.ai_analysis.ilike('%erro%'),
+                    Hand.ai_analysis.ilike('%error%'),
+                    Hand.ai_analysis.ilike('%mistake%')
+                )
+            )
+    
+    if position_filter:
+        query = query.filter(Hand.hero_position == position_filter)
+    
+    if action_filter:
+        query = query.filter(Hand.hero_action == action_filter)
+    
+    if date_from:
+        try:
+            date_from_obj = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            query = query.filter(Hand.date_played >= date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            query = query.filter(Hand.date_played <= date_to_obj)
+        except ValueError:
+            pass
+    
+    total = query.scalar()
+    return {"total": total}
+
+@router.get("/history/filters/options")
+async def get_filter_options(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Obter opções disponíveis para filtros"""
+    
+    # Posições disponíveis
+    positions = db.query(Hand.hero_position).filter(
+        Hand.user_id == current_user.id,
+        Hand.hero_position.isnot(None)
+    ).distinct().all()
+    
+    # Ações disponíveis
+    actions = db.query(Hand.hero_action).filter(
+        Hand.user_id == current_user.id,
+        Hand.hero_action.isnot(None)
+    ).distinct().all()
+    
+    return {
+        "positions": [pos[0] for pos in positions if pos[0]],
+        "actions": [action[0] for action in actions if action[0]],
+        "gap_options": [
+            {"value": "all", "label": "Todas as mãos"},
+            {"value": "ok", "label": "Mãos OK (sem gaps)"},
+            {"value": "gap", "label": "Mãos com gaps"},
+            {"value": "error", "label": "Mãos com erros"}
+        ],
+        "order_options": [
+            {"value": "date_asc", "label": "Data (mais antiga primeiro)"},
+            {"value": "date_desc", "label": "Data (mais recente primeiro)"},
+            {"value": "created_asc", "label": "Criação (mais antiga primeiro)"},
+            {"value": "created_desc", "label": "Criação (mais recente primeiro)"}
+        ]
+    }
 
 @router.get("/history/my-hands/{hand_id}", response_model=HandSchema)
 async def get_hand_detail(
