@@ -52,7 +52,7 @@ async def upload_hand_history_async(
     
     # Processar arquivo em background
     asyncio.create_task(process_upload_background(
-        upload_id, file, current_user.id, db
+        upload_id, file, current_user.id
     ))
     
     return {"upload_id": upload_id, "message": "Upload iniciado"}
@@ -60,19 +60,28 @@ async def upload_hand_history_async(
 async def process_upload_background(
     upload_id: str, 
     file: UploadFile, 
-    user_id: int, 
-    db: Session
+    user_id: int
 ):
     """Processa upload em background com atualizações de progresso"""
     
+    db = None
     try:
+        print(f"🚀 Iniciando processamento background para upload {upload_id}")
+        
+        # Criar nova sessão para esta tarefa
+        from app.models.database import SessionLocal
+        db = SessionLocal()
+        
         # Atualizar status
         upload_progress[upload_id]["status"] = "reading_file"
         upload_progress[upload_id]["message"] = "Lendo arquivo..."
+        print(f"📖 Status atualizado: reading_file")
         
         # Ler conteúdo do arquivo
         content = await file.read()
         content = content.decode('utf-8')
+        
+        print(f"📁 Arquivo lido: {len(content)} caracteres")
         
         upload_progress[upload_id]["message"] = f"Arquivo lido: {len(content)} caracteres"
         upload_progress[upload_id]["progress"] = 10
@@ -80,19 +89,24 @@ async def process_upload_background(
         # Parse das mãos
         upload_progress[upload_id]["status"] = "parsing"
         upload_progress[upload_id]["message"] = "Analisando estrutura do arquivo..."
+        print(f"🔍 Iniciando parse do arquivo...")
         
         parsed_hands = parser.parse_file(content)
+        print(f"🔍 Parse concluído: {len(parsed_hands)} mãos encontradas")
         
         if not parsed_hands:
             upload_progress[upload_id]["status"] = "error"
             upload_progress[upload_id]["message"] = "Nenhuma mão válida encontrada no arquivo"
             upload_progress[upload_id]["errors"].append("Arquivo não contém mãos válidas")
+            print(f"❌ Nenhuma mão válida encontrada")
             return
         
         total_hands = len(parsed_hands)
         upload_progress[upload_id]["total_hands"] = total_hands
         upload_progress[upload_id]["progress"] = 20
         upload_progress[upload_id]["message"] = f"Encontradas {total_hands} mãos para processar"
+        upload_progress[upload_id]["status"] = "processing"
+        print(f"📊 Iniciando processamento de {total_hands} mãos")
         
         processed_hands = []
         
@@ -104,6 +118,9 @@ async def process_upload_background(
                 upload_progress[upload_id]["processed_hands"] = i
                 upload_progress[upload_id]["current_hand"] = f"Mão #{hand_data.get('hand_id', 'unknown')}"
                 upload_progress[upload_id]["message"] = f"Processando mão {i+1}/{total_hands}"
+                
+                if i % 5 == 0:  # Log a cada 5 mãos
+                    print(f"📊 Processando mão {i+1}/{total_hands}")
                 
                 # Verificar se mão já existe
                 existing_hand = db.query(Hand).filter(
@@ -119,28 +136,15 @@ async def process_upload_background(
                 hand_id = hand_data.get('hand_id') or f"unknown_{i+1}_{user_id}"
                 tournament_id = hand_data.get('tournament_id')
                 
-                # Analisar mão com IA
-                upload_progress[upload_id]["message"] = f"Analisando mão {i+1}/{total_hands} com IA..."
-                
-                try:
-                    ai_analysis = await ai_service.analyze_hand(hand_data)
-                except Exception as e:
-                    ai_analysis = f"""
-ANÁLISE BÁSICA (IA indisponível):
+                # Análise básica (sem IA por enquanto para debug)
+                ai_analysis = f"""
+ANÁLISE BÁSICA:
 
 Posição: {hand_data.get('hero_position', 'Desconhecida')}
 Cartas: {hand_data.get('hero_cards', 'Não identificadas')}
 Ação: {hand_data.get('hero_action', 'Não identificada')}
 
-Esta é uma análise básica. Para análise completa com IA, verifique a configuração da API.
-
-RECOMENDAÇÕES GERAIS:
-- Analise a posição antes de tomar decisões
-- Considere o tamanho do pot e stack sizes
-- Observe os padrões dos oponentes
-- Mantenha disciplina com bankroll management
-
-Para análise mais detalhada, configure a integração com OpenRouter.
+Esta é uma análise básica para debug.
 """
                 
                 # Criar registro no banco
@@ -164,10 +168,11 @@ Para análise mais detalhada, configure a integração com OpenRouter.
                 db.add(db_hand)
                 processed_hands.append(db_hand)
                 
-                # Commit a cada 10 mãos para evitar timeout
-                if (i + 1) % 10 == 0:
+                # Commit a cada 5 mãos para debug
+                if (i + 1) % 5 == 0:
                     db.commit()
                     upload_progress[upload_id]["message"] = f"Salvando progresso... ({i+1}/{total_hands})"
+                    print(f"💾 Commit realizado: {i+1} mãos")
                 
             except Exception as e:
                 error_msg = f"Erro na mão {i+1}: {str(e)}"
@@ -175,6 +180,7 @@ Para análise mais detalhada, configure a integração com OpenRouter.
                 print(f"❌ {error_msg}")
         
         # Commit final
+        print(f"💾 Commit final...")
         db.commit()
         
         # Atualizar objetos com IDs
@@ -193,11 +199,19 @@ Para análise mais detalhada, configure a integração com OpenRouter.
             "duplicates_skipped": total_hands - len(processed_hands)
         }
         
+        print(f"✅ Upload {upload_id} concluído: {len(processed_hands)} mãos processadas")
+        
     except Exception as e:
         upload_progress[upload_id]["status"] = "error"
         upload_progress[upload_id]["message"] = f"Erro durante processamento: {str(e)}"
         upload_progress[upload_id]["errors"].append(str(e))
         print(f"❌ Erro no upload {upload_id}: {str(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
+    finally:
+        if db:
+            db.close()
+            print(f"🔒 Sessão do banco fechada para upload {upload_id}")
 
 @router.get("/upload-progress/{upload_id}")
 async def get_upload_progress(upload_id: str):
@@ -207,6 +221,70 @@ async def get_upload_progress(upload_id: str):
         raise HTTPException(status_code=404, detail="Upload não encontrado")
     
     return upload_progress[upload_id]
+
+@router.get("/debug/uploads")
+async def debug_uploads():
+    """Debug: Lista todos os uploads em progresso"""
+    return {
+        "total_uploads": len(upload_progress),
+        "uploads": {k: v for k, v in upload_progress.items()}
+    }
+
+@router.post("/debug/test-progress")
+async def test_progress():
+    """Debug: Cria um upload de teste para verificar o sistema"""
+    
+    upload_id = str(uuid.uuid4())
+    
+    # Inicializar progresso de teste
+    upload_progress[upload_id] = {
+        "status": "starting",
+        "progress": 0,
+        "total_hands": 10,
+        "processed_hands": 0,
+        "current_hand": "",
+        "message": "Teste iniciado...",
+        "errors": [],
+        "completed": False,
+        "result": None
+    }
+    
+    # Simular progresso em background
+    asyncio.create_task(simulate_progress(upload_id))
+    
+    return {"upload_id": upload_id, "message": "Teste iniciado"}
+
+async def simulate_progress(upload_id: str):
+    """Simula progresso para teste"""
+    try:
+        for i in range(10):
+            await asyncio.sleep(1)  # Aguardar 1 segundo
+            
+            upload_progress[upload_id]["progress"] = (i + 1) * 10
+            upload_progress[upload_id]["processed_hands"] = i + 1
+            upload_progress[upload_id]["current_hand"] = f"Teste #{i + 1}"
+            upload_progress[upload_id]["message"] = f"Processando teste {i + 1}/10"
+            upload_progress[upload_id]["status"] = "processing"
+            
+            print(f"🧪 Teste {upload_id}: {i + 1}/10")
+        
+        # Finalizar teste
+        upload_progress[upload_id]["status"] = "completed"
+        upload_progress[upload_id]["progress"] = 100
+        upload_progress[upload_id]["completed"] = True
+        upload_progress[upload_id]["message"] = "Teste concluído!"
+        upload_progress[upload_id]["result"] = {
+            "hands_processed": 10,
+            "total_found": 10,
+            "duplicates_skipped": 0
+        }
+        
+        print(f"✅ Teste {upload_id} concluído")
+        
+    except Exception as e:
+        upload_progress[upload_id]["status"] = "error"
+        upload_progress[upload_id]["message"] = f"Erro no teste: {str(e)}"
+        print(f"❌ Erro no teste {upload_id}: {str(e)}")
 
 @router.get("/upload-stream/{upload_id}")
 async def stream_upload_progress(upload_id: str):
