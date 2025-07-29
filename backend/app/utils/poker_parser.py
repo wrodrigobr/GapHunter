@@ -1,9 +1,13 @@
 import re
 from datetime import datetime
 from typing import List, Dict, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PokerStarsParser:
     def __init__(self):
+        # Padrões mais robustos para PokerStars
         self.hand_pattern = r"PokerStars Hand #(\d+):"
         self.tournament_pattern = r"Tournament #(\d+),"
         self.table_pattern = r"Table '([^']+)'"
@@ -16,24 +20,58 @@ class PokerStarsParser:
 
     def parse_file(self, content: str) -> List[Dict]:
         """Parse um arquivo de hand history e retorna lista de mãos"""
+        logger.info(f"Iniciando parse de arquivo com {len(content)} caracteres")
+        
         hands = []
         hand_blocks = self._split_hands(content)
         
-        for hand_block in hand_blocks:
+        logger.info(f"Encontrados {len(hand_blocks)} blocos de mãos")
+        
+        for i, hand_block in enumerate(hand_blocks):
+            logger.info(f"Processando mão {i+1}/{len(hand_blocks)}")
             parsed_hand = self._parse_single_hand(hand_block)
             if parsed_hand:
                 hands.append(parsed_hand)
+                logger.info(f"Mão {i+1} processada com sucesso - Hand ID: {parsed_hand.get('hand_id')}")
+            else:
+                logger.warning(f"Falha ao processar mão {i+1}")
         
+        logger.info(f"Parse concluído: {len(hands)} mãos válidas de {len(hand_blocks)} blocos")
         return hands
 
     def _split_hands(self, content: str) -> List[str]:
         """Divide o conteúdo em blocos de mãos individuais"""
-        hands = re.split(r'\n\n\n', content)
-        return [hand.strip() for hand in hands if hand.strip()]
+        # Tentar diferentes separadores
+        separators = [
+            r'\n\n\n+',  # Múltiplas linhas vazias
+            r'\*{10,}',   # Múltiplos asteriscos
+            r'PokerStars Hand #'  # Início de nova mão
+        ]
+        
+        hands = []
+        
+        # Primeiro tentar por asteriscos (formato comum)
+        if '***' in content:
+            hands = re.split(r'\*{5,}[^*]*\*{5,}', content)
+        else:
+            # Tentar por múltiplas quebras de linha
+            hands = re.split(r'\n\n\n+', content)
+        
+        # Filtrar blocos vazios e muito pequenos
+        valid_hands = []
+        for hand in hands:
+            hand = hand.strip()
+            if hand and len(hand) > 50 and 'PokerStars Hand' in hand:
+                valid_hands.append(hand)
+        
+        logger.info(f"Divisão de mãos: {len(valid_hands)} blocos válidos de {len(hands)} total")
+        return valid_hands
 
     def _parse_single_hand(self, hand_text: str) -> Optional[Dict]:
         """Parse uma única mão de poker"""
         try:
+            logger.debug(f"Parsing hand text (primeiros 200 chars): {hand_text[:200]}...")
+            
             hand_data = {
                 'raw_hand': hand_text,
                 'hand_id': self._extract_hand_id(hand_text),
@@ -49,44 +87,70 @@ class PokerStarsParser:
                 'board_cards': self._extract_board_cards(hand_text)
             }
 
+            # Log dos dados extraídos
+            logger.debug(f"Dados extraídos: hand_id={hand_data['hand_id']}, "
+                        f"tournament_id={hand_data['tournament_id']}, "
+                        f"table_name={hand_data['table_name']}")
+
             # Extrair informações do herói
             hero_info = self._extract_hero_info(hand_text)
             if hero_info:
                 hand_data.update(hero_info)
+                logger.debug(f"Hero info: {hero_info}")
+
+            # Validar dados obrigatórios
+            if not hand_data['hand_id']:
+                logger.warning("Hand ID não encontrado - mão será rejeitada")
+                return None
 
             return hand_data
         except Exception as e:
-            print(f"Erro ao processar mão: {e}")
+            logger.error(f"Erro ao processar mão: {e}")
+            logger.debug(f"Texto da mão problemática: {hand_text[:500]}...")
             return None
 
     def _extract_hand_id(self, text: str) -> Optional[str]:
         match = re.search(self.hand_pattern, text)
-        return match.group(1) if match else None
+        result = match.group(1) if match else None
+        logger.debug(f"Hand ID extraído: {result}")
+        return result
 
     def _extract_tournament_id(self, text: str) -> Optional[str]:
         match = re.search(self.tournament_pattern, text)
-        return match.group(1) if match else None
+        result = match.group(1) if match else None
+        logger.debug(f"Tournament ID extraído: {result}")
+        return result
 
     def _extract_table_name(self, text: str) -> Optional[str]:
         match = re.search(self.table_pattern, text)
-        return match.group(1) if match else None
+        result = match.group(1) if match else None
+        logger.debug(f"Table name extraído: {result}")
+        return result
 
     def _extract_date(self, text: str) -> Optional[datetime]:
         match = re.search(self.date_pattern, text)
         if match:
             try:
-                return datetime.strptime(match.group(1), "%Y/%m/%d %H:%M:%S")
-            except:
+                result = datetime.strptime(match.group(1), "%Y/%m/%d %H:%M:%S")
+                logger.debug(f"Data extraída: {result}")
+                return result
+            except Exception as e:
+                logger.warning(f"Erro ao converter data: {e}")
                 return None
+        logger.debug("Data não encontrada")
         return None
 
     def _extract_pot_size(self, text: str) -> Optional[float]:
         match = re.search(self.pot_pattern, text)
-        return float(match.group(1)) if match else None
+        result = float(match.group(1)) if match else None
+        logger.debug(f"Pot size extraído: {result}")
+        return result
 
     def _extract_board_cards(self, text: str) -> Optional[str]:
         match = re.search(self.board_pattern, text)
-        return match.group(1) if match else None
+        result = match.group(1) if match else None
+        logger.debug(f"Board cards extraído: {result}")
+        return result
 
     def _extract_hero_info(self, text: str) -> Dict:
         """Extrai informações do herói (jogador principal)"""
