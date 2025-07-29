@@ -182,8 +182,8 @@ async def process_upload_background(
                 
 
                 # Análise local
-                local_analysis = local_service.analyze_hand_locally(hand_data)
-                
+                local_analysis = await local_service.analyze_hand_locally(hand_data)
+                                
                 # Análise básica (sem IA por enquanto para debug)
                 ai_analysis = f"""
 ANÁLISE BÁSICA:
