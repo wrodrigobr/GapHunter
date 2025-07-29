@@ -91,17 +91,22 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    console.log('📁 Iniciando upload do arquivo:', this.selectedFile.name);
+    console.log('🔐 Token atual:', this.authService.getToken() ? 'PRESENTE' : 'AUSENTE');
+
     this.isUploading = true;
     this.uploadMessage = '';
 
     this.apiService.uploadHand(this.selectedFile).subscribe({
       next: (response) => {
+        console.log('✅ Upload bem-sucedido:', response);
         this.isUploading = false;
         this.uploadMessage = `Sucesso! ${response.gaps_found} gaps encontrados`;
         this.selectedFile = null;
         this.loadHands(); // Recarregar lista de mãos
       },
       error: (error) => {
+        console.error('❌ Erro no upload:', error);
         this.isUploading = false;
         this.uploadMessage = error;
       }

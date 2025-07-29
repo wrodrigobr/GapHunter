@@ -12,13 +12,18 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
   const authService = inject(AuthService);
   const token = authService.getToken();
   
+  console.log('🔐 Interceptor executado para:', req.url);
+  console.log('🎫 Token encontrado:', token ? 'SIM' : 'NÃO');
+  
   if (token) {
     const authReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
+    console.log('✅ Header Authorization adicionado');
     return next(authReq);
   }
   
+  console.log('❌ Requisição sem token');
   return next(req);
 }
 
