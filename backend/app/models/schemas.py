@@ -48,7 +48,7 @@ class TokenData(BaseModel):
 # Hand schemas
 class HandBase(BaseModel):
     hand_id: str
-    tournament_id: Optional[str] = None
+    tournament_id: Optional[int] = None  # Corrigido: int em vez de str
     table_name: Optional[str] = None
     date_played: Optional[datetime] = None
     hero_name: Optional[str] = None

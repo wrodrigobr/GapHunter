@@ -117,11 +117,34 @@ export class DashboardComponent implements OnInit {
     this.isUploading = true;
     this.uploadMessage = 'Iniciando upload...';
 
+    // Iniciar tracking de progresso IMEDIATAMENTE (modal aparece)
+    this.uploadService.progressSubject.next({
+      status: 'starting',
+      progress: 0,
+      total_hands: 0,
+      processed_hands: 0,
+      current_hand: '',
+      message: 'Preparando upload...',
+      errors: [],
+      completed: false
+    });
+
     // Usar sistema de progresso com popup
     this.uploadService.uploadFile(this.selectedFile).subscribe({
       next: (response) => {
         console.log('✅ Upload iniciado:', response);
-        this.notificationService.info('Upload iniciado! Acompanhe o progresso.');
+        
+        // Atualizar progresso para "processando"
+        this.uploadService.progressSubject.next({
+          status: 'processing',
+          progress: 5,
+          total_hands: 0,
+          processed_hands: 0,
+          current_hand: '',
+          message: 'Conectando ao servidor...',
+          errors: [],
+          completed: false
+        });
         
         // Iniciar tracking de progresso usando Server-Sent Events
         this.uploadService.startProgressTrackingSSE(response.upload_id);

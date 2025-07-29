@@ -29,7 +29,7 @@ export interface UploadStartResponse {
 })
 export class UploadService {
   private apiUrl = 'https://ghunter-backend-djfcaycjd5eeeahu.brazilsouth-01.azurewebsites.net/api';
-  private progressSubject = new BehaviorSubject<UploadProgress | null>(null);
+  public progressSubject = new BehaviorSubject<UploadProgress | null>(null);
   public progress$ = this.progressSubject.asObservable();
 
   constructor(private http: HttpClient) {}

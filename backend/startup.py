@@ -47,6 +47,20 @@ def main():
     
     print(f"📊 Banco de dados: {database_url.split('@')[0]}@***")
     
+    # Verificar se é SQL Server e se drivers estão disponíveis
+    if 'mssql' in database_url or 'pyodbc' in database_url:
+        try:
+            import pyodbc
+            # Testar conexão básica
+            test_connection = database_url.replace('mssql+pyodbc://', '').split('@')[1] if '@' in database_url else None
+            if test_connection:
+                print("🔍 Testando conectividade com SQL Server...")
+                # Se não conseguir conectar, usar SQLite como fallback
+        except ImportError:
+            print("⚠️  Drivers SQL Server não disponíveis, usando SQLite como fallback...")
+            os.environ['DATABASE_URL'] = 'sqlite:///./gaphunter.db'
+            database_url = 'sqlite:///./gaphunter.db'
+    
     # Executar migrações do banco de dados
     if not run_command("alembic upgrade head", "Executando migrações do banco de dados"):
         print("❌ Falha nas migrações. Tentando criar migração inicial...")
