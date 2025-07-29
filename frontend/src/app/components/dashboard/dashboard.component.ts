@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
   selectedFile: File | null = null;
   isUploading = false;
   uploadMessage = '';
+  isDragOver = false;  // NOVO: controle drag over
 
   constructor(
     private authService: AuthService,
@@ -46,7 +47,6 @@ export class DashboardComponent implements OnInit {
   loadDashboardData() {
     this.isLoading = true;
     
-    // Carregar estatísticas e mãos em paralelo
     Promise.all([
       this.apiService.getUserStats().toPromise(),
       this.apiService.getUserHands(0, 10).toPromise()
@@ -82,16 +82,19 @@ export class DashboardComponent implements OnInit {
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.isDragOver = true;  // NOVO
   }
 
   onDragLeave(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.isDragOver = false; // NOVO
   }
 
   onDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.isDragOver = false; // NOVO
     
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
@@ -129,12 +132,10 @@ export class DashboardComponent implements OnInit {
       completed: false
     });
 
-    // Usar sistema de progresso com popup
     this.uploadService.uploadFile(this.selectedFile).subscribe({
       next: (response) => {
         console.log('✅ Upload iniciado:', response);
         
-        // Atualizar progresso para "processando"
         this.uploadService.progressSubject.next({
           status: 'processing',
           progress: 5,
@@ -146,27 +147,20 @@ export class DashboardComponent implements OnInit {
           completed: false
         });
         
-        // Iniciar tracking de progresso usando Server-Sent Events
         this.uploadService.startProgressTrackingSSE(response.upload_id);
         
-        // Limpar seleção de arquivo
         this.selectedFile = null;
         this.uploadMessage = '';
         this.isUploading = false;
         
-        // Escutar conclusão do upload
         this.uploadService.progress$.subscribe(progress => {
           if (progress?.completed && progress.result) {
             this.notificationService.success(
               `Upload concluído! ${progress.result.hands_processed} mãos processadas.`
             );
-            
-            // Recarregar dados do dashboard
             this.loadDashboardData();
           } else if (progress?.status === 'error') {
-            this.notificationService.error(
-              progress.message || 'Erro durante o upload'
-            );
+            this.notificationService.error(progress.message || 'Erro durante o upload');
           }
         });
       },
@@ -189,7 +183,6 @@ export class DashboardComponent implements OnInit {
   }
 
   viewHandDetails(hand: Hand) {
-    // TODO: Implementar modal ou página de detalhes da mão
     console.log('Ver detalhes da mão:', hand);
     this.notificationService.info(`Detalhes da mão ${hand.hand_id} - Em desenvolvimento`);
   }
@@ -213,7 +206,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Getters para estatísticas
   get totalHands(): number {
     return this.userStats?.total_hands || 0;
   }
@@ -293,5 +285,9 @@ export class DashboardComponent implements OnInit {
     };
     return actionNames[action] || action || 'Desconhecida';
   }
-}
 
+  // NOVO: Getter para controle de exibição do modal de progresso
+  get isUploadingInProgress(): boolean {
+    return this.uploadService.progressSubject.value !== null;
+  }
+}

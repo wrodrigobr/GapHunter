@@ -49,7 +49,7 @@
       
       <div 
         class="upload-area"
-        [class.drag-over]="false"
+        [class.drag-over]="isDragOver"
         (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)"
         (drop)="onDrop($event)">
@@ -258,6 +258,5 @@
   </main>
 </div>
 
-<!-- Componente de Progresso de Upload -->
-<app-upload-progress></app-upload-progress>
-
+<!-- Componente de Progresso de Upload - aparece apenas durante upload -->
+<app-upload-progress *ngIf="isUploadingInProgress"></app-upload-progress>
