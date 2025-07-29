@@ -100,7 +100,13 @@ class PokerStarsParser:
         return match.group(1) if match else None
 
     def _extract_hero_info(self, text: str) -> Dict:
-        hero_info = {}
+        hero_info = {
+            'hero_name': None,
+            'hero_cards': None,
+            'hero_position': None,
+            'hero_action': None,
+            'hero_stack': None
+        }
 
         hole_cards_match = re.search(self.hole_cards_pattern, text)
         if hole_cards_match:
