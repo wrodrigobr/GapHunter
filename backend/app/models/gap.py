@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.models.database import Base
 
 class Gap(Base):
@@ -16,10 +15,7 @@ class Gap(Base):
     last_seen = Column(DateTime(timezone=True), server_default=func.now())
     improvement_suggestion = Column(Text)
     
-    # Relacionamento com usuário
-    user = relationship("User", back_populates="gaps")
-
-# Adicionar relacionamento no modelo User
-# Esta linha deve ser adicionada ao modelo User existente:
-# gaps = relationship("Gap", back_populates="user")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="gaps")
 

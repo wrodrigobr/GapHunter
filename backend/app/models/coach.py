@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean, Table
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.models.database import Base
 
 # Tabela de associação para relacionamento many-to-many entre coaches e alunos
@@ -37,11 +36,12 @@ class Coach(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamentos
-    user = relationship("User", back_populates="coach_profile")
-    students = relationship("User", secondary=coach_student_association, back_populates="coaches")
-    coaching_sessions = relationship("CoachingSession", back_populates="coach")
-    student_notes = relationship("StudentNote", back_populates="coach")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # user = relationship("User", back_populates="coach_profile")
+    # students = relationship("User", secondary=coach_student_association, back_populates="coaches")
+    # coaching_sessions = relationship("CoachingSession", back_populates="coach")
+    # student_notes = relationship("StudentNote", back_populates="coach")
 
 class CoachingSession(Base):
     __tablename__ = "coaching_sessions"
@@ -67,9 +67,10 @@ class CoachingSession(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # Relacionamentos
-    coach = relationship("Coach", back_populates="coaching_sessions")
-    student = relationship("User", back_populates="coaching_sessions")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # coach = relationship("Coach", back_populates="coaching_sessions")
+    # student = relationship("User", back_populates="coaching_sessions")
 
 class StudentNote(Base):
     __tablename__ = "student_notes"
@@ -90,9 +91,10 @@ class StudentNote(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamentos
-    coach = relationship("Coach", back_populates="student_notes")
-    student = relationship("User", back_populates="coach_notes")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # coach = relationship("Coach", back_populates="student_notes")
+    # student = relationship("User", back_populates="coach_notes")
 
 class GapHunterVision(Base):
     __tablename__ = "gaphunter_vision"
@@ -113,8 +115,9 @@ class GapHunterVision(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamento
-    user = relationship("User", back_populates="vision_settings")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="vision_settings")
 
 class PlayerAnalysis(Base):
     __tablename__ = "player_analyses"
@@ -136,7 +139,8 @@ class PlayerAnalysis(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # Relacionamentos
-    analyzer = relationship("User", foreign_keys=[analyzer_id], back_populates="analyses_made")
-    target = relationship("User", foreign_keys=[target_id], back_populates="analyses_received")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # analyzer = relationship("User", foreign_keys=[analyzer_id], back_populates="analyses_made")
+    # target = relationship("User", foreign_keys=[target_id], back_populates="analyses_received")
 
