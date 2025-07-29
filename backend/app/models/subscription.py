@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean, Enum
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.models.database import Base
 import enum
 
@@ -47,9 +46,10 @@ class Subscription(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamentos
-    user = relationship("User", back_populates="subscription")
-    affiliate = relationship("Affiliate", back_populates="referrals")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # user = relationship("User", back_populates="subscription")
+    # affiliate = relationship("Affiliate", back_populates="referrals")
 
 class Affiliate(Base):
     __tablename__ = "affiliates"
@@ -78,10 +78,11 @@ class Affiliate(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamentos
-    user = relationship("User", back_populates="affiliate_profile")
-    referrals = relationship("Subscription", back_populates="affiliate")
-    commissions = relationship("Commission", back_populates="affiliate")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # user = relationship("User", back_populates="affiliate_profile")
+    # referrals = relationship("Subscription", back_populates="affiliate")
+    # commissions = relationship("Commission", back_populates="affiliate")
 
 class Commission(Base):
     __tablename__ = "commissions"
@@ -101,9 +102,10 @@ class Commission(Base):
     earned_date = Column(DateTime(timezone=True), server_default=func.now())
     paid_date = Column(DateTime(timezone=True))
     
-    # Relacionamentos
-    affiliate = relationship("Affiliate", back_populates="commissions")
-    subscription = relationship("Subscription")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # affiliate = relationship("Affiliate", back_populates="commissions")
+    # subscription = relationship("Subscription")
 
 class FeatureAccess(Base):
     __tablename__ = "feature_access"
@@ -127,8 +129,9 @@ class FeatureAccess(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamento
-    user = relationship("User", back_populates="feature_access")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="feature_access")
 
 class PaymentHistory(Base):
     __tablename__ = "payment_history"
@@ -153,9 +156,10 @@ class PaymentHistory(Base):
     payment_date = Column(DateTime(timezone=True), server_default=func.now())
     processed_date = Column(DateTime(timezone=True))
     
-    # Relacionamentos
-    user = relationship("User")
-    subscription = relationship("Subscription")
+    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Serão reativados após correção dos relacionamentos
+    # user = relationship("User")
+    # subscription = relationship("Subscription")
 
 class ClubMember(Base):
     __tablename__ = "club_members"
@@ -179,6 +183,7 @@ class ClubMember(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relacionamento
-    user = relationship("User", back_populates="club_membership")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="club_membership")
 
