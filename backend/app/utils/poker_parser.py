@@ -7,16 +7,17 @@ logger = logging.getLogger(__name__)
 
 class PokerStarsParser:
     def __init__(self):
-        # Padrões mais robustos para PokerStars
-        self.hand_pattern = r"PokerStars Hand #(\d+):"
-        self.tournament_pattern = r"Tournament #(\d+),"
-        self.table_pattern = r"Table '([^']+)'"
+        # Padrões para PokerStars em português
+        self.hand_pattern = r"Mão PokerStars #(\d+):"
+        self.tournament_pattern = r"Torneio #(\d+),"
+        self.table_pattern = r"Mesa '([^']+)'"
         self.date_pattern = r"(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})"
-        self.seat_pattern = r"Seat (\d+): ([^(]+) \((\d+) in chips\)"
-        self.hole_cards_pattern = r"Dealt to ([^[]+) \[([^\]]+)\]"
-        self.action_pattern = r"([^:]+): (folds|checks|calls|bets|raises|all-in)"
-        self.pot_pattern = r"Total pot (\d+)"
-        self.board_pattern = r"Board \[([^\]]+)\]"
+        self.seat_pattern = r"Lugar (\d+): ([^(]+) \((\d+) em fichas\)"
+        self.hole_cards_pattern = r"(\w+) recebe \[([^\]]+)\]"
+        self.action_pattern = r"([^:]+): (desiste|passa|iguala|aumenta|aposta|está all-in)"
+        self.pot_pattern = r"Total pote (\d+)"
+        self.board_pattern = r"Mesa \[([^\]]+)\]"
+        self.button_pattern = r"Lugar #(\d+) é o botão"
 
     def parse_file(self, content: str) -> List[Dict]:
         """Parse um arquivo de hand history e retorna lista de mãos"""
@@ -41,27 +42,14 @@ class PokerStarsParser:
 
     def _split_hands(self, content: str) -> List[str]:
         """Divide o conteúdo em blocos de mãos individuais"""
-        # Tentar diferentes separadores
-        separators = [
-            r'\n\n\n+',  # Múltiplas linhas vazias
-            r'\*{10,}',   # Múltiplos asteriscos
-            r'PokerStars Hand #'  # Início de nova mão
-        ]
-        
-        hands = []
-        
-        # Primeiro tentar por asteriscos (formato comum)
-        if '***' in content:
-            hands = re.split(r'\*{5,}[^*]*\*{5,}', content)
-        else:
-            # Tentar por múltiplas quebras de linha
-            hands = re.split(r'\n\n\n+', content)
+        # O formato usa asteriscos para separar as mãos
+        hands = re.split(r'\*{10,}[^*]*\*{10,}', content)
         
         # Filtrar blocos vazios e muito pequenos
         valid_hands = []
         for hand in hands:
             hand = hand.strip()
-            if hand and len(hand) > 50 and 'PokerStars Hand' in hand:
+            if hand and len(hand) > 50 and 'Mão PokerStars' in hand:
                 valid_hands.append(hand)
         
         logger.info(f"Divisão de mãos: {len(valid_hands)} blocos válidos de {len(hands)} total")
@@ -156,7 +144,7 @@ class PokerStarsParser:
         """Extrai informações do herói (jogador principal)"""
         hero_info = {}
         
-        # Procurar por "Dealt to" para identificar o herói
+        # Procurar por "recebe" para identificar o herói (formato português)
         hole_cards_match = re.search(self.hole_cards_pattern, text)
         if hole_cards_match:
             hero_info['hero_name'] = hole_cards_match.group(1).strip()
@@ -172,18 +160,59 @@ class PokerStarsParser:
 
     def _find_hero_position(self, text: str, hero_name: str) -> Optional[str]:
         """Encontra a posição do herói na mesa"""
-        # Implementação simplificada - pode ser melhorada
-        if "Button" in text and hero_name in text:
-            return "BTN"
-        elif "Small Blind" in text and hero_name in text:
-            return "SB"
-        elif "Big Blind" in text and hero_name in text:
-            return "BB"
-        else:
+        # Procurar pela linha que define o botão
+        button_match = re.search(self.button_pattern, text)
+        if not button_match:
             return "EP"  # Early position por padrão
+        
+        button_seat = int(button_match.group(1))
+        
+        # Encontrar o lugar do herói
+        hero_seat_pattern = rf"Lugar (\d+): {re.escape(hero_name)}"
+        hero_seat_match = re.search(hero_seat_pattern, text)
+        
+        if not hero_seat_match:
+            return "EP"
+        
+        hero_seat = int(hero_seat_match.group(1))
+        
+        # Determinar posição relativa ao botão
+        if hero_seat == button_seat:
+            return "BTN"
+        elif (hero_seat == button_seat + 1) or (button_seat == 9 and hero_seat == 1):
+            return "SB"
+        elif (hero_seat == button_seat + 2) or (button_seat >= 8 and hero_seat <= 2):
+            return "BB"
+        elif hero_seat in [button_seat - 1, button_seat - 2] or (button_seat <= 2 and hero_seat >= 8):
+            return "LP"  # Late position
+        else:
+            return "EP"  # Early position
 
     def _find_hero_action(self, text: str, hero_name: str) -> Optional[str]:
         """Encontra a última ação do herói"""
-        actions = re.findall(f"{re.escape(hero_name)}: (\\w+)", text)
-        return actions[-1] if actions else None
+        # Padrões de ação em português
+        action_patterns = [
+            rf"{re.escape(hero_name)}: desiste",
+            rf"{re.escape(hero_name)}: passa",
+            rf"{re.escape(hero_name)}: iguala",
+            rf"{re.escape(hero_name)}: aumenta",
+            rf"{re.escape(hero_name)}: aposta"
+        ]
+        
+        last_action = None
+        for pattern in action_patterns:
+            matches = re.findall(pattern, text)
+            if matches:
+                if "desiste" in pattern:
+                    last_action = "fold"
+                elif "passa" in pattern:
+                    last_action = "check"
+                elif "iguala" in pattern:
+                    last_action = "call"
+                elif "aumenta" in pattern:
+                    last_action = "raise"
+                elif "aposta" in pattern:
+                    last_action = "bet"
+        
+        return last_action
 
