@@ -14,6 +14,18 @@
       <span class="hand-id">Mão #{{ handReplay.hand_id }}</span>
       <span class="tournament">Torneio #{{ handReplay.tournament_id }}</span>
     </div>
+    
+    <!-- Botão Tela Cheia -->
+    <div class="fullscreen-controls">
+      <button 
+        class="fullscreen-btn"
+        (click)="openFullscreen()"
+        title="Abrir em tela cheia"
+      >
+        <span class="fullscreen-icon">⛶</span>
+        Tela Cheia
+      </button>
+    </div>
   </div>
 
   <!-- Mesa de Poker -->

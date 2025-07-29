@@ -1,0 +1,118 @@
+<div class="fullscreen-container" *ngIf="handReplay">
+  <!-- Header com controles -->
+  <div class="fullscreen-header">
+    <div class="table-info">
+      <h2>{{ handReplay.table_name }}</h2>
+      <div class="blinds-info">
+        <span class="blind">SB: {{ handReplay.blinds.small }}</span>
+        <span class="blind">BB: {{ handReplay.blinds.big }}</span>
+        <span class="ante" *ngIf="handReplay.blinds.ante > 0">Ante: {{ handReplay.blinds.ante }}</span>
+      </div>
+    </div>
+    
+    <div class="hand-info">
+      <span class="hand-id">Mão #{{ handReplay.hand_id }}</span>
+      <span class="tournament">Torneio #{{ handReplay.tournament_id }}</span>
+    </div>
+    
+    <button class="close-btn" (click)="closeFullscreen()" title="Fechar">
+      ✕
+    </button>
+  </div>
+
+  <!-- Mesa Principal -->
+  <div class="poker-table-fullscreen">
+    <!-- Feltro da Mesa -->
+    <div class="table-felt">
+      
+      <!-- Cartas Comunitárias -->
+      <div class="community-cards">
+        <div class="board-label">{{ currentStreet.toUpperCase() }}</div>
+        <div class="cards-container">
+          <div 
+            class="community-card" 
+            *ngFor="let card of currentBoardCards; let i = index"
+            [innerHTML]="formatCards(card)"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Pot -->
+      <div class="pot-container">
+        <div class="pot-label">POT</div>
+        <div class="pot-amount">{{ formatStack(currentPot) }}</div>
+      </div>
+
+    </div>
+
+    <!-- Jogadores -->
+    <div 
+      class="player-seat" 
+      *ngFor="let player of currentPlayers"
+      [style.left.%]="getPlayerPosition(player.position).x"
+      [style.top.%]="getPlayerPosition(player.position).y"
+      [ngClass]="getPlayerClass(player)"
+    >
+      
+      <!-- Avatar do Jogador -->
+      <div class="player-avatar">
+        <div class="player-name">{{ player.name }}</div>
+        <div class="player-stack">{{ formatStack(player.stack) }}</div>
+      </div>
+
+      <!-- Cartas do Jogador -->
+      <div class="player-cards-container" *ngIf="shouldShowCards(player)">
+        <div class="player-cards">
+          <span class="cards-text" [innerHTML]="formatCards(player.cards || '')"></span>
+        </div>
+      </div>
+
+      <!-- Aposta Atual -->
+      <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
+        {{ formatStack(player.current_bet) }}
+      </div>
+
+      <!-- Indicador de Posição -->
+      <div class="position-indicator" *ngIf="player.is_button">BTN</div>
+      <div class="position-indicator sb" *ngIf="player.is_small_blind">SB</div>
+      <div class="position-indicator bb" *ngIf="player.is_big_blind">BB</div>
+    </div>
+  </div>
+
+  <!-- Controles de Navegação -->
+  <div class="navigation-controls">
+    <div class="control-group">
+      <button class="nav-btn" (click)="restart()" title="Reiniciar">
+        🔄
+      </button>
+      <button class="nav-btn" (click)="previousStreet()" title="Street Anterior">
+        ⏪
+      </button>
+      <button class="nav-btn" (click)="previousAction()" title="Ação Anterior">
+        ⏮️
+      </button>
+    </div>
+    
+    <div class="progress-info">
+      <span class="street-info">{{ currentStreet.toUpperCase() }}</span>
+      <span class="action-info">Ação {{ currentActionIndex + 1 }}</span>
+    </div>
+    
+    <div class="control-group">
+      <button class="nav-btn" (click)="nextAction()" title="Próxima Ação">
+        ⏭️
+      </button>
+      <button class="nav-btn" (click)="nextStreet()" title="Próxima Street">
+        ⏩
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Mensagem se não há dados -->
+<div class="no-data" *ngIf="!handReplay">
+  <h2>Erro ao carregar dados da mesa</h2>
+  <p>Não foi possível carregar os dados da mão.</p>
+  <button (click)="closeFullscreen()">Fechar</button>
+</div>
+

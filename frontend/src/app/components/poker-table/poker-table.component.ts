@@ -191,11 +191,49 @@ export class PokerTableComponent implements OnInit, OnChanges {
 
     this.currentBoardCards = [];
     
-    // Adicionar cartas até a street atual
+    // Lógica correta para mostrar cartas por street
     for (let i = 0; i <= this.currentStreetIndex; i++) {
       const street = this.handReplay.streets[i];
-      if (street && street.cards) {
-        this.currentBoardCards.push(...street.cards);
+      if (street && street.cards && street.cards.length > 0) {
+        // Para preflop, não há cartas comunitárias
+        if (street.name === 'preflop') {
+          continue;
+        }
+        // Para flop, mostrar 3 cartas
+        else if (street.name === 'flop') {
+          this.currentBoardCards = [...street.cards]; // Substitui, não adiciona
+        }
+        // Para turn, adicionar apenas 1 carta ao flop
+        else if (street.name === 'turn') {
+          // Se já temos o flop, adicionar apenas a carta do turn
+          if (this.currentBoardCards.length === 3) {
+            this.currentBoardCards.push(...street.cards);
+          } else {
+            // Se não temos flop ainda, pegar flop + turn
+            const flopStreet = this.handReplay.streets.find(s => s.name === 'flop');
+            if (flopStreet && flopStreet.cards) {
+              this.currentBoardCards = [...flopStreet.cards, ...street.cards];
+            }
+          }
+        }
+        // Para river, adicionar apenas 1 carta ao turn
+        else if (street.name === 'river') {
+          // Se já temos flop + turn, adicionar apenas a carta do river
+          if (this.currentBoardCards.length === 4) {
+            this.currentBoardCards.push(...street.cards);
+          } else {
+            // Se não temos todas as cartas, construir sequência completa
+            const flopStreet = this.handReplay.streets.find(s => s.name === 'flop');
+            const turnStreet = this.handReplay.streets.find(s => s.name === 'turn');
+            
+            let allCards: string[] = [];
+            if (flopStreet && flopStreet.cards) allCards.push(...flopStreet.cards);
+            if (turnStreet && turnStreet.cards) allCards.push(...turnStreet.cards);
+            allCards.push(...street.cards);
+            
+            this.currentBoardCards = allCards;
+          }
+        }
       }
     }
   }
@@ -240,7 +278,18 @@ export class PokerTableComponent implements OnInit, OnChanges {
         'd': '♦',
         'c': '♣'
       };
-      return rank + suitIcons[suit];
+      
+      const suitColors: { [key: string]: string } = {
+        's': '#000000', // Preto para espadas
+        'h': '#ff0000', // Vermelho para copas
+        'd': '#ff0000', // Vermelho para ouros
+        'c': '#000000'  // Preto para paus
+      };
+      
+      const suitIcon = suitIcons[suit];
+      const suitColor = suitColors[suit];
+      
+      return `${rank}<span style="color: ${suitColor}">${suitIcon}</span>`;
     });
   }
 
@@ -484,6 +533,38 @@ export class PokerTableComponent implements OnInit, OnChanges {
     };
     
     return positionNames[relativePosition] || `Pos${relativePosition + 1}`;
+  }
+
+  // Método para abrir mesa em tela cheia
+  openFullscreen() {
+    if (!this.handReplay) return;
+
+    // Criar dados para a nova janela
+    const fullscreenData = {
+      handReplay: this.handReplay,
+      currentStreetIndex: this.currentStreetIndex,
+      currentActionIndex: this.currentActionIndex
+    };
+
+    // Serializar dados para passar via URL
+    const dataString = encodeURIComponent(JSON.stringify(fullscreenData));
+    
+    // Abrir nova janela com a mesa em tela cheia
+    const newWindow = window.open(
+      `${window.location.origin}/poker-table-fullscreen?data=${dataString}`,
+      'poker-table-fullscreen',
+      'width=1400,height=900,scrollbars=no,resizable=yes,status=no,location=no,toolbar=no,menubar=no'
+    );
+
+    if (newWindow) {
+      newWindow.focus();
+    } else {
+      // Fallback: tentar abrir em nova aba se popup foi bloqueado
+      window.open(
+        `${window.location.origin}/poker-table-fullscreen?data=${dataString}`,
+        '_blank'
+      );
+    }
   }
 }
 

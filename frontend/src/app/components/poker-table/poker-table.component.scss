@@ -60,6 +60,43 @@
   }
 }
 
+/* Controles de Tela Cheia */
+.fullscreen-controls {
+  display: flex;
+  align-items: center;
+}
+
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+  
+  &:hover {
+    background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 212, 170, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.fullscreen-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 /* Mesa Principal */
 .poker-table {
   position: relative;
