@@ -548,4 +548,15 @@ export class PokerTableComponent implements OnInit, OnChanges {
     // Remover classe do body
     document.body.classList.remove('fullscreen-mode');
   }
+
+  canGoNextStreet(): boolean {
+    if (!this.handReplay) return false;
+    return this.currentStreetIndex < this.handReplay.streets.length - 1;
+  }
+
+  restartHand() {
+    this.currentStreetIndex = 0;
+    this.currentActionIndex = 0;
+    this.updateTableState();
+  }
 }

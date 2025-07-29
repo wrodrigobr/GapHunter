@@ -235,7 +235,7 @@
     <!-- Header Fullscreen -->
     <div class="fullscreen-header">
       <div class="fullscreen-title">
-        <h2>{{ handReplay.table_name }} - Mão #{{ handReplay.hand_id }}</h2>
+        <h2>{{ handReplay?.table_name }} - Mão #{{ handReplay?.hand_id }}</h2>
         <span class="fullscreen-subtitle">{{ currentStreet.toUpperCase() }} - Ação {{ currentActionIndex + 1 }}</span>
       </div>
       <button class="close-fullscreen-btn" (click)="closeFullscreen()" title="Fechar tela cheia">
@@ -384,7 +384,7 @@
         <button 
           class="control-btn" 
           (click)="nextStreet()"
-          [disabled]="currentStreetIndex >= getMaxStreetIndex()"
+          [disabled]="!canGoNextStreet()"
           title="Próxima Street"
         >
           ⏭️ Próxima Street
@@ -392,7 +392,7 @@
         
         <button 
           class="control-btn restart" 
-          (click)="restart()"
+          (click)="restartHand()"
           title="Reiniciar Mão"
         >
           🔄 Reiniciar
