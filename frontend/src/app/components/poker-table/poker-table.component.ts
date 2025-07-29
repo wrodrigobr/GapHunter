@@ -62,6 +62,7 @@ export class PokerTableComponent implements OnInit, OnChanges {
   currentBoardCards: string[] = [];
   currentPot: number = 0;
   currentStreet: string = 'preflop';
+  isFullscreen: boolean = false;
   
   // Posições na mesa (coordenadas para 9 jogadores)
   seatPositions = [
@@ -537,34 +538,14 @@ export class PokerTableComponent implements OnInit, OnChanges {
 
   // Método para abrir mesa em tela cheia
   openFullscreen() {
-    if (!this.handReplay) return;
+    this.isFullscreen = true;
+    // Adicionar classe ao body para esconder scroll
+    document.body.classList.add('fullscreen-mode');
+  }
 
-    // Criar dados para a nova janela
-    const fullscreenData = {
-      handReplay: this.handReplay,
-      currentStreetIndex: this.currentStreetIndex,
-      currentActionIndex: this.currentActionIndex
-    };
-
-    // Serializar dados para passar via URL
-    const dataString = encodeURIComponent(JSON.stringify(fullscreenData));
-    
-    // Abrir nova janela com a mesa em tela cheia
-    const newWindow = window.open(
-      `${window.location.origin}/poker-table-fullscreen?data=${dataString}`,
-      'poker-table-fullscreen',
-      'width=1400,height=900,scrollbars=no,resizable=yes,status=no,location=no,toolbar=no,menubar=no'
-    );
-
-    if (newWindow) {
-      newWindow.focus();
-    } else {
-      // Fallback: tentar abrir em nova aba se popup foi bloqueado
-      window.open(
-        `${window.location.origin}/poker-table-fullscreen?data=${dataString}`,
-        '_blank'
-      );
-    }
+  closeFullscreen() {
+    this.isFullscreen = false;
+    // Remover classe do body
+    document.body.classList.remove('fullscreen-mode');
   }
 }
-

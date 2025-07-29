@@ -689,3 +689,201 @@
   color: #000000;
 }
 
+/* Overlay Fullscreen */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.fullscreen-content {
+  width: 95vw;
+  height: 95vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
+  .fullscreen-title {
+    h2 {
+      margin: 0 0 5px 0;
+      color: #00d4aa;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    
+    .fullscreen-subtitle {
+      color: #b0b0b0;
+      font-size: 1rem;
+    }
+  }
+  
+  .close-fullscreen-btn {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #e74c3c;
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.fullscreen-table {
+  flex: 1;
+  position: relative;
+  padding: 20px;
+  
+  .table-felt {
+    width: 90%;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .community-cards {
+    top: 25%;
+  }
+  
+  .community-card {
+    width: 80px;
+    height: 112px;
+    font-size: 1.4rem;
+    margin: 0 8px;
+  }
+  
+  .pot-container {
+    top: 45%;
+    
+    .pot-amount {
+      font-size: 2rem;
+    }
+  }
+  
+  .player-seat {
+    .player-avatar {
+      width: 100px;
+      height: 100px;
+      
+      .avatar-circle {
+        width: 80px;
+        height: 80px;
+        
+        .player-initial {
+          font-size: 1.8rem;
+        }
+      }
+    }
+    
+    .player-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .player-stack {
+      font-size: 1rem;
+    }
+    
+    .cards-text {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.fullscreen-controls-bottom {
+  padding: 20px 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .street-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    
+    .street-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #00d4aa;
+    }
+    
+    .action-count {
+      color: #b0b0b0;
+      font-size: 1rem;
+    }
+  }
+  
+  .control-buttons {
+    display: flex;
+    gap: 15px;
+    
+    .control-btn {
+      background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+      border: none;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 140px;
+      
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        transform: translateY(-2px);
+      }
+      
+      &:disabled {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      &.restart {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        }
+      }
+    }
+  }
+}
+
+/* Classe para esconder scroll quando fullscreen está ativo */
+:global(body.fullscreen-mode) {
+  overflow: hidden;
+}
+

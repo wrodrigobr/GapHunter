@@ -228,3 +228,179 @@
   <p>Carregando dados da mão...</p>
 </div>
 
+<!-- Overlay Fullscreen -->
+<div class="fullscreen-overlay" *ngIf="isFullscreen" (click)="closeFullscreen()">
+  <div class="fullscreen-content" (click)="$event.stopPropagation()">
+    
+    <!-- Header Fullscreen -->
+    <div class="fullscreen-header">
+      <div class="fullscreen-title">
+        <h2>{{ handReplay.table_name }} - Mão #{{ handReplay.hand_id }}</h2>
+        <span class="fullscreen-subtitle">{{ currentStreet.toUpperCase() }} - Ação {{ currentActionIndex + 1 }}</span>
+      </div>
+      <button class="close-fullscreen-btn" (click)="closeFullscreen()" title="Fechar tela cheia">
+        ✕
+      </button>
+    </div>
+
+    <!-- Mesa em Tela Cheia -->
+    <div class="fullscreen-table">
+      
+      <!-- Feltro da Mesa -->
+      <div class="table-felt">
+        
+        <!-- Cartas Comunitárias -->
+        <div class="community-cards">
+          <div class="board-label">{{ currentStreet.toUpperCase() }}</div>
+          <div class="cards-container">
+            <div 
+              class="community-card" 
+              *ngFor="let card of currentBoardCards; let i = index"
+              [class.new-card]="isNewCard(i)"
+              [ngClass]="getCardClass(card)"
+            >
+              {{ formatCards(card) }}
+            </div>
+            
+            <!-- Cartas vazias para completar o board -->
+            <div 
+              class="community-card empty" 
+              *ngFor="let empty of getEmptyCards()"
+            >
+              <span class="card-back">🂠</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pot Central -->
+        <div class="pot-container">
+          <div class="pot-label">POT</div>
+          <div class="pot-amount">{{ formatStack(currentPot) }}</div>
+        </div>
+
+        <!-- Ação Atual -->
+        <div class="current-action" *ngIf="getCurrentAction() as action">
+          <div class="action-player">{{ action.player }}</div>
+          <div class="action-description">{{ getActionDescription(action) }}</div>
+        </div>
+
+      </div>
+
+      <!-- Jogadores -->
+      <div 
+        class="player-seat" 
+        *ngFor="let player of currentPlayers"
+        [style.left.%]="getPlayerPosition(player.position).x"
+        [style.top.%]="getPlayerPosition(player.position).y"
+        [ngClass]="getPlayerClass(player)"
+      >
+        
+        <!-- Avatar do Jogador -->
+        <div class="player-avatar">
+          <div class="avatar-circle">
+            <span class="player-initial">{{ player.name.charAt(0).toUpperCase() }}</span>
+          </div>
+          
+          <!-- Indicadores -->
+          <div class="player-indicators">
+            <span class="dealer-button" *ngIf="player.is_button">D</span>
+            <span class="blind-indicator sb" *ngIf="player.is_small_blind">SB</span>
+            <span class="blind-indicator bb" *ngIf="player.is_big_blind">BB</span>
+          </div>
+        </div>
+
+        <!-- Informações do Jogador -->
+        <div class="player-info">
+          <div class="player-name" [class.hero-name]="player.is_hero">
+            {{ player.name }}
+            <span class="hero-indicator" *ngIf="player.is_hero">👤</span>
+          </div>
+          <div class="player-stack">{{ formatStack(player.stack) }}</div>
+        </div>
+
+        <!-- Cartas do Jogador -->
+        <div class="player-cards-container" *ngIf="shouldShowCards(player)">
+          <div [ngClass]="getPlayerCardClass(player)">
+            <span class="cards-text" [ngClass]="getCardClass(player.cards || '')">{{ formatCards(player.cards || '') }}</span>
+          </div>
+        </div>
+
+        <!-- Aposta Atual -->
+        <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
+          <div class="bet-chips">
+            <span class="bet-amount">{{ formatStack(player.current_bet) }}</span>
+          </div>
+        </div>
+
+        <!-- Status de Ação -->
+        <div class="action-status" *ngIf="player.is_active">
+          <div class="action-indicator"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Controles Fullscreen -->
+    <div class="fullscreen-controls-bottom">
+      
+      <!-- Informações da Street Atual -->
+      <div class="street-info">
+        <span class="street-name">{{ currentStreet.toUpperCase() }}</span>
+        <span class="action-count">
+          Ação {{ currentActionIndex + 1 }} de {{ getTotalActionsInStreet() }}
+        </span>
+      </div>
+
+      <!-- Botões de Controle -->
+      <div class="control-buttons">
+        <button 
+          class="control-btn" 
+          (click)="previousAction()"
+          [disabled]="!canGoPrevious()"
+          title="Ação Anterior"
+        >
+          ⏮️ Anterior
+        </button>
+        
+        <button 
+          class="control-btn" 
+          (click)="nextAction()"
+          [disabled]="!canGoNext()"
+          title="Próxima Ação"
+        >
+          ▶️ Próxima
+        </button>
+        
+        <button 
+          class="control-btn" 
+          (click)="previousStreet()"
+          [disabled]="currentStreetIndex <= 0"
+          title="Street Anterior"
+        >
+          ⏪ Street Anterior
+        </button>
+        
+        <button 
+          class="control-btn" 
+          (click)="nextStreet()"
+          [disabled]="currentStreetIndex >= getMaxStreetIndex()"
+          title="Próxima Street"
+        >
+          ⏭️ Próxima Street
+        </button>
+        
+        <button 
+          class="control-btn restart" 
+          (click)="restart()"
+          title="Reiniciar Mão"
+        >
+          🔄 Reiniciar
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+

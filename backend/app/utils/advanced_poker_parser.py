@@ -287,21 +287,21 @@ class AdvancedPokerParser:
                 streets.append(current_street)
                 turn_match = re.search(self.patterns['turn'], line)
                 if turn_match:
-                    flop_cards = self._parse_cards(turn_match.group(1))
+                    # Apenas a carta do turn (segunda parte do match)
                     turn_card = self._parse_cards(turn_match.group(2))
                     current_street = Street(
                         name='turn',
-                        cards=flop_cards + turn_card
+                        cards=turn_card
                     )
             elif '*** RIVER ***' in line:
                 streets.append(current_street)
                 river_match = re.search(self.patterns['river'], line)
                 if river_match:
-                    turn_cards = self._parse_cards(river_match.group(1))
+                    # Apenas a carta do river (segunda parte do match)
                     river_card = self._parse_cards(river_match.group(2))
                     current_street = Street(
                         name='river',
-                        cards=turn_cards + river_card
+                        cards=river_card
                     )
             elif '*** SUMÁRIO ***' in line:
                 streets.append(current_street)

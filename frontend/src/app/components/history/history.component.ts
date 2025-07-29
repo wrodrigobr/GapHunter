@@ -241,11 +241,10 @@ export class HistoryComponent implements OnInit {
       'c': '♣'  // clubs (preto)
     };
     
-    // Substituir cartas por formato com ícones
+    // Substituir cartas por formato com ícones (apenas texto)
     return cards.replace(/([AKQJT98765432])([shdc])/g, (match, rank, suit) => {
       const icon = suitIcons[suit] || suit;
-      const colorClass = (suit === 'h' || suit === 'd') ? 'suit-red' : 'suit-black';
-      return `${rank}<span class="${colorClass}">${icon}</span>`;
+      return `${rank}${icon}`;
     });
   }
 
