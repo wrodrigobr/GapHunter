@@ -117,6 +117,18 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
+  // Obter dados de replay da mão
+  getHandReplay(handId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hands/replay/${handId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // Analisar ação específica
+  analyzeSpecificAction(handId: number, actionData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/hands/replay/${handId}/analyze-action`, actionData)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Erro desconhecido';
     

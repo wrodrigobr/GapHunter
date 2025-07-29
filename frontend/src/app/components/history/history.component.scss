@@ -259,10 +259,14 @@
   font-family: 'Courier New', monospace;
   font-weight: bold;
   
-  .suit-s { color: #000; } // Spades
-  .suit-h { color: #dc2626; } // Hearts
-  .suit-d { color: #dc2626; } // Diamonds
-  .suit-c { color: #000; } // Clubs
+  .suit-red { 
+    color: #dc2626; 
+    font-size: 1.1em;
+  } // Hearts e Diamonds
+  .suit-black { 
+    color: #1f2937; 
+    font-size: 1.1em;
+  } // Spades e Clubs
 }
 
 // Botões

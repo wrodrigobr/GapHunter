@@ -12,6 +12,7 @@ from app.models.tournament import Tournament
 from app.models.schemas import Hand as HandSchema, UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
+from app.utils.advanced_poker_parser import parse_hand_for_table_replay
 from app.services.ai_service import AIAnalysisService
 
 router = APIRouter()
@@ -450,4 +451,126 @@ async def delete_hand(
     db.commit()
     
     return {"message": "Mão deletada com sucesso"}
+
+
+
+@router.get("/replay/{hand_id}")
+async def get_hand_replay(
+    hand_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Obter dados da mão para reprodução na mesa virtual"""
+    
+    # Buscar mão no banco
+    hand = db.query(Hand).filter(
+        Hand.id == hand_id,
+        Hand.user_id == current_user.id
+    ).first()
+    
+    if not hand:
+        raise HTTPException(status_code=404, detail="Mão não encontrada")
+    
+    # Parse avançado da mão para reprodução
+    replay_data = parse_hand_for_table_replay(hand.raw_hand)
+    
+    if not replay_data:
+        raise HTTPException(status_code=400, detail="Não foi possível processar a mão para reprodução")
+    
+    # Adicionar informações adicionais do banco
+    replay_data.update({
+        'hand_db_id': hand.id,
+        'date_played': hand.date_played,
+        'ai_analysis': hand.ai_analysis,
+        'hero_position_name': hand.hero_position,
+        'hero_action_summary': hand.hero_action,
+        'pot_size': hand.pot_size,
+        'bet_amount': hand.bet_amount,
+        'board_cards': hand.board_cards
+    })
+    
+    return replay_data
+
+@router.post("/replay/{hand_id}/analyze-action")
+async def analyze_specific_action(
+    hand_id: int,
+    action_data: dict,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Analisar uma ação específica da mão com IA"""
+    
+    # Buscar mão no banco
+    hand = db.query(Hand).filter(
+        Hand.id == hand_id,
+        Hand.user_id == current_user.id
+    ).first()
+    
+    if not hand:
+        raise HTTPException(status_code=404, detail="Mão não encontrada")
+    
+    try:
+        # Análise específica da ação com contexto
+        analysis_prompt = f"""
+        Analise esta ação específica no contexto da mão:
+        
+        Situação:
+        - Street: {action_data.get('street', 'unknown')}
+        - Jogador: {action_data.get('player', 'unknown')}
+        - Ação: {action_data.get('action', 'unknown')}
+        - Valor: {action_data.get('amount', 0)}
+        - Cartas do herói: {action_data.get('hero_cards', [])}
+        - Cartas comunitárias: {action_data.get('community_cards', [])}
+        - Posição: {action_data.get('position', 'unknown')}
+        - Tamanho do pot: {action_data.get('pot_size', 0)}
+        
+        Contexto da mão:
+        {hand.raw_hand[:500]}...
+        
+        Forneça uma análise específica desta ação:
+        1. A ação foi correta?
+        2. Quais eram as alternativas?
+        3. Que fatores deveriam ser considerados?
+        4. Há algum gap ou erro?
+        """
+        
+        # Usar serviço de IA para análise
+        specific_analysis = await ai_service.analyze_custom_prompt(analysis_prompt)
+        
+        return {
+            'action_analysis': specific_analysis,
+            'action_context': action_data,
+            'recommendations': [
+                'Considere o tamanho do pot e odds',
+                'Analise a força relativa da mão',
+                'Observe padrões dos oponentes',
+                'Avalie a posição na mesa'
+            ]
+        }
+        
+    except Exception as e:
+        # Análise básica se IA não disponível
+        return {
+            'action_analysis': f"""
+            Análise básica da ação:
+            
+            Ação: {action_data.get('action', 'unknown')} por {action_data.get('amount', 0)}
+            Street: {action_data.get('street', 'unknown')}
+            
+            Para análise detalhada, configure a integração com IA.
+            
+            Pontos a considerar:
+            - Força da mão atual
+            - Posição na mesa
+            - Tamanho do pot
+            - Padrões dos oponentes
+            """,
+            'action_context': action_data,
+            'recommendations': [
+                'Configure IA para análise detalhada',
+                'Considere fatores básicos de poker',
+                'Analise contexto da situação'
+            ],
+            'error': str(e)
+        }
 

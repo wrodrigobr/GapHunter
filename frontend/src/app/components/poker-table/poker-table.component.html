@@ -1,0 +1,218 @@
+<div class="poker-table-container" *ngIf="handReplay">
+  <!-- Informações da Mesa -->
+  <div class="table-header">
+    <div class="table-info">
+      <h3>{{ handReplay.table_name }}</h3>
+    <div class="blinds-info">
+      <span class="blind">SB: {{ handReplay.blinds.small }}</span>
+      <span class="blind">BB: {{ handReplay.blinds.big }}</span>
+      <span class="ante" *ngIf="handReplay.blinds.ante > 0">Ante: {{ handReplay.blinds.ante }}</span>
+    </div>
+    </div>
+    
+    <div class="hand-info">
+      <span class="hand-id">Mão #{{ handReplay.hand_id }}</span>
+      <span class="tournament">Torneio #{{ handReplay.tournament_id }}</span>
+    </div>
+  </div>
+
+  <!-- Mesa de Poker -->
+  <div class="poker-table">
+    <!-- Feltro da Mesa -->
+    <div class="table-felt">
+      
+      <!-- Cartas Comunitárias -->
+      <div class="community-cards">
+        <div class="board-label">{{ currentStreet.toUpperCase() }}</div>
+        <div class="cards-container">
+          <div 
+            class="community-card" 
+            *ngFor="let card of currentBoardCards; let i = index"
+            [class.new-card]="isNewCard(i)"
+          >
+            <span class="card-content">{{ formatCards(card) }}</span>
+          </div>
+          
+          <!-- Cartas vazias para completar o board -->
+          <div 
+            class="community-card empty" 
+            *ngFor="let empty of getEmptyCards()"
+          >
+            <span class="card-back">🂠</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pot Central -->
+      <div class="pot-container">
+        <div class="pot-label">POT</div>
+        <div class="pot-amount">{{ formatStack(currentPot) }}</div>
+      </div>
+
+      <!-- Ação Atual -->
+      <div class="current-action" *ngIf="getCurrentAction() as action">
+        <div class="action-player">{{ action.player }}</div>
+        <div class="action-description">{{ getActionDescription(action) }}</div>
+      </div>
+
+    </div>
+
+    <!-- Jogadores -->
+    <div 
+      class="player-seat" 
+      *ngFor="let player of currentPlayers"
+      [style.left.%]="getPlayerPosition(player.position).x"
+      [style.top.%]="getPlayerPosition(player.position).y"
+      [ngClass]="getPlayerClass(player)"
+    >
+      
+      <!-- Avatar do Jogador -->
+      <div class="player-avatar">
+        <div class="avatar-circle">
+          <span class="player-initial">{{ player.name.charAt(0).toUpperCase() }}</span>
+        </div>
+        
+        <!-- Indicadores -->
+        <div class="player-indicators">
+          <span class="dealer-button" *ngIf="player.is_button">D</span>
+          <span class="blind-indicator sb" *ngIf="player.is_small_blind">SB</span>
+          <span class="blind-indicator bb" *ngIf="player.is_big_blind">BB</span>
+        </div>
+      </div>
+
+      <!-- Informações do Jogador -->
+      <div class="player-info">
+        <div class="player-name" [class.hero-name]="player.is_hero">
+          {{ player.name }}
+          <span class="hero-indicator" *ngIf="player.is_hero">👤</span>
+        </div>
+        <div class="player-stack">{{ formatStack(player.stack) }}</div>
+      </div>
+
+      <!-- Cartas do Jogador -->
+      <div class="player-cards-container" *ngIf="shouldShowCards(player)">
+        <div [ngClass]="getPlayerCardClass(player)">
+          <span class="cards-text">{{ formatCards(player.cards || '') }}</span>
+        </div>
+      </div>
+
+      <!-- Aposta Atual -->
+      <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
+        <div class="bet-chips">
+          <span class="bet-amount">{{ formatStack(player.current_bet) }}</span>
+        </div>
+      </div>
+
+      <!-- Status de Ação -->
+      <div class="action-status" *ngIf="player.is_active">
+        <div class="action-indicator"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Controles de Navegação -->
+  <div class="table-controls">
+    
+    <!-- Informações da Street Atual -->
+    <div class="street-info">
+      <span class="street-name">{{ currentStreet.toUpperCase() }}</span>
+      <span class="action-count">
+        Ação {{ currentActionIndex + 1 }} de {{ getTotalActionsInStreet() }}
+      </span>
+    </div>
+
+    <!-- Botões de Controle -->
+    <div class="control-buttons">
+      <button 
+        class="control-btn" 
+        (click)="previousAction()"
+        [disabled]="!canGoPrevious()"
+        title="Ação Anterior"
+      >
+        ⏮️ Anterior
+      </button>
+      
+      <button 
+        class="control-btn" 
+        (click)="nextAction()"
+        [disabled]="!canGoNext()"
+        title="Próxima Ação"
+      >
+        Próxima ▶️
+      </button>
+      
+      <button 
+        class="control-btn" 
+        (click)="previousStreet()"
+        [disabled]="!canGoPreviousStreet()"
+        title="Street Anterior"
+      >
+        ⏪ Street
+      </button>
+      
+      <button 
+        class="control-btn" 
+        (click)="nextStreet()"
+        [disabled]="!canGoNextStreet()"
+        title="Próxima Street"
+      >
+        Street ⏩
+      </button>
+      
+      <button 
+        class="control-btn reset" 
+        (click)="resetToStart()"
+        title="Reiniciar"
+      >
+        🔄 Reiniciar
+      </button>
+    </div>
+
+    <!-- Barra de Progresso -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="getProgressPercentage()"
+        ></div>
+      </div>
+      <span class="progress-text">{{ getProgressText() }}</span>
+    </div>
+
+  </div>
+
+  <!-- Análise da Ação Atual -->
+  <div class="action-analysis" *ngIf="getCurrentAction() as action">
+    <h4>Análise da Ação</h4>
+    <div class="analysis-content">
+      <p><strong>{{ action.player }}</strong> {{ getActionDescription(action) }}</p>
+      <div class="analysis-details">
+        <span>Posição: {{ getPlayerPositionName(action.player) }}</span>
+        <span *ngIf="action.amount > 0">Valor: {{ formatStack(action.amount) }}</span>
+        <span>Street: {{ currentStreet }}</span>
+      </div>
+      
+      <!-- Análise específica se for o herói -->
+      <div class="hero-analysis" *ngIf="action.player === handReplay?.hero_name">
+        <div class="analysis-badge hero">🎯 Ação do Herói</div>
+        <p>Esta é uma ação sua. Analise se foi a melhor decisão considerando:</p>
+        <ul>
+          <li>Força das suas cartas</li>
+          <li>Posição na mesa</li>
+          <li>Tamanho do pot</li>
+          <li>Padrões dos oponentes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Estado de Loading -->
+<div class="loading-state" *ngIf="!handReplay">
+  <div class="loading-spinner"></div>
+  <p>Carregando dados da mão...</p>
+</div>
+

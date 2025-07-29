@@ -181,92 +181,91 @@
 
 <!-- Modal de Análise -->
 <div *ngIf="showAnalysisModal" class="modal-overlay" (click)="closeAnalysisModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+  <div class="modal-content poker-analysis-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>🔍 Análise Detalhada da Mão</h2>
+      <h2>🎰 Mesa Interativa - Análise Passo a Passo</h2>
       <button class="modal-close" (click)="closeAnalysisModal()">×</button>
     </div>
 
     <div *ngIf="selectedHand" class="modal-body">
-      <!-- Informações da Mão -->
-      <div class="hand-info-grid">
-        <div class="info-card">
-          <h3>📋 Informações Básicas</h3>
-          <div class="info-row">
-            <span class="label">Mão ID:</span>
-            <span class="value">{{selectedHand.hand_id}}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Data/Hora:</span>
-            <span class="value">{{formatDate(selectedHand.date_played)}}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Torneio:</span>
-            <span class="value">{{selectedHand.pokerstars_tournament_id || 'Cash Game'}}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Mesa:</span>
-            <span class="value">{{selectedHand.table_name || '-'}}</span>
-          </div>
-        </div>
+      
+      <!-- Loading da Mesa -->
+      <div *ngIf="loadingReplay" class="replay-loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando dados da mão para reprodução...</p>
+      </div>
 
-        <div class="info-card">
-          <h3>🎯 Ação do Herói</h3>
-          <div class="info-row">
-            <span class="label">Jogador:</span>
-            <span class="value">{{selectedHand.hero_name || '-'}}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Posição:</span>
-            <span class="value position-badge" [class]="'position-' + (selectedHand.hero_position || 'unknown')">
-              {{selectedHand.hero_position || '-'}}
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="label">Cartas:</span>
-            <span class="value cards" [innerHTML]="formatCards(selectedHand.hero_cards || '')"></span>
-          </div>
-          <div class="info-row">
-            <span class="label">Ação:</span>
-            <span class="value action-badge" [class]="'action-' + (selectedHand.hero_action || 'unknown')">
-              {{selectedHand.hero_action || '-'}}
-            </span>
-          </div>
-        </div>
+      <!-- Mesa de Poker Interativa -->
+      <div *ngIf="!loadingReplay && handReplayData" class="poker-table-section">
+        <app-poker-table 
+          [handReplay]="handReplayData"
+          [currentStreetIndex]="currentStreetIndex"
+          [currentActionIndex]="currentActionIndex">
+        </app-poker-table>
+      </div>
 
-        <div class="info-card">
-          <h3>💰 Informações do Pote</h3>
-          <div class="info-row">
-            <span class="label">Tamanho do Pote:</span>
-            <span class="value">{{selectedHand.pot_size ? '$' + selectedHand.pot_size : '-'}}</span>
+      <!-- Erro ao carregar -->
+      <div *ngIf="!loadingReplay && !handReplayData" class="replay-error">
+        <div class="error-icon">⚠️</div>
+        <h3>Erro ao carregar reprodução</h3>
+        <p>Não foi possível processar esta mão para reprodução interativa.</p>
+        
+        <!-- Fallback: Análise Tradicional -->
+        <div class="fallback-analysis">
+          <h4>📋 Informações Básicas</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Mão ID:</span>
+              <span class="value">{{selectedHand.hand_id}}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Posição:</span>
+              <span class="value">{{selectedHand.hero_position || '-'}}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Cartas:</span>
+              <span class="value" [innerHTML]="formatCards(selectedHand.hero_cards || '')"></span>
+            </div>
+            <div class="info-item">
+              <span class="label">Ação:</span>
+              <span class="value">{{selectedHand.hero_action || '-'}}</span>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="label">Valor da Aposta:</span>
-            <span class="value">{{selectedHand.bet_amount ? '$' + selectedHand.bet_amount : '-'}}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Board:</span>
-            <span class="value board" [innerHTML]="formatCards(selectedHand.board_cards || '')"></span>
-          </div>
-          <div class="info-row">
-            <span class="label">Status:</span>
-            <span class="value status-badge" [class]="getGapStatusClass(getGapStatus(selectedHand.ai_analysis || ''))">
-              {{getGapStatusLabel(getGapStatus(selectedHand.ai_analysis || ''))}}
-            </span>
+          
+          <h4>🤖 Análise da IA</h4>
+          <div class="analysis-content">
+            <pre>{{selectedHand.ai_analysis || 'Análise não disponível'}}</pre>
           </div>
         </div>
       </div>
 
-      <!-- Análise IA -->
-      <div class="analysis-section">
-        <h3>🤖 Análise da IA</h3>
-        <div class="analysis-content">
-          <pre>{{selectedHand.ai_analysis || 'Análise não disponível'}}</pre>
+      <!-- Controles Adicionais -->
+      <div *ngIf="handReplayData" class="additional-controls">
+        <div class="control-section">
+          <h4>🎯 Análise Específica</h4>
+          <button 
+            class="btn-analyze-action" 
+            (click)="analyzeCurrentAction()"
+            [disabled]="analyzingAction">
+            {{analyzingAction ? 'Analisando...' : '🔍 Analisar Ação Atual'}}
+          </button>
+        </div>
+
+        <!-- Resultado da Análise Específica -->
+        <div *ngIf="currentActionAnalysis" class="action-analysis-result">
+          <h4>📊 Análise da Ação</h4>
+          <div class="analysis-content">
+            <pre>{{currentActionAnalysis}}</pre>
+          </div>
         </div>
       </div>
+
     </div>
 
     <div class="modal-footer">
+      <button class="btn-secondary" (click)="resetReplay()" *ngIf="handReplayData">
+        🔄 Reiniciar Reprodução
+      </button>
       <button class="btn-close" (click)="closeAnalysisModal()">
         Fechar
       </button>
