@@ -279,18 +279,18 @@ export class PokerTableComponent implements OnInit, OnChanges {
         'c': '♣'
       };
       
-      const suitColors: { [key: string]: string } = {
-        's': '#000000', // Preto para espadas
-        'h': '#ff0000', // Vermelho para copas
-        'd': '#ff0000', // Vermelho para ouros
-        'c': '#000000'  // Preto para paus
-      };
-      
-      const suitIcon = suitIcons[suit];
-      const suitColor = suitColors[suit];
-      
-      return `${rank}<span style="color: ${suitColor}">${suitIcon}</span>`;
+      return rank + suitIcons[suit];
     });
+  }
+
+  getCardClass(card: string): string {
+    if (!card) return '';
+    
+    const suit = card.slice(-1);
+    if (suit === 'h' || suit === 'd') {
+      return 'red-suit';
+    }
+    return 'black-suit';
   }
 
   formatStack(stack: number): string {

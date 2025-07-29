@@ -237,5 +237,61 @@ export class DashboardComponent implements OnInit {
   get actionStats(): Array<{action: string, count: number}> {
     return this.userStats?.action_stats || [];
   }
+
+  formatCards(cards: string): string {
+    if (!cards) return '';
+    
+    return cards.replace(/([AKQJT98765432])([shdc])/g, (match, rank, suit) => {
+      const suitIcons: { [key: string]: string } = {
+        's': '♠',
+        'h': '♥',
+        'd': '♦',
+        'c': '♣'
+      };
+      
+      return rank + suitIcons[suit];
+    });
+  }
+
+  getCardClass(card: string): string {
+    if (!card) return '';
+    
+    const suit = card.slice(-1);
+    if (suit === 'h' || suit === 'd') {
+      return 'red-suit';
+    }
+    return 'black-suit';
+  }
+
+  getPercentage(value: number, total: number): number {
+    return total > 0 ? Math.round((value / total) * 100) : 0;
+  }
+
+  getPositionName(position: string): string {
+    const positionNames: { [key: string]: string } = {
+      'BTN': 'Button',
+      'SB': 'Small Blind',
+      'BB': 'Big Blind',
+      'UTG': 'Under the Gun',
+      'UTG+1': 'UTG+1',
+      'MP': 'Middle Position',
+      'MP+1': 'MP+1',
+      'CO': 'Cut Off',
+      'HJ': 'Hijack'
+    };
+    return positionNames[position] || position || 'Desconhecida';
+  }
+
+  getActionName(action: string): string {
+    const actionNames: { [key: string]: string } = {
+      'fold': 'Fold',
+      'call': 'Call',
+      'raise': 'Raise',
+      'bet': 'Bet',
+      'check': 'Check',
+      'all-in': 'All-in'
+    };
+    return actionNames[action] || action || 'Desconhecida';
+  }
 }
 

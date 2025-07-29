@@ -679,3 +679,25 @@
   }
 }
 
+/* Cores dos Naipes */
+.red-suit {
+  color: #ff0000 !important;
+}
+
+.black-suit {
+  color: #000000 !important;
+}
+
+/* Aplicar cores aos naipes nas cartas */
+.community-card.red-suit,
+.player-cards.red-suit,
+.cards-text.red-suit {
+  color: #ff0000;
+}
+
+.community-card.black-suit,
+.player-cards.black-suit,
+.cards-text.black-suit {
+  color: #000000;
+}
+

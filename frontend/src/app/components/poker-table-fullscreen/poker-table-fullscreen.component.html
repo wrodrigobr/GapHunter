@@ -32,8 +32,10 @@
           <div 
             class="community-card" 
             *ngFor="let card of currentBoardCards; let i = index"
-            [innerHTML]="formatCards(card)"
-          ></div>
+            [ngClass]="getCardClass(card)"
+          >
+            {{ formatCards(card) }}
+          </div>
         </div>
       </div>
 
@@ -62,8 +64,8 @@
 
       <!-- Cartas do Jogador -->
       <div class="player-cards-container" *ngIf="shouldShowCards(player)">
-        <div class="player-cards">
-          <span class="cards-text" [innerHTML]="formatCards(player.cards || '')"></span>
+        <div class="player-cards" [ngClass]="getCardClass(player.cards || '')">
+          <span class="cards-text">{{ formatCards(player.cards || '') }}</span>
         </div>
       </div>
 
