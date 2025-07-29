@@ -487,6 +487,7 @@ async def get_hand_replay(
         'hand_db_id': hand.id,
         'date_played': hand.date_played,
         'ai_analysis': hand.ai_analysis,
+        'local_analysis': hand.local_analysis,
         'hero_position_name': hand.hero_position,
         'hero_action_summary': hand.hero_action,
         'pot_size': hand.pot_size,

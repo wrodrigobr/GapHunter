@@ -10,6 +10,7 @@ export interface Hand {
   hero_cards?: string;
   hero_action?: string;
   date_played: string;
+  local_analysis?: string;
   ai_analysis?: string;
   has_gap?: boolean;
   created_at: string;
