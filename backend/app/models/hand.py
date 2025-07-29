@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, BigInteger
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.models.database import Base
@@ -8,7 +8,7 @@ class Hand(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    tournament_id = Column(Integer, ForeignKey("tournaments.id"), nullable=True)
+    tournament_id = Column(String(50), nullable=True)  # ID do torneio como string
     hand_id = Column(String(50), nullable=False)  # ID da mão no arquivo
     
     # Dados do PokerStars
@@ -28,5 +28,4 @@ class Hand(Base):
 
     # Relacionamentos
     user = relationship("User", back_populates="hands")
-    tournament = relationship("Tournament", back_populates="hands")
 
