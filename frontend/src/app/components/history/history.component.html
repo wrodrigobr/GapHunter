@@ -1,0 +1,275 @@
+<div class="history-container">
+  <!-- Header -->
+  <div class="history-header">
+    <h1>📊 Histórico de Mãos</h1>
+    <p class="subtitle">Análise completa de todas as suas mãos de poker</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Filtro por Gap -->
+      <div class="filter-group">
+        <label>Status:</label>
+        <select [(ngModel)]="filters.gap_filter" (change)="onFilterChange()">
+          <option *ngFor="let option of filterOptions.gap_options" [value]="option.value">
+            {{option.label}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtro por Posição -->
+      <div class="filter-group">
+        <label>Posição:</label>
+        <select [(ngModel)]="filters.position_filter" (change)="onFilterChange()">
+          <option value="">Todas</option>
+          <option *ngFor="let position of filterOptions.positions" [value]="position">
+            {{position}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtro por Ação -->
+      <div class="filter-group">
+        <label>Ação:</label>
+        <select [(ngModel)]="filters.action_filter" (change)="onFilterChange()">
+          <option value="">Todas</option>
+          <option *ngFor="let action of filterOptions.actions" [value]="action">
+            {{action}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Ordenação -->
+      <div class="filter-group">
+        <label>Ordenar por:</label>
+        <select [(ngModel)]="filters.order_by" (change)="onFilterChange()">
+          <option *ngFor="let option of filterOptions.order_options" [value]="option.value">
+            {{option.label}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Data De -->
+      <div class="filter-group">
+        <label>Data de:</label>
+        <input type="date" [(ngModel)]="filters.date_from" (change)="onFilterChange()">
+      </div>
+
+      <!-- Data Até -->
+      <div class="filter-group">
+        <label>Data até:</label>
+        <input type="date" [(ngModel)]="filters.date_to" (change)="onFilterChange()">
+      </div>
+    </div>
+
+    <div class="filters-actions">
+      <button class="btn-clear" (click)="clearFilters()">
+        🗑️ Limpar Filtros
+      </button>
+      <div class="results-info">
+        {{totalHands}} mãos encontradas
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Carregando histórico...</p>
+  </div>
+
+  <!-- Tabela de Mãos -->
+  <div *ngIf="!loading" class="hands-table-container">
+    <table class="hands-table">
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Mão ID</th>
+          <th>Torneio</th>
+          <th>Posição</th>
+          <th>Cartas</th>
+          <th>Ação</th>
+          <th>Board</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hand of hands" class="hand-row">
+          <td class="date-cell">
+            {{formatDate(hand.date_played)}}
+          </td>
+          <td class="hand-id-cell">
+            <span class="hand-id">{{hand.hand_id}}</span>
+          </td>
+          <td class="tournament-cell">
+            <span *ngIf="hand.pokerstars_tournament_id" class="tournament-id">
+              {{hand.pokerstars_tournament_id}}
+            </span>
+            <span *ngIf="!hand.pokerstars_tournament_id" class="no-tournament">
+              Cash Game
+            </span>
+          </td>
+          <td class="position-cell">
+            <span class="position-badge" [class]="'position-' + (hand.hero_position || 'unknown')">
+              {{hand.hero_position || '-'}}
+            </span>
+          </td>
+          <td class="cards-cell">
+            <span class="cards" [ngClass]="getCardClass(hand.hero_cards || '')">{{formatCards(hand.hero_cards || '')}}</span>
+          </td>
+          <td class="action-cell">
+            <span class="action-badge" [class]="'action-' + (hand.hero_action || 'unknown')">
+              {{hand.hero_action || '-'}}
+            </span>
+          </td>
+          <td class="board-cell">
+            <span class="board" [ngClass]="getCardClass(hand.board_cards || '')">{{formatCards(hand.board_cards || '')}}</span>
+          </td>
+          <td class="status-cell">
+            <span class="status-badge" [class]="getGapStatusClass(getGapStatus(hand.ai_analysis || ''))">
+              {{getGapStatusLabel(getGapStatus(hand.ai_analysis || ''))}}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button class="btn-analysis" (click)="openAnalysisModal(hand)">
+              🔍 Ver Análise
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Mensagem quando não há mãos -->
+    <div *ngIf="hands.length === 0" class="no-hands">
+      <div class="no-hands-icon">🃏</div>
+      <h3>Nenhuma mão encontrada</h3>
+      <p>Tente ajustar os filtros ou faça upload de hand histories.</p>
+    </div>
+  </div>
+
+  <!-- Paginação -->
+  <div *ngIf="!loading && totalPages > 1" class="pagination">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1"
+      (click)="onPageChange(currentPage - 1)">
+      ← Anterior
+    </button>
+
+    <button 
+      *ngFor="let page of getPageNumbers()"
+      class="pagination-btn"
+      [class.active]="page === currentPage"
+      (click)="onPageChange(page)">
+      {{page}}
+    </button>
+
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === totalPages"
+      (click)="onPageChange(currentPage + 1)">
+      Próxima →
+    </button>
+
+    <div class="pagination-info">
+      Página {{currentPage}} de {{totalPages}} ({{totalHands}} mãos)
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Análise -->
+<div *ngIf="showAnalysisModal" class="modal-overlay" (click)="closeAnalysisModal()">
+  <div class="modal-content poker-analysis-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🎰 Mesa Interativa - Análise Passo a Passo</h2>
+      <button class="modal-close" (click)="closeAnalysisModal()">×</button>
+    </div>
+
+    <div *ngIf="selectedHand" class="modal-body">
+      
+      <!-- Loading da Mesa -->
+      <div *ngIf="loadingReplay" class="replay-loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando dados da mão para reprodução...</p>
+      </div>
+
+      <!-- Mesa de Poker Interativa -->
+      <div *ngIf="!loadingReplay && handReplayData" class="poker-table-section">
+        <app-poker-table 
+          [handReplay]="handReplayData"
+          [currentStreetIndex]="currentStreetIndex"
+          [currentActionIndex]="currentActionIndex">
+        </app-poker-table>
+      </div>
+
+      <!-- Erro ao carregar -->
+      <div *ngIf="!loadingReplay && !handReplayData" class="replay-error">
+        <div class="error-icon">⚠️</div>
+        <h3>Erro ao carregar reprodução</h3>
+        <p>Não foi possível processar esta mão para reprodução interativa.</p>
+        
+        <!-- Fallback: Análise Tradicional -->
+        <div class="fallback-analysis">
+          <h4>📋 Informações Básicas</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Mão ID:</span>
+              <span class="value">{{selectedHand.hand_id}}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Posição:</span>
+              <span class="value">{{selectedHand.hero_position || '-'}}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Cartas:</span>
+              <span class="value" [innerHTML]="formatCards(selectedHand.hero_cards || '')"></span>
+            </div>
+            <div class="info-item">
+              <span class="label">Ação:</span>
+              <span class="value">{{selectedHand.hero_action || '-'}}</span>
+            </div>
+          </div>
+          
+          <h4>🤖 Análise da IA</h4>
+          <div class="analysis-content">
+            <pre>{{selectedHand.ai_analysis || 'Análise não disponível'}}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controles Adicionais -->
+      <div *ngIf="handReplayData" class="additional-controls">
+        <div class="control-section">
+          <h4>🎯 Análise Específica</h4>
+          <button 
+            class="btn-analyze-action" 
+            (click)="analyzeCurrentAction()"
+            [disabled]="analyzingAction">
+            {{analyzingAction ? 'Analisando...' : '🔍 Analisar Ação Atual'}}
+          </button>
+        </div>
+
+        <!-- Resultado da Análise Específica -->
+        <div *ngIf="currentActionAnalysis" class="action-analysis-result">
+          <h4>📊 Análise da Ação</h4>
+          <div class="analysis-content">
+            <pre>{{currentActionAnalysis}}</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="resetReplay()" *ngIf="handReplayData">
+        🔄 Reiniciar Reprodução
+      </button>
+      <button class="btn-close" (click)="closeAnalysisModal()">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+

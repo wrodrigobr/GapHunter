@@ -1,0 +1,547 @@
+.history-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+  min-height: 100vh;
+  color: #e2e8f0;
+}
+
+.history-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+}
+
+// Seção de Filtros
+.filters-section {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 600;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+  }
+
+  select, input {
+    padding: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.8);
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #00d4ff;
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+  }
+}
+
+.filters-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+
+  .btn-clear {
+    padding: 0.75rem 1.5rem;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+
+  .results-info {
+    font-weight: 600;
+    color: #00d4ff;
+  }
+}
+
+// Loading
+.loading-section {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 212, 255, 0.2);
+    border-top: 4px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Tabela
+.hands-table-container {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.hands-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: rgba(15, 23, 42, 0.9);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    font-size: 0.9rem;
+  }
+
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    vertical-align: middle;
+  }
+
+  .hand-row {
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(0, 212, 255, 0.05);
+    }
+  }
+}
+
+// Células específicas
+.date-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.hand-id-cell {
+  .hand-id {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #00d4ff;
+  }
+}
+
+.tournament-cell {
+  .tournament-id {
+    font-family: 'Courier New', monospace;
+    color: #fbbf24;
+  }
+  
+  .no-tournament {
+    color: #94a3b8;
+    font-style: italic;
+  }
+}
+
+// Badges
+.position-badge, .action-badge, .status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.position-badge {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.action-badge {
+  &.action-fold {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  
+  &.action-call {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fde68a;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  
+  &.action-raise, &.action-bet {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  &.action-check {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+}
+
+.status-badge {
+  &.status-ok {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  &.status-gap {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fde68a;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  
+  &.status-error {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+}
+
+// Cartas
+.cards, .board {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  
+  .suit-red { 
+    color: #dc2626; 
+    font-size: 1.1em;
+  } // Hearts e Diamonds
+  .suit-black { 
+    color: #1f2937; 
+    font-size: 1.1em;
+  } // Spades e Clubs
+}
+
+// Botões
+.btn-analysis {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+  }
+}
+
+// Sem mãos
+.no-hands {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .no-hands-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #94a3b8;
+  }
+}
+
+// Paginação
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+
+  .pagination-btn {
+    padding: 0.75rem 1rem;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 212, 255, 0.2);
+      border-color: #00d4ff;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+      border-color: #00d4ff;
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .pagination-info {
+    margin-left: 1rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+
+  h2 {
+    margin: 0;
+    color: #00d4ff;
+    font-size: 1.5rem;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #e2e8f0;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.hand-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.info-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #00d4ff;
+    font-size: 1.1rem;
+  }
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .label {
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .value {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+}
+
+.analysis-section {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #00d4ff;
+    font-size: 1.1rem;
+  }
+
+  .analysis-content {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #e2e8f0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  text-align: right;
+
+  .btn-close {
+    padding: 0.75rem 2rem;
+    background: rgba(148, 163, 184, 0.2);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(148, 163, 184, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .history-container {
+    padding: 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hands-table {
+    font-size: 0.8rem;
+    
+    th, td {
+      padding: 0.5rem;
+    }
+  }
+
+  .modal-content {
+    margin: 1rem;
+    max-height: 95vh;
+  }
+
+  .hand-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cores dos Naipes */
+.red-suit {
+  color: #ff0000 !important;
+}
+
+.black-suit {
+  color: #000000 !important;
+}
+
+/* Aplicar cores aos naipes nas cartas */
+.cards.red-suit,
+.board.red-suit {
+  color: #ff0000;
+}
+
+.cards.black-suit,
+.board.black-suit {
+  color: #000000;
+}
+

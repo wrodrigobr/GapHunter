@@ -1,0 +1,263 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/images/logo_main.png" alt="GapHunter" class="logo">
+        <h1>GapHunter</h1>
+      </div>
+      
+      <div class="user-section">
+        <span class="welcome-text">Bem-vindo, {{ currentUser?.nickname || currentUser?.full_name }}!</span>
+        <button class="logout-button" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🃏</div>
+        <div class="stat-content">
+          <h3>{{ totalHands }}</h3>
+          <p>Mãos Analisadas</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <h3>{{ gapsFound }}</h3>
+          <p>Gaps Encontrados</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+          <h3>{{ gapPercentage }}%</h3>
+          <p>Taxa de Gaps</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h2>Upload de Hand History</h2>
+      
+      <div 
+        class="upload-area"
+        [class.drag-over]="false"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+        
+        <div class="upload-content">
+          <div class="upload-icon">📁</div>
+          <h3>Arraste um arquivo ou clique para selecionar</h3>
+          <p>Formatos suportados: .txt</p>
+          
+          <input 
+            type="file" 
+            id="file-input"
+            accept=".txt"
+            (change)="onFileSelected($event)"
+            style="display: none;">
+          
+          <button 
+            class="select-file-button"
+            (click)="openFileDialog()"
+            [disabled]="isUploading">
+            Selecionar Arquivo
+          </button>
+        </div>
+      </div>
+
+      <!-- Selected File Info -->
+      <div *ngIf="selectedFile" class="selected-file">
+        <div class="file-info">
+          <span class="file-name">{{ selectedFile.name }}</span>
+          <span class="file-size">({{ (selectedFile.size / 1024).toFixed(1) }} KB)</span>
+        </div>
+        
+        <button 
+          class="upload-button"
+          (click)="uploadFile()"
+          [disabled]="isUploading">
+          <span *ngIf="!isUploading">Analisar Mãos</span>
+          <span *ngIf="isUploading" class="loading">Analisando...</span>
+        </button>
+      </div>
+
+      <!-- Upload Message -->
+      <div *ngIf="uploadMessage" 
+           class="upload-message"
+           [class.success]="uploadMessage.includes('Sucesso')"
+           [class.error]="!uploadMessage.includes('Sucesso')">
+        {{ uploadMessage }}
+      </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div *ngIf="userStats && (positionStats.length > 0 || actionStats.length > 0)" class="statistics-section">
+      <h2>📊 Estatísticas Detalhadas</h2>
+      
+      <div class="stats-row">
+        <!-- Position Stats -->
+        <div *ngIf="positionStats.length > 0" class="stats-card position-stats">
+          <div class="stats-header">
+            <h3>🎯 Distribuição por Posição</h3>
+            <span class="stats-subtitle">Onde você joga mais</span>
+          </div>
+          <div class="stats-chart">
+            <div *ngFor="let stat of positionStats" class="stat-bar">
+              <div class="stat-info">
+                <span class="stat-label">{{ getPositionName(stat.position) }}</span>
+                <span class="stat-value">{{ stat.count }} mãos</span>
+                <span class="stat-percentage">({{ getPercentage(stat.count, totalHands) }}%)</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="getPercentage(stat.count, totalHands)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Stats -->
+        <div *ngIf="actionStats.length > 0" class="stats-card action-stats">
+          <div class="stats-header">
+            <h3>⚡ Distribuição por Ação</h3>
+            <span class="stats-subtitle">Suas decisões mais comuns</span>
+          </div>
+          <div class="stats-chart">
+            <div *ngFor="let stat of actionStats" class="stat-bar">
+              <div class="stat-info">
+                <span class="stat-label">{{ getActionName(stat.action) }}</span>
+                <span class="stat-value">{{ stat.count }} vezes</span>
+                <span class="stat-percentage">({{ getPercentage(stat.count, totalHands) }}%)</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width.%]="getPercentage(stat.count, totalHands)"
+                     [class]="'action-' + stat.action"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Summary -->
+      <div class="performance-summary">
+        <div class="summary-card">
+          <div class="summary-icon">🎯</div>
+          <div class="summary-content">
+            <h4>Taxa de Acerto</h4>
+            <span class="summary-value">{{ (100 - gapPercentage).toFixed(1) }}%</span>
+            <span class="summary-subtitle">{{ totalHands - gapsFound }} de {{ totalHands }} mãos</span>
+          </div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="summary-icon">⚠️</div>
+          <div class="summary-content">
+            <h4>Gaps Identificados</h4>
+            <span class="summary-value">{{ gapsFound }}</span>
+            <span class="summary-subtitle">{{ gapPercentage.toFixed(1) }}% das mãos</span>
+          </div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="summary-icon">📈</div>
+          <div class="summary-content">
+            <h4>Mãos Analisadas</h4>
+            <span class="summary-value">{{ totalHands }}</span>
+            <span class="summary-subtitle">Total processado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Hands -->
+    <div class="hands-section">
+      <h2>Mãos Recentes</h2>
+      
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Carregando mãos...</p>
+      </div>
+
+      <div *ngIf="!isLoading && recentHands.length === 0" class="empty-state">
+        <div class="empty-icon">🎲</div>
+        <h3>Nenhuma mão analisada ainda</h3>
+        <p>Faça upload de um arquivo de hand history para começar</p>
+      </div>
+
+      <!-- Tabela de Mãos Recentes -->
+      <div *ngIf="!isLoading && recentHands.length > 0" class="recent-hands-table">
+        <table class="hands-table">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Mão ID</th>
+              <th>Posição</th>
+              <th>Cartas</th>
+              <th>Ação</th>
+              <th>Board</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let hand of recentHands" class="hand-row">
+              <td class="date-cell">
+                {{formatDate(hand.date_played)}}
+              </td>
+              <td class="hand-id-cell">
+                <span class="hand-id">{{hand.hand_id}}</span>
+              </td>
+              <td class="position-cell">
+                <span class="position-badge" [class]="'position-' + (hand.hero_position || 'unknown')">
+                  {{hand.hero_position || '-'}}
+                </span>
+              </td>
+              <td class="cards-cell">
+                <span class="cards" [ngClass]="getCardClass(hand.hero_cards || '')">{{formatCards(hand.hero_cards || '')}}</span>
+              </td>
+              <td class="action-cell">
+                <span class="action-badge" [class]="'action-' + (hand.hero_action || 'unknown')">
+                  {{hand.hero_action || '-'}}
+                </span>
+              </td>
+              <td class="board-cell">
+                <span class="board" [ngClass]="getCardClass(hand.board_cards || '')">{{formatCards(hand.board_cards || '')}}</span>
+              </td>
+              <td class="status-cell">
+                <span class="status-badge" [class.has-gap]="hand.has_gap">
+                  {{ hand.has_gap ? '⚠️ Gap' : '✅ OK' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button class="btn-analysis" (click)="viewHandDetails(hand)">
+                  🔍 Ver Análise
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- View All Hands Button -->
+      <div *ngIf="totalHands > recentHands.length" class="view-all-section">
+        <button class="view-all-button" (click)="viewAllHands()">
+          Ver Todas as {{ totalHands }} Mãos
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Componente de Progresso de Upload -->
+<app-upload-progress></app-upload-progress>
+

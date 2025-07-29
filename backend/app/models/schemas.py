@@ -6,9 +6,18 @@ from typing import Optional, List
 class UserBase(BaseModel):
     username: str
     email: EmailStr
+    full_name: str
+    nickname: str
 
 class UserCreate(UserBase):
     password: str
+    # Informações específicas de poker
+    poker_experience: Optional[str] = None  # "beginner", "intermediate", "advanced", "professional"
+    preferred_games: Optional[str] = None   # "cash", "tournaments", "both"
+    main_stakes: Optional[str] = None       # "micro", "low", "mid", "high"
+    poker_goals: Optional[str] = None       # "recreational", "profit", "professional"
+    country: Optional[str] = None
+    timezone: Optional[str] = None
 
 class UserLogin(BaseModel):
     username: str
@@ -17,6 +26,12 @@ class UserLogin(BaseModel):
 class User(UserBase):
     id: int
     is_active: bool
+    poker_experience: Optional[str] = None
+    preferred_games: Optional[str] = None
+    main_stakes: Optional[str] = None
+    poker_goals: Optional[str] = None
+    country: Optional[str] = None
+    timezone: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -33,7 +48,8 @@ class TokenData(BaseModel):
 # Hand schemas
 class HandBase(BaseModel):
     hand_id: str
-    tournament_id: Optional[str] = None
+    tournament_id: Optional[int] = None  # FK para tabela tournaments
+    pokerstars_tournament_id: Optional[str] = None  # ID original do PokerStars
     table_name: Optional[str] = None
     date_played: Optional[datetime] = None
     hero_name: Optional[str] = None

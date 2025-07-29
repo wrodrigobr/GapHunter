@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, BigInteger
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.models.database import Base
 
 class Hand(Base):
@@ -8,11 +7,11 @@ class Hand(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    tournament_id = Column(Integer, ForeignKey("tournaments.id"), nullable=True)
+    tournament_id = Column(Integer, ForeignKey("tournaments.id"), nullable=True)  # FK para tabela tournaments
     hand_id = Column(String(50), nullable=False)  # ID da mão no arquivo
     
     # Dados do PokerStars
-    pokerstars_tournament_id = Column(String(50))
+    pokerstars_tournament_id = Column(String(50))  # ID original do PokerStars
     table_name = Column(String(100))
     date_played = Column(DateTime)
     hero_name = Column(String(50))
@@ -26,7 +25,8 @@ class Hand(Base):
     ai_analysis = Column(Text)  # Análise da IA
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Relacionamentos
-    user = relationship("User", back_populates="hands")
-    tournament = relationship("Tournament", back_populates="hands")
+    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
+    # Será reativado após correção dos relacionamentos
+    # user = relationship("User", back_populates="hands")
+    # tournament = relationship("Tournament", back_populates="hands")
 

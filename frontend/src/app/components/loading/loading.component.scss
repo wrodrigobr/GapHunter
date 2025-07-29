@@ -1,0 +1,80 @@
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  &.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 31, 46, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+  }
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  &[data-size="small"] {
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border-width: 2px;
+    }
+    
+    .loading-message {
+      font-size: 14px;
+    }
+  }
+
+  &[data-size="medium"] {
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-width: 3px;
+    }
+    
+    .loading-message {
+      font-size: 16px;
+    }
+  }
+
+  &[data-size="large"] {
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border-width: 4px;
+    }
+    
+    .loading-message {
+      font-size: 18px;
+    }
+  }
+}
+
+.spinner {
+  border: 3px solid rgba(100, 255, 218, 0.3);
+  border-top: 3px solid #64ffda;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-message {
+  color: #8892b0;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

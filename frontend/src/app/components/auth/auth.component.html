@@ -1,0 +1,238 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header com Logo -->
+    <div class="auth-header">
+      <img src="assets/images/logo_main.png" alt="GapHunter" class="logo">
+      <h1>GapHunter</h1>
+      <p>Análise Técnica de Poker</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="isLoginMode"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Login
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="!isLoginMode"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Registro
+      </button>
+    </div>
+
+    <!-- Formulário de Login -->
+    <form *ngIf="isLoginMode" (ngSubmit)="onLogin()" class="auth-form">
+      <div class="form-group">
+        <label for="login-email">Email ou Username</label>
+        <input 
+          type="text" 
+          id="login-email"
+          [(ngModel)]="loginData.email"
+          name="email"
+          placeholder="seu@email.com ou username"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Senha</label>
+        <input 
+          type="password" 
+          id="login-password"
+          [(ngModel)]="loginData.password"
+          name="password"
+          placeholder="••••••••"
+          [disabled]="isLoading"
+          required>
+      </div>
+
+      <button 
+        type="submit" 
+        class="auth-button"
+        [disabled]="isLoading">
+        <span *ngIf="!isLoading">Entrar</span>
+        <span *ngIf="isLoading" class="loading">Entrando...</span>
+      </button>
+    </form>
+
+    <!-- Formulário de Registro -->
+    <form *ngIf="!isLoginMode" (ngSubmit)="onRegister()" class="auth-form">
+      <!-- Informações Básicas -->
+      <div class="form-section">
+        <h3 class="section-title">Informações Básicas</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="register-username">Username *</label>
+            <input 
+              type="text" 
+              id="register-username"
+              [(ngModel)]="registerData.username"
+              name="username"
+              placeholder="meuusername"
+              [disabled]="isLoading"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="register-nickname">Apelido *</label>
+            <input 
+              type="text" 
+              id="register-nickname"
+              [(ngModel)]="registerData.nickname"
+              name="nickname"
+              placeholder="Seu apelido"
+              [disabled]="isLoading"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-fullname">Nome Completo *</label>
+          <input 
+            type="text" 
+            id="register-fullname"
+            [(ngModel)]="registerData.full_name"
+            name="full_name"
+            placeholder="Seu nome completo"
+            [disabled]="isLoading"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="register-email">Email *</label>
+          <input 
+            type="email" 
+            id="register-email"
+            [(ngModel)]="registerData.email"
+            name="email"
+            placeholder="seu@email.com"
+            [disabled]="isLoading"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="register-password">Senha *</label>
+          <input 
+            type="password" 
+            id="register-password"
+            [(ngModel)]="registerData.password"
+            name="password"
+            placeholder="••••••••"
+            [disabled]="isLoading"
+            required>
+        </div>
+      </div>
+
+      <!-- Perfil de Poker -->
+      <div class="form-section">
+        <h3 class="section-title">Perfil de Poker</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="poker-experience">Experiência</label>
+            <select 
+              id="poker-experience"
+              [(ngModel)]="registerData.poker_experience"
+              name="poker_experience"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="beginner">Iniciante</option>
+              <option value="intermediate">Intermediário</option>
+              <option value="advanced">Avançado</option>
+              <option value="professional">Profissional</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="preferred-games">Jogos Preferidos</label>
+            <select 
+              id="preferred-games"
+              [(ngModel)]="registerData.preferred_games"
+              name="preferred_games"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="cash">Cash Games</option>
+              <option value="tournaments">Torneios</option>
+              <option value="both">Ambos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="main-stakes">Stakes Principais</label>
+            <select 
+              id="main-stakes"
+              [(ngModel)]="registerData.main_stakes"
+              name="main_stakes"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="micro">Micro ($0.01/$0.02 - $0.05/$0.10)</option>
+              <option value="low">Low ($0.25/$0.50 - $1/$2)</option>
+              <option value="mid">Mid ($2/$5 - $10/$20)</option>
+              <option value="high">High ($25/$50+)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="poker-goals">Objetivos</label>
+            <select 
+              id="poker-goals"
+              [(ngModel)]="registerData.poker_goals"
+              name="poker_goals"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="recreational">Recreativo</option>
+              <option value="profit">Lucro</option>
+              <option value="professional">Profissional</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="country">País</label>
+            <input 
+              type="text" 
+              id="country"
+              [(ngModel)]="registerData.country"
+              name="country"
+              placeholder="Brasil"
+              [disabled]="isLoading">
+          </div>
+
+          <div class="form-group">
+            <label for="timezone">Fuso Horário</label>
+            <select 
+              id="timezone"
+              [(ngModel)]="registerData.timezone"
+              name="timezone"
+              [disabled]="isLoading">
+              <option value="">Selecione...</option>
+              <option value="America/Sao_Paulo">Brasília (UTC-3)</option>
+              <option value="America/New_York">Nova York (UTC-5)</option>
+              <option value="Europe/London">Londres (UTC+0)</option>
+              <option value="Europe/Berlin">Berlim (UTC+1)</option>
+              <option value="Asia/Tokyo">Tóquio (UTC+9)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="auth-button"
+        [disabled]="isLoading">
+        <span *ngIf="!isLoading">Criar Conta</span>
+        <span *ngIf="isLoading" class="loading">Criando...</span>
+      </button>
+    </form>
+  </div>
+</div>
+
