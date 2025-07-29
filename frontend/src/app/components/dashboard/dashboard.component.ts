@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
-import { ApiService, Hand } from '../../services/api.service';
+import { ApiService, Hand, UserStats } from '../../services/api.service';
 import { UploadService } from '../../services/upload.service';
 import { NotificationService } from '../../services/notification.service';
 import { UploadProgressComponent } from '../upload-progress/upload-progress.component';
@@ -16,6 +16,7 @@ import { UploadProgressComponent } from '../upload-progress/upload-progress.comp
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
+  userStats: UserStats | null = null;
   hands: Hand[] = [];
   isLoading = true;
   errorMessage = '';
@@ -39,20 +40,24 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    this.loadHands();
+    this.loadDashboardData();
   }
 
-  loadHands() {
+  loadDashboardData() {
     this.isLoading = true;
-    this.apiService.getUserHands().subscribe({
-      next: (hands) => {
-        this.hands = hands;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = error;
-        this.isLoading = false;
-      }
+    
+    // Carregar estatísticas e mãos em paralelo
+    Promise.all([
+      this.apiService.getUserStats().toPromise(),
+      this.apiService.getUserHands(0, 10).toPromise()
+    ]).then(([stats, hands]) => {
+      this.userStats = stats || null;
+      this.hands = hands || [];
+      this.isLoading = false;
+    }).catch(error => {
+      console.error('Erro ao carregar dados:', error);
+      this.errorMessage = 'Erro ao carregar dados do dashboard';
+      this.isLoading = false;
     });
   }
 
@@ -112,34 +117,20 @@ export class DashboardComponent implements OnInit {
     this.isUploading = true;
     this.uploadMessage = 'Iniciando upload...';
 
-    this.uploadService.uploadFile(this.selectedFile).subscribe({
+    // Usar upload direto em vez do sistema de progresso por enquanto
+    this.apiService.uploadHand(this.selectedFile).subscribe({
       next: (response) => {
-        console.log('✅ Upload iniciado:', response);
-        this.notificationService.info('Upload iniciado! Acompanhe o progresso.');
-        
-        // Iniciar tracking de progresso usando Server-Sent Events
-        this.uploadService.startProgressTrackingSSE(response.upload_id);
-        
-        // Limpar seleção de arquivo
-        this.selectedFile = null;
-        this.uploadMessage = '';
+        console.log('✅ Upload concluído:', response);
         this.isUploading = false;
+        this.uploadMessage = '';
+        this.selectedFile = null;
         
-        // Escutar conclusão do upload
-        this.uploadService.progress$.subscribe(progress => {
-          if (progress?.completed && progress.result) {
-            this.notificationService.success(
-              `Upload concluído! ${progress.result.hands_processed} mãos processadas.`
-            );
-            
-            // Recarregar dados
-            this.loadHands();
-          } else if (progress?.status === 'error') {
-            this.notificationService.error(
-              progress.message || 'Erro durante o upload'
-            );
-          }
-        });
+        this.notificationService.success(
+          `Upload concluído! ${response.hands_processed} mãos processadas.`
+        );
+        
+        // Recarregar dados do dashboard
+        this.loadDashboardData();
       },
       error: (error) => {
         console.error('❌ Erro no upload:', error);
@@ -150,13 +141,25 @@ export class DashboardComponent implements OnInit {
         
         if (error.status === 0) {
           errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
-        } else if (error.error?.detail) {
-          errorMessage = error.error.detail;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
         }
         
         this.notificationService.error(errorMessage);
       }
     });
+  }
+
+  viewHandDetails(hand: Hand) {
+    // TODO: Implementar modal ou página de detalhes da mão
+    console.log('Ver detalhes da mão:', hand);
+    this.notificationService.info(`Detalhes da mão ${hand.hand_id} - Em desenvolvimento`);
+  }
+
+  viewAllHands() {
+    // TODO: Implementar página de histórico completo
+    console.log('Ver todas as mãos');
+    this.notificationService.info('Página de histórico completo - Em desenvolvimento');
   }
 
   logout() {
@@ -174,14 +177,29 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getTotalGaps(): number {
-    return this.hands.reduce((total, hand) => total + hand.gaps_count, 0);
+  // Getters para estatísticas
+  get totalHands(): number {
+    return this.userStats?.total_hands || 0;
   }
 
-  getAverageGaps(): string {
-    if (this.hands.length === 0) return '0.0';
-    const average = this.getTotalGaps() / this.hands.length;
-    return average.toFixed(1);
+  get gapsFound(): number {
+    return this.userStats?.gaps_found || 0;
+  }
+
+  get gapPercentage(): number {
+    return this.userStats?.gap_percentage || 0;
+  }
+
+  get recentHands(): Hand[] {
+    return this.userStats?.recent_hands || [];
+  }
+
+  get positionStats(): Array<{position: string, count: number}> {
+    return this.userStats?.position_stats || [];
+  }
+
+  get actionStats(): Array<{action: string, count: number}> {
+    return this.userStats?.action_stats || [];
   }
 }
 

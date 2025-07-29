@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 from datetime import datetime
 import os
@@ -141,6 +142,65 @@ Para análise mais detalhada, configure a integração com OpenRouter.
     except Exception as e:
         print(f"❌ Erro no upload: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao processar arquivo: {str(e)}")
+
+@router.get("/stats")
+async def get_user_stats(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Obter estatísticas das mãos do usuário"""
+    
+    # Estatísticas básicas
+    total_hands = db.query(func.count(Hand.id)).filter(Hand.user_id == current_user.id).scalar()
+    
+    # Estatísticas por posição
+    position_stats = db.query(
+        Hand.hero_position,
+        func.count(Hand.id).label('count')
+    ).filter(
+        Hand.user_id == current_user.id,
+        Hand.hero_position.isnot(None)
+    ).group_by(Hand.hero_position).all()
+    
+    # Estatísticas por ação
+    action_stats = db.query(
+        Hand.hero_action,
+        func.count(Hand.id).label('count')
+    ).filter(
+        Hand.user_id == current_user.id,
+        Hand.hero_action.isnot(None)
+    ).group_by(Hand.hero_action).all()
+    
+    # Mãos recentes (últimas 10)
+    recent_hands = db.query(Hand).filter(
+        Hand.user_id == current_user.id
+    ).order_by(Hand.created_at.desc()).limit(10).all()
+    
+    # Análise de gaps (simulada por enquanto)
+    gaps_found = 0
+    for hand in recent_hands:
+        if hand.ai_analysis and ('gap' in hand.ai_analysis.lower() or 'erro' in hand.ai_analysis.lower()):
+            gaps_found += 1
+    
+    return {
+        "total_hands": total_hands,
+        "gaps_found": gaps_found,
+        "gap_percentage": round((gaps_found / total_hands * 100) if total_hands > 0 else 0, 1),
+        "position_stats": [{"position": pos, "count": count} for pos, count in position_stats],
+        "action_stats": [{"action": action, "count": count} for action, count in action_stats],
+        "recent_hands": [
+            {
+                "id": hand.id,
+                "hand_id": hand.hand_id,
+                "hero_position": hand.hero_position,
+                "hero_cards": hand.hero_cards,
+                "hero_action": hand.hero_action,
+                "date_played": hand.date_played,
+                "has_gap": 'gap' in (hand.ai_analysis or '').lower() or 'erro' in (hand.ai_analysis or '').lower()
+            }
+            for hand in recent_hands
+        ]
+    }
 
 @router.get("/history/my-hands", response_model=List[HandSchema])
 async def get_my_hands(

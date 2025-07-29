@@ -5,26 +5,28 @@ import { catchError } from 'rxjs/operators';
 
 export interface Hand {
   id: number;
-  filename: string;
-  content: string;
-  gaps_count: number;
-  created_at: string;
-  user_id: number;
+  hand_id: string;
+  hero_position?: string;
+  hero_cards?: string;
+  hero_action?: string;
+  date_played: string;
+  ai_analysis?: string;
+  has_gap?: boolean;
 }
 
-export interface Gap {
-  id: number;
-  hand_id: number;
-  gap_type: string;
-  description: string;
-  severity: string;
-  recommendation: string;
+export interface UserStats {
+  total_hands: number;
+  gaps_found: number;
+  gap_percentage: number;
+  position_stats: Array<{position: string, count: number}>;
+  action_stats: Array<{action: string, count: number}>;
+  recent_hands: Hand[];
 }
 
 export interface UploadResponse {
   message: string;
-  hand_id: number;
-  gaps_found: number;
+  hands_processed: number;
+  hands: Hand[];
 }
 
 @Injectable({
@@ -44,21 +46,27 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
+  // Obter estatísticas do usuário
+  getUserStats(): Observable<UserStats> {
+    return this.http.get<UserStats>(`${this.apiUrl}/hands/stats`)
+      .pipe(catchError(this.handleError));
+  }
+
   // Listar mãos do usuário
-  getUserHands(): Observable<Hand[]> {
-    return this.http.get<Hand[]>(`${this.apiUrl}/hands/`)
+  getUserHands(skip: number = 0, limit: number = 50): Observable<Hand[]> {
+    return this.http.get<Hand[]>(`${this.apiUrl}/hands/history/my-hands?skip=${skip}&limit=${limit}`)
       .pipe(catchError(this.handleError));
   }
 
   // Obter detalhes de uma mão específica
   getHand(handId: number): Observable<Hand> {
-    return this.http.get<Hand>(`${this.apiUrl}/hands/${handId}`)
+    return this.http.get<Hand>(`${this.apiUrl}/hands/history/my-hands/${handId}`)
       .pipe(catchError(this.handleError));
   }
 
-  // Obter gaps de uma mão
-  getHandGaps(handId: number): Observable<Gap[]> {
-    return this.http.get<Gap[]>(`${this.apiUrl}/hands/${handId}/gaps`)
+  // Deletar uma mão
+  deleteHand(handId: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/hands/history/my-hands/${handId}`)
       .pipe(catchError(this.handleError));
   }
 

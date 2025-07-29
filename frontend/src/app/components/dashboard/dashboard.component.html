@@ -8,7 +8,7 @@
       </div>
       
       <div class="user-section">
-        <span class="welcome-text">Bem-vindo, {{ currentUser?.nickname }}!</span>
+        <span class="welcome-text">Bem-vindo, {{ currentUser?.nickname || currentUser?.full_name }}!</span>
         <button class="logout-button" (click)="logout()">Sair</button>
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div class="stat-card">
         <div class="stat-icon">🃏</div>
         <div class="stat-content">
-          <h3>{{ hands.length }}</h3>
+          <h3>{{ totalHands }}</h3>
           <p>Mãos Analisadas</p>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <div class="stat-card">
         <div class="stat-icon">🎯</div>
         <div class="stat-content">
-          <h3>{{ getTotalGaps() }}</h3>
+          <h3>{{ gapsFound }}</h3>
           <p>Gaps Encontrados</p>
         </div>
       </div>
@@ -37,8 +37,8 @@
       <div class="stat-card">
         <div class="stat-icon">📈</div>
         <div class="stat-content">
-          <h3>{{ getAverageGaps() }}</h3>
-          <p>Média de Gaps</p>
+          <h3>{{ gapPercentage }}%</h3>
+          <p>Taxa de Gaps</p>
         </div>
       </div>
     </div>
@@ -57,12 +57,12 @@
         <div class="upload-content">
           <div class="upload-icon">📁</div>
           <h3>Arraste um arquivo ou clique para selecionar</h3>
-          <p>Formatos suportados: .txt, .log</p>
+          <p>Formatos suportados: .txt</p>
           
           <input 
             type="file" 
             id="file-input"
-            accept=".txt,.log"
+            accept=".txt"
             (change)="onFileSelected($event)"
             style="display: none;">
           
@@ -100,40 +100,84 @@
       </div>
     </div>
 
-    <!-- Hands History -->
+    <!-- Statistics Section -->
+    <div *ngIf="userStats && (positionStats.length > 0 || actionStats.length > 0)" class="statistics-section">
+      <h2>Estatísticas Detalhadas</h2>
+      
+      <div class="stats-row">
+        <!-- Position Stats -->
+        <div *ngIf="positionStats.length > 0" class="stats-card">
+          <h3>Por Posição</h3>
+          <div class="stats-list">
+            <div *ngFor="let stat of positionStats" class="stat-item">
+              <span class="stat-label">{{ stat.position || 'Desconhecida' }}</span>
+              <span class="stat-value">{{ stat.count }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Stats -->
+        <div *ngIf="actionStats.length > 0" class="stats-card">
+          <h3>Por Ação</h3>
+          <div class="stats-list">
+            <div *ngFor="let stat of actionStats" class="stat-item">
+              <span class="stat-label">{{ stat.action || 'Desconhecida' }}</span>
+              <span class="stat-value">{{ stat.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Hands -->
     <div class="hands-section">
-      <h2>Histórico de Mãos</h2>
+      <h2>Mãos Recentes</h2>
       
       <div *ngIf="isLoading" class="loading-state">
         <div class="spinner"></div>
         <p>Carregando mãos...</p>
       </div>
 
-      <div *ngIf="!isLoading && hands.length === 0" class="empty-state">
+      <div *ngIf="!isLoading && recentHands.length === 0" class="empty-state">
         <div class="empty-icon">🎲</div>
         <h3>Nenhuma mão analisada ainda</h3>
         <p>Faça upload de um arquivo de hand history para começar</p>
       </div>
 
-      <div *ngIf="!isLoading && hands.length > 0" class="hands-grid">
-        <div *ngFor="let hand of hands" class="hand-card">
+      <div *ngIf="!isLoading && recentHands.length > 0" class="hands-grid">
+        <div *ngFor="let hand of recentHands" class="hand-card" [class.has-gap]="hand.has_gap">
           <div class="hand-header">
-            <h4>{{ hand.filename }}</h4>
-            <span class="gaps-badge">{{ hand.gaps_count }} gaps</span>
+            <h4>Mão #{{ hand.hand_id }}</h4>
+            <span class="gap-badge" [class.has-gap]="hand.has_gap">
+              {{ hand.has_gap ? '⚠️ Gap' : '✅ OK' }}
+            </span>
+          </div>
+          
+          <div class="hand-details">
+            <div class="hand-info">
+              <span class="position">{{ hand.hero_position || 'Posição desconhecida' }}</span>
+              <span class="cards">{{ hand.hero_cards || 'Cartas não identificadas' }}</span>
+            </div>
+            <div class="hand-action">
+              <span class="action">{{ hand.hero_action || 'Ação desconhecida' }}</span>
+            </div>
           </div>
           
           <div class="hand-meta">
-            <span class="hand-date">{{ formatDate(hand.created_at) }}</span>
-          </div>
-          
-          <div class="hand-preview">
-            {{ hand.content.substring(0, 100) }}...
+            <span class="hand-date">{{ formatDate(hand.date_played) }}</span>
           </div>
           
           <div class="hand-actions">
-            <button class="view-button">Ver Detalhes</button>
+            <button class="view-button" (click)="viewHandDetails(hand)">Ver Análise</button>
           </div>
         </div>
+      </div>
+
+      <!-- View All Hands Button -->
+      <div *ngIf="totalHands > recentHands.length" class="view-all-section">
+        <button class="view-all-button" (click)="viewAllHands()">
+          Ver Todas as {{ totalHands }} Mãos
+        </button>
       </div>
     </div>
   </main>
