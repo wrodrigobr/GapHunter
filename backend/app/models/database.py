@@ -24,8 +24,9 @@ if DATABASE_URL.startswith("mssql") or DATABASE_URL.startswith("sqlserver"):
         echo=os.getenv("DEBUG", "False").lower() == "true",
         # Configurações específicas para SQL Server
         connect_args={
-            "timeout": 30,
-            "login_timeout": 30,
+            "timeout": 15,  # Reduzido para 15 segundos
+            "login_timeout": 15,  # Reduzido para 15 segundos
+            "connect_timeout": 15,  # Adicionado timeout de conexão
             "autocommit": True
         }
     )

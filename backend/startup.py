@@ -55,13 +55,29 @@ def main():
     if 'mssql' in database_url or 'pyodbc' in database_url:
         try:
             import pyodbc
-            # Testar conexão básica
-            test_connection = database_url.replace('mssql+pyodbc://', '').split('@')[1] if '@' in database_url else None
-            if test_connection:
-                print("🔍 Testando conectividade com SQL Server...")
-                # Se não conseguir conectar, usar SQLite como fallback
-        except ImportError:
-            print("⚠️  Drivers SQL Server não disponíveis, usando SQLite como fallback...")
+            print("🔍 Testando conectividade com SQL Server...")
+            
+            # Testar conexão com timeout reduzido
+            import sqlalchemy
+            from sqlalchemy import create_engine
+            
+            # Criar engine com timeout reduzido para teste
+            test_engine = create_engine(
+                database_url,
+                connect_args={
+                    'timeout': 10,  # 10 segundos de timeout
+                    'connect_timeout': 10
+                }
+            )
+            
+            # Testar conexão
+            with test_engine.connect() as conn:
+                conn.execute(sqlalchemy.text("SELECT 1"))
+                print("✅ Conexão com SQL Server bem-sucedida")
+                
+        except Exception as e:
+            print(f"⚠️  Erro ao conectar com SQL Server: {e}")
+            print("🔄 Usando SQLite como fallback...")
             os.environ['DATABASE_URL'] = 'sqlite:///./gaphunter.db'
             database_url = 'sqlite:///./gaphunter.db'
     
@@ -93,7 +109,7 @@ def main():
             # Configurações simplificadas do Gunicorn para Azure
             gunicorn_cmd = [
                 "gunicorn",
-                "app:app",  # Usar app.py como entry point
+git status                "app:app",  # Usar app.py como entry point
                 "-w", "1",  # 1 worker para evitar problemas de memória
                 "-k", "uvicorn.workers.UvicornWorker",
                 "--bind", "0.0.0.0:8000",
