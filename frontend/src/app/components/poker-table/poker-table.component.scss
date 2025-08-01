@@ -3,9 +3,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -97,7 +97,7 @@
   font-weight: bold;
 }
 
-/* Mesa Principal */
+/* Mesa Principal - Feltro Profissional */
 .poker-table {
   position: relative;
   width: 100%;
@@ -112,15 +112,54 @@
   transform: translate(-50%, -50%);
   width: 80%;
   height: 60%;
-  background: radial-gradient(ellipse at center, #0f4c3a 0%, #0a3d2e 100%);
+  
+  /* Feltro verde profissional inspirado no PokerStars */
+  background: 
+    radial-gradient(ellipse at center, #2d5a2d 0%, #1e3a1e 60%, #0f2a0f 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px
+    );
+  
   border-radius: 50%;
-  border: 8px solid #8b4513;
+  border: 12px solid #8b4513;
   box-shadow: 
-    inset 0 0 50px rgba(0, 0, 0, 0.3),
-    0 0 30px rgba(0, 0, 0, 0.5);
+    inset 0 0 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+  
+  /* Borda dourada interna */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #d4af37, #ffd700, #d4af37);
+    z-index: -1;
+  }
+  
+  /* Logo da mesa no centro */
+  &::after {
+    content: 'GAP HUNTER';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+  }
 }
 
-/* Cartas Comunitárias */
+/* Cartas Comunitárias - Estilo Profissional */
 .community-cards {
   position: absolute;
   top: 30%;
@@ -133,34 +172,58 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #00d4aa;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 212, 170, 0.3);
 }
 
 .cards-container {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: center;
 }
 
 .community-card {
-  width: 50px;
-  height: 70px;
-  background: #ffffff;
+  width: 60px;
+  height: 84px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border-radius: 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid #d4af37;
   transition: all 0.3s ease;
+  position: relative;
+  
+  /* Borda interna dourada */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 6px;
+    border: 1px solid #ffd700;
+    pointer-events: none;
+  }
   
   &.new-card {
-    animation: cardFlip 0.6s ease-in-out;
-    box-shadow: 0 0 20px rgba(0, 212, 170, 0.6);
+    animation: cardFlip 0.8s ease-in-out;
+    box-shadow: 
+      0 0 30px rgba(0, 212, 170, 0.8),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
   }
   
   &.empty {
@@ -169,273 +232,577 @@
     color: rgba(255, 255, 255, 0.5);
     
     .card-back {
-      font-size: 2rem;
+      font-size: 2.5rem;
+      opacity: 0.7;
+    }
+  }
+  
+  /* Layout das cartas com rank e naipe */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    
+    .card-rank {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #000;
+    }
+    
+    .card-suit {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
   }
 }
 
 @keyframes cardFlip {
-  0% { transform: rotateY(180deg) scale(0.8); }
-  50% { transform: rotateY(90deg) scale(1.1); }
-  100% { transform: rotateY(0deg) scale(1); }
+  0% { 
+    transform: rotateY(180deg) scale(0.8); 
+    opacity: 0;
+  }
+  50% { 
+    transform: rotateY(90deg) scale(1.2); 
+    opacity: 0.8;
+  }
+  100% { 
+    transform: rotateY(0deg) scale(1); 
+    opacity: 1;
+  }
 }
 
-/* Pot Central */
+/* Pot Central - Fichas Profissionais */
 .pot-container {
   position: absolute;
   top: 60%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 12px 20px;
-  border-radius: 25px;
-  border: 2px solid #d4af37;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px 25px;
+  border-radius: 30px;
+  border: 3px solid #d4af37;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  /* Fichas empilhadas no fundo */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 8px;
+    background: linear-gradient(45deg, #d4af37, #ffd700, #d4af37);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .pot-label {
   font-size: 0.9rem;
   color: #d4af37;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .pot-amount {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(45deg, #ffffff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
 }
 
-/* Ação Atual */
+.pot-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    
+    .breakdown-label {
+      color: #b0b0b0;
+      font-weight: 500;
+    }
+    
+    .breakdown-value {
+      color: #d4af37;
+      font-weight: bold;
+    }
+  }
+}
+
+/* Ação Atual - Balão Profissional */
 .current-action {
   position: absolute;
   top: 15%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  background: rgba(0, 212, 170, 0.9);
-  padding: 8px 16px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
-  animation: pulse 2s infinite;
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  padding: 12px 20px;
+  border-radius: 25px;
+  box-shadow: 
+    0 6px 20px rgba(0, 212, 170, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  animation: actionPulse 2s infinite;
+  
+  /* Seta apontando para baixo */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #00b894;
+  }
 }
 
 .action-player {
   font-size: 0.9rem;
   font-weight: 600;
   color: #ffffff;
+  margin-bottom: 2px;
 }
 
 .action-description {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   color: #ffffff;
-  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes pulse {
-  0%, 100% { transform: translateX(-50%) scale(1); }
-  50% { transform: translateX(-50%) scale(1.05); }
+@keyframes actionPulse {
+  0%, 100% { 
+    transform: translateX(-50%) scale(1); 
+    box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);
+  }
+  50% { 
+    transform: translateX(-50%) scale(1.05); 
+    box-shadow: 0 8px 25px rgba(0, 212, 170, 0.6);
+  }
 }
 
-/* Jogadores */
+/* Jogadores - Avatares Profissionais */
 .player-seat {
   position: absolute;
-  width: 120px;
-  height: 140px;
+  width: 140px;
+  height: 160px;
   transform: translate(-50%, -50%);
   transition: all 0.3s ease;
 }
 
 .player-avatar {
   position: relative;
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 8px;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 10px;
 }
 
 .avatar-circle {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background: linear-gradient(135deg, #4a5568, #2d3748);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #718096;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 4px solid #718096;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  
+  /* Brilho interno */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  }
 }
 
 .player-initial {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .player-indicators {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -10px;
+  right: -10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .dealer-button {
-  width: 24px;
-  height: 24px;
-  background: #d4af37;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #d4af37, #ffd700);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #000;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 2px solid #ffffff;
 }
 
 .blind-indicator {
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
   font-weight: bold;
   color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   
   &.sb {
-    background: #e53e3e;
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    border: 1px solid #ffffff;
   }
   
   &.bb {
-    background: #3182ce;
+    background: linear-gradient(135deg, #3182ce, #2c5aa0);
+    border: 1px solid #ffffff;
   }
 }
 
 /* Informações do Jogador */
 .player-info {
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .player-name {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   
   &.hero-name {
     color: #00d4aa;
     font-weight: bold;
+    text-shadow: 0 0 8px rgba(0, 212, 170, 0.5);
   }
 }
 
 .hero-indicator {
   margin-left: 4px;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .player-stack {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #b0b0b0;
   font-weight: 500;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
 }
 
-/* Cartas do Jogador */
+/* Cartas do Jogador - Estilo Profissional */
 .player-cards-container {
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .player-cards {
   display: inline-block;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: bold;
   color: #000;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid #d4af37;
+  position: relative;
+  
+  /* Borda interna */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 6px;
+    border: 1px solid #ffd700;
+    pointer-events: none;
+  }
   
   &.hero-cards {
     background: linear-gradient(135deg, #00d4aa, #00b894);
     color: #ffffff;
-    box-shadow: 0 0 12px rgba(0, 212, 170, 0.4);
+    box-shadow: 
+      0 0 20px rgba(0, 212, 170, 0.6),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: #00d4aa;
+    
+    &::before {
+      border-color: #ffffff;
+    }
   }
   
   &.folded-cards {
     background: rgba(255, 255, 255, 0.3);
     color: #666;
+    border-color: #666;
+    opacity: 0.7;
+  }
+  
+  /* Layout das cartas dos jogadores */
+  .cards-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    
+    .card-rank {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: inherit;
+    }
+    
+    .card-suit {
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
   }
 }
 
-/* Apostas */
+/* Apostas - Fichas Profissionais */
 .player-bet {
   position: absolute;
-  top: -20px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .bet-chips {
-  background: #d4af37;
+  background: linear-gradient(135deg, #d4af37, #ffd700);
   color: #000;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  border: 2px solid #ffd700;
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 2px solid #ffffff;
+  position: relative;
+  animation: chipFloat 2s ease-in-out infinite;
+  
+  /* Múltiplas fichas empilhadas */
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    border: 2px solid #ffffff;
+    background: linear-gradient(135deg, #d4af37, #ffd700);
+  }
+  
+  &::before {
+    top: -3px;
+    left: -3px;
+    z-index: -1;
+    opacity: 0.8;
+  }
+  
+  &::after {
+    top: -6px;
+    left: -6px;
+    z-index: -2;
+    opacity: 0.6;
+  }
+}
+
+.bet-amount {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes chipFloat {
+  0%, 100% { 
+    transform: translateX(-50%) translateY(0px);
+  }
+  50% { 
+    transform: translateX(-50%) translateY(-2px);
+  }
 }
 
 /* Status de Ação */
 .action-status {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -15px;
+  right: -15px;
 }
 
 .action-indicator {
-  width: 16px;
-  height: 16px;
-  background: #00d4aa;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #00d4aa, #00b894);
   border-radius: 50%;
-  animation: blink 1s infinite;
-  box-shadow: 0 0 8px rgba(0, 212, 170, 0.6);
+  animation: actionBlink 1s infinite;
+  box-shadow: 
+    0 0 12px rgba(0, 212, 170, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 2px solid #ffffff;
 }
 
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.3; }
+@keyframes actionBlink {
+  0%, 50% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  51%, 100% { 
+    opacity: 0.7; 
+    transform: scale(0.9);
+  }
+}
+
+/* Balões de Ação */
+.action-bubble {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  animation: bubbleAppear 0.5s ease-out;
+}
+
+.bubble-content {
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 
+    0 4px 12px rgba(0, 212, 170, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  
+  /* Seta apontando para baixo */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #00b894;
+  }
+  
+  .action-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes bubbleAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
 }
 
 /* Estados dos Jogadores */
 .player.hero .avatar-circle {
   border-color: #00d4aa;
-  box-shadow: 0 0 16px rgba(0, 212, 170, 0.4);
+  box-shadow: 
+    0 0 20px rgba(0, 212, 170, 0.6),
+    0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .player.active .avatar-circle {
   border-color: #ffd700;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+  box-shadow: 
+    0 0 16px rgba(255, 215, 0, 0.6),
+    0 6px 20px rgba(0, 0, 0, 0.4);
+  animation: activePulse 1.5s infinite;
+}
+
+@keyframes activePulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 16px rgba(255, 215, 0, 0.6),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 0 24px rgba(255, 215, 0, 0.8),
+      0 6px 20px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .player.folded {
-  opacity: 0.5;
+  opacity: 0.6;
   
   .avatar-circle {
     border-color: #666;
     background: linear-gradient(135deg, #2d3748, #1a202c);
   }
+  
+  .player-cards {
+    opacity: 0.5;
+  }
 }
 
 .player.button .avatar-circle {
   border-color: #d4af37;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
 }
 
-/* Controles */
+/* Controles - Estilo Profissional */
 .table-controls {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -470,26 +837,55 @@
 }
 
 .control-btn {
-  padding: 10px 16px;
+  padding: 14px 24px;
   background: linear-gradient(135deg, #4a5568, #2d3748);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  
+  /* Efeito de brilho */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
   
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #00d4aa, #00b894);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 
+      0 8px 20px rgba(0, 212, 170, 0.5),
+      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(-1px);
   }
   
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
   }
   
   &.reset {
@@ -497,7 +893,9 @@
     
     &:hover:not(:disabled) {
       background: linear-gradient(135deg, #fc8181, #e53e3e);
-      box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+      box-shadow: 
+        0 8px 20px rgba(229, 62, 62, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
     }
   }
 }
@@ -509,18 +907,20 @@
 
 .progress-bar {
   width: 100%;
-  height: 8px;
+  height: 10px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 5px;
   overflow: hidden;
   margin-bottom: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #00d4aa, #00b894);
   transition: width 0.3s ease;
-  border-radius: 4px;
+  border-radius: 5px;
+  box-shadow: 0 0 8px rgba(0, 212, 170, 0.4);
 }
 
 .progress-text {
@@ -658,40 +1058,42 @@
   }
   
   .player-seat {
-    width: 100px;
-    height: 120px;
+    width: 120px;
+    height: 140px;
   }
   
   .avatar-circle {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
   }
   
   .player-initial {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
   
   .community-card {
-    width: 40px;
-    height: 56px;
-    font-size: 1rem;
+    width: 50px;
+    height: 70px;
+    font-size: 1.2rem;
   }
 }
 
-/* Cores dos Naipes */
+/* Cores dos Naipes - Melhoradas */
 .red-suit {
-  color: #ff0000 !important;
+  color: #d32f2f !important;
+  text-shadow: 0 1px 2px rgba(211, 47, 47, 0.3);
 }
 
 .black-suit {
   color: #000000 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Aplicar cores aos naipes nas cartas */
 .community-card.red-suit,
 .player-cards.red-suit,
 .cards-text.red-suit {
-  color: #ff0000;
+  color: #d32f2f;
 }
 
 .community-card.black-suit,
@@ -718,7 +1120,7 @@
 .fullscreen-content {
   width: 95vw;
   height: 95vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   border-radius: 20px;
   display: flex;
   flex-direction: column;

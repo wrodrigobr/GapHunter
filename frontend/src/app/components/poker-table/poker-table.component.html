@@ -42,7 +42,10 @@
             *ngFor="let card of currentBoardCards; let i = index"
             [class.new-card]="isNewCard(i)"
           >
-            <span class="card-content">{{ formatCards(card) }}</span>
+            <div class="card-content">
+              <span class="card-rank">{{ getCardRank(card) }}</span>
+              <span class="card-suit" [style.color]="getCardSuitColor(card)">{{ getCardSuitSymbol(card) }}</span>
+            </div>
           </div>
           
           <!-- Cartas vazias para completar o board -->
@@ -59,6 +62,20 @@
       <div class="pot-container">
         <div class="pot-label">POT</div>
         <div class="pot-amount">{{ formatStack(currentPot) }}</div>
+        <div class="pot-breakdown" *ngIf="getPotBreakdown() as breakdown">
+          <div class="breakdown-item" *ngIf="breakdown.blinds > 0">
+            <span class="breakdown-label">Blinds:</span>
+            <span class="breakdown-value">{{ formatStack(breakdown.blinds) }}</span>
+          </div>
+          <div class="breakdown-item" *ngIf="breakdown.antes > 0">
+            <span class="breakdown-label">Antes:</span>
+            <span class="breakdown-value">{{ formatStack(breakdown.antes) }}</span>
+          </div>
+          <div class="breakdown-item" *ngIf="breakdown.bets > 0">
+            <span class="breakdown-label">Apostas:</span>
+            <span class="breakdown-value">{{ formatStack(breakdown.bets) }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Ação Atual -->
@@ -104,7 +121,10 @@
       <!-- Cartas do Jogador -->
       <div class="player-cards-container" *ngIf="shouldShowCards(player)">
         <div [ngClass]="getPlayerCardClass(player)">
-          <span class="cards-text">{{ formatCards(player.cards || '') }}</span>
+          <div class="cards-text">
+            <span class="card-rank">{{ getCardRank(player.cards || '') }}</span>
+            <span class="card-suit" [style.color]="getCardSuitColor(player.cards || '')">{{ getCardSuitSymbol(player.cards || '') }}</span>
+          </div>
         </div>
       </div>
 
@@ -118,6 +138,13 @@
       <!-- Status de Ação -->
       <div class="action-status" *ngIf="player.is_active">
         <div class="action-indicator"></div>
+      </div>
+
+      <!-- Balão de Ação -->
+      <div class="action-bubble" *ngIf="getCurrentAction()?.player === player.name">
+        <div class="bubble-content">
+          <span class="action-text">{{ getActionDescription(getCurrentAction()!) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -140,7 +167,7 @@
         class="control-btn" 
         (click)="previousAction()"
         [disabled]="!canGoPrevious()"
-        title="Ação Anterior"
+        title="Ação Anterior (←)"
       >
         ⏮️ Anterior
       </button>
@@ -149,7 +176,7 @@
         class="control-btn" 
         (click)="nextAction()"
         [disabled]="!canGoNext()"
-        title="Próxima Ação"
+        title="Próxima Ação (→ ou Espaço)"
       >
         Próxima ▶️
       </button>
@@ -158,7 +185,7 @@
         class="control-btn" 
         (click)="previousStreet()"
         [disabled]="!canGoPreviousStreet()"
-        title="Street Anterior"
+        title="Street Anterior (Page Up)"
       >
         ⏪ Street
       </button>
@@ -167,7 +194,7 @@
         class="control-btn" 
         (click)="nextStreet()"
         [disabled]="!canGoNextStreet()"
-        title="Próxima Street"
+        title="Próxima Street (Page Down)"
       >
         Street ⏩
       </button>
@@ -175,9 +202,18 @@
       <button 
         class="control-btn reset" 
         (click)="resetToStart()"
-        title="Reiniciar"
+        title="Reiniciar (Home)"
       >
         🔄 Reiniciar
+      </button>
+      
+      <button 
+        class="control-btn" 
+        (click)="goToEnd()"
+        [disabled]="!canGoNext()"
+        title="Ir para o Final (End)"
+      >
+        ⏭️ Final
       </button>
     </div>
 

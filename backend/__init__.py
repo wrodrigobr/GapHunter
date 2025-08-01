@@ -1,0 +1,1 @@
+# Este arquivo garante que o diretório backend seja reconhecido como um módulo Python 

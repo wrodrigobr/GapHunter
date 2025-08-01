@@ -2,7 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+import sys
 from dotenv import load_dotenv
+
+# Garantir que o path do Python inclua o diretório atual
+current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
 from app.routers import auth, hands, upload_progress, users, gaps, performance, coaching
 from app.routers import subscription as subscription_router

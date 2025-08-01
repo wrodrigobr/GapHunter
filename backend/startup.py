@@ -9,6 +9,10 @@ import sys
 import subprocess
 from dotenv import load_dotenv
 
+# Adicionar o diretório atual ao path do Python para garantir imports corretos
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
+
 def run_command(command, description):
     """Executa um comando e exibe o resultado"""
     print(f"\n🔄 {description}...")
@@ -89,7 +93,7 @@ def main():
             # Configurações simplificadas do Gunicorn para Azure
             gunicorn_cmd = [
                 "gunicorn",
-                "app.main:app",
+                "app:app",  # Usar app.py como entry point
                 "-w", "1",  # 1 worker para evitar problemas de memória
                 "-k", "uvicorn.workers.UvicornWorker",
                 "--bind", "0.0.0.0:8000",
@@ -107,7 +111,7 @@ def main():
             # Fallback para Uvicorn se Gunicorn falhar
             subprocess.run([
                 "uvicorn", 
-                "app.main:app", 
+                "app:app",  # Usar app.py como entry point
                 "--host", "0.0.0.0", 
                 "--port", "8000",
                 "--log-level", "info"
@@ -118,7 +122,7 @@ def main():
         try:
             subprocess.run([
                 "uvicorn", 
-                "app.main:app", 
+                "app:app",  # Usar app.py como entry point
                 "--host", "0.0.0.0", 
                 "--port", "8000", 
                 "--reload"

@@ -80,6 +80,63 @@ export class PokerTableComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initializeTable();
+    this.setupKeyboardShortcuts();
+  }
+
+  ngOnDestroy() {
+    this.removeKeyboardShortcuts();
+  }
+
+  private setupKeyboardShortcuts() {
+    document.addEventListener('keydown', this.handleKeyDown.bind(this));
+  }
+
+  private removeKeyboardShortcuts() {
+    document.removeEventListener('keydown', this.handleKeyDown.bind(this));
+  }
+
+  private handleKeyDown(event: KeyboardEvent) {
+    // Só processar se não estiver em um input ou textarea
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.previousAction();
+        break;
+      case 'ArrowRight':
+      case ' ':
+        event.preventDefault();
+        this.nextAction();
+        break;
+      case 'Home':
+        event.preventDefault();
+        this.resetToStart();
+        break;
+      case 'End':
+        event.preventDefault();
+        this.goToEnd();
+        break;
+      case 'PageUp':
+        event.preventDefault();
+        this.previousStreet();
+        break;
+      case 'PageDown':
+        event.preventDefault();
+        this.nextStreet();
+        break;
+    }
+  }
+
+  goToEnd() {
+    if (!this.handReplay) return;
+    
+    this.currentStreetIndex = this.handReplay.streets.length - 1;
+    const lastStreet = this.handReplay.streets[this.currentStreetIndex];
+    this.currentActionIndex = lastStreet ? lastStreet.actions.length - 1 : 0;
+    this.updateTableState();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -255,6 +312,20 @@ export class PokerTableComponent implements OnInit, OnChanges {
     }
   }
 
+  getPotBreakdown(): { blinds: number, antes: number, bets: number } {
+    if (!this.handReplay) return { blinds: 0, antes: 0, bets: 0 };
+
+    const bets = this.currentPlayers.reduce((total, player) => {
+      return total + (player.current_bet || 0);
+    }, 0);
+
+    const blinds = this.handReplay.blinds.small + this.handReplay.blinds.big;
+    const antes = this.handReplay.blinds.ante > 0 ? 
+      this.handReplay.blinds.ante * this.currentPlayers.length : 0;
+
+    return { blinds, antes, bets };
+  }
+
   getPlayerPosition(seat: number): { x: number, y: number } {
     return this.seatPositions[seat - 1] || { x: 50, y: 50 };
   }
@@ -283,6 +354,32 @@ export class PokerTableComponent implements OnInit, OnChanges {
       
       return rank + suitIcons[suit];
     });
+  }
+
+  getCardRank(card: string): string {
+    if (!card) return '';
+    return card.charAt(0);
+  }
+
+  getCardSuit(card: string): string {
+    if (!card || card.length < 2) return '';
+    return card.charAt(1);
+  }
+
+  getCardSuitSymbol(card: string): string {
+    const suit = this.getCardSuit(card);
+    const suitIcons: { [key: string]: string } = {
+      's': '♠',
+      'h': '♥',
+      'd': '♦',
+      'c': '♣'
+    };
+    return suitIcons[suit] || '';
+  }
+
+  getCardSuitColor(card: string): string {
+    const suit = this.getCardSuit(card);
+    return (suit === 'h' || suit === 'd') ? '#d32f2f' : '#000000';
   }
 
   getCardClass(card: string): string {
