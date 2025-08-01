@@ -57,27 +57,56 @@ def main():
             import pyodbc
             print("🔍 Testando conectividade com SQL Server...")
             
-            # Testar conexão com timeout reduzido
-            import sqlalchemy
-            from sqlalchemy import create_engine
-            
-            # Criar engine com timeout reduzido para teste
-            test_engine = create_engine(
-                database_url,
-                connect_args={
-                    'timeout': 10,  # 10 segundos de timeout
-                    'connect_timeout': 10
+            # Tentar diferentes configurações de conexão
+            connection_configs = [
+                {
+                    'timeout': 30,
+                    'connect_timeout': 30,
+                    'login_timeout': 30
+                },
+                {
+                    'timeout': 60,
+                    'connect_timeout': 60,
+                    'login_timeout': 60
+                },
+                {
+                    'timeout': 120,
+                    'connect_timeout': 120,
+                    'login_timeout': 120
                 }
-            )
+            ]
             
-            # Testar conexão
-            with test_engine.connect() as conn:
-                conn.execute(sqlalchemy.text("SELECT 1"))
-                print("✅ Conexão com SQL Server bem-sucedida")
+            success = False
+            for i, config in enumerate(connection_configs):
+                try:
+                    print(f"🔄 Tentativa {i+1} com timeout {config['timeout']}s...")
+                    
+                    import sqlalchemy
+                    from sqlalchemy import create_engine
+                    
+                    test_engine = create_engine(
+                        database_url,
+                        connect_args=config
+                    )
+                    
+                    with test_engine.connect() as conn:
+                        conn.execute(sqlalchemy.text("SELECT 1"))
+                        print(f"✅ Conexão com SQL Server bem-sucedida (tentativa {i+1})")
+                        success = True
+                        break
+                        
+                except Exception as e:
+                    print(f"❌ Tentativa {i+1} falhou: {str(e)[:100]}...")
+                    continue
+            
+            if not success:
+                print("⚠️  Todas as tentativas de conexão com SQL Server falharam")
+                print("🔄 Usando SQLite como fallback...")
+                os.environ['DATABASE_URL'] = 'sqlite:///./gaphunter.db'
+                database_url = 'sqlite:///./gaphunter.db'
                 
-        except Exception as e:
-            print(f"⚠️  Erro ao conectar com SQL Server: {e}")
-            print("🔄 Usando SQLite como fallback...")
+        except ImportError:
+            print("⚠️  Drivers SQL Server não disponíveis, usando SQLite como fallback...")
             os.environ['DATABASE_URL'] = 'sqlite:///./gaphunter.db'
             database_url = 'sqlite:///./gaphunter.db'
     
