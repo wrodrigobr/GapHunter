@@ -307,6 +307,43 @@ class AdvancedPokerParser:
                 streets.append(current_street)
                 break
             
+            # Extrair antes
+            ante_match = re.search(self.patterns['ante'], line)
+            if ante_match:
+                player_name = ante_match.group(1).strip()
+                ante_amount = int(ante_match.group(2))
+                
+                action = Action(
+                    player=player_name,
+                    action_type='ante',
+                    amount=ante_amount,
+                    total_bet=ante_amount,
+                    street=current_street.name,
+                    timestamp=action_counter
+                )
+                
+                current_street.actions.append(action)
+                action_counter += 1
+            
+            # Extrair blinds
+            blind_match = re.search(self.patterns['blind'], line)
+            if blind_match:
+                player_name = blind_match.group(1).strip()
+                blind_type = blind_match.group(2)  # 'small' ou 'big'
+                blind_amount = int(blind_match.group(3))
+                
+                action = Action(
+                    player=player_name,
+                    action_type=f'{blind_type}_blind',
+                    amount=blind_amount,
+                    total_bet=blind_amount,
+                    street=current_street.name,
+                    timestamp=action_counter
+                )
+                
+                current_street.actions.append(action)
+                action_counter += 1
+            
             # Extrair ações
             action_match = re.search(self.patterns['action'], line)
             if action_match:

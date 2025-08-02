@@ -108,10 +108,22 @@
         </div>
       </div>
 
-      <!-- Aposta Atual -->
-      <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
-        <div class="bet-chips">
-          <span class="bet-amount">{{ formatStack(player.current_bet) }}</span>
+      <!-- Fichas Visuais -->
+      <div class="poker-chips chips-position-{{ player.position }}" *ngIf="shouldShowChips(player)">
+        <div class="chip-stack">
+          <div 
+            *ngFor="let chipType of getPlayerChips(player); let i = index"
+            class="chip-group"
+          >
+            <div 
+              *ngFor="let chip of Array(chipType.count).fill(0); let j = index"
+              class="chip {{ chipType.class }} chip-animate-in"
+              [style.animation-delay.ms]="(i * chipType.count + j) * 100"
+            ></div>
+          </div>
+        </div>
+        <div class="bet-amount">
+          {{ formatStack(player.current_bet) }}
         </div>
       </div>
 
@@ -325,10 +337,22 @@
           </div>
         </div>
 
-        <!-- Aposta Atual -->
-        <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
-          <div class="bet-chips">
-            <span class="bet-amount">{{ formatStack(player.current_bet) }}</span>
+        <!-- Fichas Visuais -->
+        <div class="poker-chips chips-position-{{ player.position }}" *ngIf="shouldShowChips(player)">
+          <div class="chip-stack">
+            <div 
+              *ngFor="let chipType of getPlayerChips(player); let i = index"
+              class="chip-group"
+            >
+              <div 
+                *ngFor="let chip of Array(chipType.count).fill(0); let j = index"
+                class="chip {{ chipType.class }} chip-animate-in"
+                [style.animation-delay.ms]="(i * chipType.count + j) * 100"
+              ></div>
+            </div>
+          </div>
+          <div class="bet-amount">
+            {{ formatStack(player.current_bet) }}
           </div>
         </div>
 

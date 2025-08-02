@@ -111,9 +111,9 @@ export class PokerTableComponent implements OnInit, OnChanges {
       player.is_folded = false;
     });
 
-    // Aplicar blinds se estivermos no preflop
+    // Aplicar blinds e antes se estivermos no preflop
     if (this.currentStreetIndex === 0) {
-      this.applyBlinds();
+      this.applyBlindsAndAntes();
     }
 
     // Aplicar ações até o ponto atual
@@ -126,9 +126,18 @@ export class PokerTableComponent implements OnInit, OnChanges {
     this.updatePot();
   }
 
-  applyBlinds() {
+  applyBlindsAndAntes() {
     if (!this.handReplay) return;
 
+    // Aplicar antes primeiro (se houver)
+    if (this.handReplay.blinds.ante > 0) {
+      this.currentPlayers.forEach(player => {
+        // Antes não aparecem como fichas, vão direto para o pot
+        // player.current_bet += this.handReplay!.blinds.ante;
+      });
+    }
+
+    // Aplicar blinds
     this.currentPlayers.forEach(player => {
       if (player.is_small_blind) {
         player.current_bet = this.handReplay!.blinds.small;
@@ -145,6 +154,13 @@ export class PokerTableComponent implements OnInit, OnChanges {
     for (let streetIndex = 0; streetIndex <= this.currentStreetIndex; streetIndex++) {
       const street = this.handReplay.streets[streetIndex];
       if (!street) continue;
+
+      // Se não é a street atual, limpar apostas no início (simulando fichas indo para o pot)
+      if (streetIndex > 0 && streetIndex !== this.currentStreetIndex) {
+        this.currentPlayers.forEach(player => {
+          player.current_bet = 0;
+        });
+      }
 
       const maxActionIndex = streetIndex === this.currentStreetIndex ? 
         this.currentActionIndex : street.actions.length - 1;
@@ -534,6 +550,74 @@ export class PokerTableComponent implements OnInit, OnChanges {
     };
     
     return positionNames[relativePosition] || `Pos${relativePosition + 1}`;
+  }
+
+  // Métodos para fichas visuais
+  getPlayerChips(player: PlayerInfo): any[] {
+    if (!player.current_bet || player.current_bet <= 0) return [];
+    
+    return this.calculateChipBreakdown(player.current_bet);
+  }
+
+  calculateChipBreakdown(amount: number): any[] {
+    const chipValues = [1000, 500, 100, 50, 25, 10, 5, 1];
+    const chips: any[] = [];
+    let remaining = amount;
+
+    for (const value of chipValues) {
+      const count = Math.floor(remaining / value);
+      if (count > 0) {
+        // Limitar a 5 fichas por valor para não ficar muito alto
+        const stackCount = Math.min(count, 5);
+        chips.push({
+          value: value,
+          count: stackCount,
+          class: `chip-${value}`
+        });
+        remaining -= stackCount * value;
+      }
+    }
+
+    return chips;
+  }
+
+  getChipType(action: PlayerAction): string {
+    switch (action.action) {
+      case 'ante':
+        return 'ante-chip';
+      case 'small_blind':
+      case 'big_blind':
+        return 'blind-chip';
+      default:
+        return this.getChipClassByAmount(action.amount);
+    }
+  }
+
+  getChipClassByAmount(amount: number): string {
+    if (amount >= 1000) return 'chip-1000';
+    if (amount >= 500) return 'chip-500';
+    if (amount >= 100) return 'chip-100';
+    if (amount >= 50) return 'chip-50';
+    if (amount >= 25) return 'chip-25';
+    if (amount >= 10) return 'chip-10';
+    if (amount >= 5) return 'chip-5';
+    return 'chip-1';
+  }
+
+  getBetAmountClass(action: PlayerAction): string {
+    switch (action.action) {
+      case 'ante':
+        return 'ante-amount';
+      case 'small_blind':
+      case 'big_blind':
+        return 'blind-amount';
+      default:
+        return '';
+    }
+  }
+
+  shouldShowChips(player: PlayerInfo): boolean {
+    return player.current_bet && player.current_bet > 0 && !player.is_folded;
   }
 
   // Método para abrir mesa em tela cheia
