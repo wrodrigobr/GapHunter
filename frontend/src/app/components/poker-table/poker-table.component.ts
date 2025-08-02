@@ -65,17 +65,22 @@ export class PokerTableComponent implements OnInit, OnChanges {
   currentStreet: string = 'preflop';
   isFullscreen: boolean = false;
   
+  // Fichas dinâmicas
+  dynamicChips: Array<{x: number, y: number, flying: boolean}> = [];
+  winner: string | null = null;
+  showWinnerAnimation: boolean = false;
+  
   // Posições na mesa (coordenadas para 9 jogadores)
   seatPositions = [
-    { x: 50, y: 85 },   // Seat 1 - Bottom center
-    { x: 15, y: 70 },   // Seat 2 - Bottom left
-    { x: 5, y: 40 },    // Seat 3 - Middle left
-    { x: 15, y: 15 },   // Seat 4 - Top left
-    { x: 50, y: 5 },    // Seat 5 - Top center
-    { x: 85, y: 15 },   // Seat 6 - Top right
-    { x: 95, y: 40 },   // Seat 7 - Middle right
-    { x: 85, y: 70 },   // Seat 8 - Bottom right
-    { x: 65, y: 85 }    // Seat 9 - Bottom right center
+    { x: 50, y: 90 },   // Seat 1 - Bottom center (mais baixo)
+    { x: 20, y: 75 },   // Seat 2 - Bottom left (melhor posicionado)
+    { x: 8, y: 45 },    // Seat 3 - Middle left (mais próximo da borda)
+    { x: 20, y: 12 },   // Seat 4 - Top left (melhor posicionado)
+    { x: 50, y: 2 },    // Seat 5 - Top center (mais alto)
+    { x: 80, y: 12 },   // Seat 6 - Top right (melhor posicionado)
+    { x: 92, y: 45 },   // Seat 7 - Middle right (mais próximo da borda)
+    { x: 80, y: 75 },   // Seat 8 - Bottom right (melhor posicionado)
+    { x: 70, y: 90 }    // Seat 9 - Bottom right center (mais baixo)
   ];
 
   ngOnInit() {
@@ -156,6 +161,11 @@ export class PokerTableComponent implements OnInit, OnChanges {
       is_folded: false
     }));
 
+    // Resetar estado do ganhador
+    this.winner = null;
+    this.showWinnerAnimation = false;
+    this.dynamicChips = [];
+
     this.updateTableState();
   }
 
@@ -174,8 +184,10 @@ export class PokerTableComponent implements OnInit, OnChanges {
       this.applyBlinds();
     }
 
-    // Aplicar ações até o ponto atual
-    this.applyActionsUpToCurrentPoint();
+    // Aplicar ações até o ponto atual (apenas se não for a primeira ação)
+    if (this.currentStreetIndex > 0 || this.currentActionIndex > 0) {
+      this.applyActionsUpToCurrentPoint();
+    }
 
     // Atualizar board cards
     this.updateBoardCards();
@@ -187,13 +199,29 @@ export class PokerTableComponent implements OnInit, OnChanges {
   applyBlinds() {
     if (!this.handReplay) return;
 
+    // Aplicar blinds
     this.currentPlayers.forEach(player => {
       if (player.is_small_blind) {
-        player.current_bet = this.handReplay!.blinds.small;
+        const blindAmount = this.handReplay!.blinds.small;
+        player.current_bet = blindAmount;
+        player.stack = Math.max(0, player.stack - blindAmount);
       } else if (player.is_big_blind) {
-        player.current_bet = this.handReplay!.blinds.big;
+        const blindAmount = this.handReplay!.blinds.big;
+        player.current_bet = blindAmount;
+        player.stack = Math.max(0, player.stack - blindAmount);
       }
     });
+
+    // Aplicar antes para todos os jogadores (antes são pagas por todos)
+    if (this.handReplay.blinds.ante > 0) {
+      this.currentPlayers.forEach(player => {
+        if (!player.current_bet) {
+          player.current_bet = 0;
+        }
+        player.current_bet += this.handReplay!.blinds.ante;
+        player.stack = Math.max(0, player.stack - this.handReplay!.blinds.ante);
+      });
+    }
   }
 
   applyActionsUpToCurrentPoint() {
@@ -223,17 +251,32 @@ export class PokerTableComponent implements OnInit, OnChanges {
     // Marcar jogador como ativo
     player.is_active = true;
 
+    // Adicionar fichas dinâmicas para apostas
+    if (action.action === 'call' || action.action === 'raise' || action.action === 'bet' || action.action === 'all-in') {
+      this.addDynamicChip(action);
+    }
+
     switch (action.action) {
       case 'fold':
         player.is_folded = true;
         player.is_active = false;
         break;
       case 'call':
-        player.current_bet = action.amount;
+        // Calcular quanto o jogador precisa pagar
+        const callAmount = action.amount - (player.current_bet || 0);
+        if (callAmount > 0) {
+          player.stack = Math.max(0, player.stack - callAmount);
+          player.current_bet = action.amount;
+        }
         break;
       case 'raise':
       case 'bet':
-        player.current_bet = action.amount;
+        // Calcular quanto o jogador precisa pagar
+        const betAmount = action.amount - (player.current_bet || 0);
+        if (betAmount > 0) {
+          player.stack = Math.max(0, player.stack - betAmount);
+          player.current_bet = action.amount;
+        }
         break;
       case 'check':
         // Não altera aposta
@@ -243,6 +286,42 @@ export class PokerTableComponent implements OnInit, OnChanges {
         player.stack = 0;
         break;
     }
+  }
+
+  addDynamicChip(action: PlayerAction) {
+    const player = this.currentPlayers.find(p => p.name === action.player);
+    if (!player) return;
+
+    const playerPos = this.getPlayerPosition(player.position);
+    
+    // Calcular posição inicial da ficha (jogador) - ajustado para posicionamento mais preciso
+    const startX = (playerPos.x / 100) * 1200; // Converter % para px (assumindo largura de 1200px)
+    const startY = (playerPos.y / 100) * 600;  // Converter % para px (assumindo altura de 600px)
+    
+    // Posição final (centro do pote - 20% do topo, 50% da esquerda)
+    const endX = 600; // Centro horizontal
+    const endY = 120; // Centro do pote (20% do topo)
+    
+    // Adicionar ficha com animação
+    this.dynamicChips.push({
+      x: startX,
+      y: startY,
+      flying: true
+    });
+
+    // Animar movimento da ficha
+    setTimeout(() => {
+      const chip = this.dynamicChips.find(c => c.x === startX && c.y === startY);
+      if (chip) {
+        chip.x = endX;
+        chip.y = endY;
+      }
+    }, 100);
+
+    // Remover ficha após animação
+    setTimeout(() => {
+      this.dynamicChips = this.dynamicChips.filter(chip => chip.x !== startX || chip.y !== startY);
+    }, 1500);
   }
 
   updateBoardCards() {
@@ -299,29 +378,107 @@ export class PokerTableComponent implements OnInit, OnChanges {
 
   updatePot() {
     if (!this.handReplay) return;
+    const breakdown = this.getPotBreakdown();
+    this.currentPot = breakdown.blinds + breakdown.antes + breakdown.bets;
+    
+    // Verificar se chegamos ao final da mão para determinar o ganhador
+    if (this.isHandComplete()) {
+      this.determineWinner();
+    }
+  }
 
-    // Calcular pot baseado nas apostas atuais
-    this.currentPot = this.currentPlayers.reduce((total, player) => {
-      return total + (player.current_bet || 0);
-    }, 0);
+  isHandComplete(): boolean {
+    if (!this.handReplay) return false;
+    
+    // Verificar se estamos na última street e na última ação
+    const isLastStreet = this.currentStreetIndex === this.handReplay.streets.length - 1;
+    if (!isLastStreet) return false;
+    
+    const lastStreet = this.handReplay.streets[this.currentStreetIndex];
+    const isLastAction = this.currentActionIndex === lastStreet.actions.length - 1;
+    
+    return isLastAction;
+  }
 
-    // Adicionar blinds e ante
-    this.currentPot += this.handReplay.blinds.small + this.handReplay.blinds.big;
-    if (this.handReplay.blinds.ante > 0) {
-      this.currentPot += this.handReplay.blinds.ante * this.currentPlayers.length;
+  determineWinner() {
+    if (!this.handReplay) return;
+    
+    // Lógica simplificada: o último jogador ativo é o ganhador
+    const activePlayers = this.currentPlayers.filter(p => !p.is_folded);
+    
+    if (activePlayers.length === 1) {
+      this.winner = activePlayers[0].name;
+      this.showWinnerAnimation = true;
+      this.distributePotToWinner();
+    } else if (activePlayers.length > 1) {
+      // Em caso de empate, o primeiro jogador ativo é considerado ganhador
+      this.winner = activePlayers[0].name;
+      this.showWinnerAnimation = true;
+      this.distributePotToWinner();
+    }
+  }
+
+  distributePotToWinner() {
+    if (!this.winner) return;
+    
+    const winnerPlayer = this.currentPlayers.find(p => p.name === this.winner);
+    if (winnerPlayer) {
+      // Adicionar o pote ao stack do ganhador
+      winnerPlayer.stack += this.currentPot;
+      
+      // Animar fichas voando para o ganhador
+      this.animatePotToWinner();
+    }
+  }
+
+  animatePotToWinner() {
+    if (!this.winner) return;
+    
+    const winnerPlayer = this.currentPlayers.find(p => p.name === this.winner);
+    if (!winnerPlayer) return;
+    
+    const winnerPos = this.getPlayerPosition(winnerPlayer.position);
+    
+    // Criar múltiplas fichas voando do pote para o ganhador
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        this.dynamicChips.push({
+          x: 600, // Centro do pote
+          y: 120, // Centro do pote
+          flying: true
+        });
+        
+        // Animar movimento para o ganhador
+        setTimeout(() => {
+          const chip = this.dynamicChips[this.dynamicChips.length - 1];
+          if (chip) {
+            chip.x = (winnerPos.x / 100) * 1200;
+            chip.y = (winnerPos.y / 100) * 600;
+          }
+        }, 100);
+        
+        // Remover ficha após animação
+        setTimeout(() => {
+          this.dynamicChips.pop();
+        }, 2000);
+      }, i * 200);
     }
   }
 
   getPotBreakdown(): { blinds: number, antes: number, bets: number } {
     if (!this.handReplay) return { blinds: 0, antes: 0, bets: 0 };
 
+    // Blinds sempre contabilizados
+    const blinds = this.handReplay.blinds.small + this.handReplay.blinds.big;
+    
+    // Antes contabilizadas para todos os jogadores ativos (não foldados)
+    const antes = this.handReplay.blinds.ante > 0 ? 
+      this.handReplay.blinds.ante * this.currentPlayers.filter(p => !p.is_folded).length : 0;
+    
+    // Apostas atuais dos jogadores
     const bets = this.currentPlayers.reduce((total, player) => {
       return total + (player.current_bet || 0);
     }, 0);
-
-    const blinds = this.handReplay.blinds.small + this.handReplay.blinds.big;
-    const antes = this.handReplay.blinds.ante > 0 ? 
-      this.handReplay.blinds.ante * this.currentPlayers.length : 0;
 
     return { blinds, antes, bets };
   }
@@ -399,6 +556,16 @@ export class PokerTableComponent implements OnInit, OnChanges {
       return (stack / 1000).toFixed(1) + 'K';
     }
     return stack.toString();
+  }
+
+  getStackChange(player: PlayerInfo): number {
+    if (!this.handReplay) return 0;
+    
+    // Encontrar o stack inicial do jogador
+    const initialPlayer = this.handReplay.players.find(p => p.name === player.name);
+    if (!initialPlayer) return 0;
+    
+    return player.stack - initialPlayer.stack;
   }
 
   getPlayerCardClass(player: PlayerInfo): string {
@@ -511,6 +678,9 @@ export class PokerTableComponent implements OnInit, OnChanges {
   resetToStart() {
     this.currentStreetIndex = 0;
     this.currentActionIndex = 0;
+    this.winner = null;
+    this.showWinnerAnimation = false;
+    this.dynamicChips = [];
     this.updateTableState();
   }
 

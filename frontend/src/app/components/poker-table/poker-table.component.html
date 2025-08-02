@@ -78,10 +78,47 @@
         </div>
       </div>
 
+      <!-- Fichas Dinâmicas -->
+      <div class="dynamic-chips" *ngFor="let chip of dynamicChips; let i = index">
+        <div class="chip" [class.chip-flying]="chip.flying" [style.left.px]="chip.x" [style.top.px]="chip.y"></div>
+      </div>
+
+      <!-- Fichas de Blind - Posicionadas dinamicamente na frente dos jogadores -->
+      <div 
+        class="blind-chips small-blind" 
+        *ngFor="let player of currentPlayers"
+        *ngIf="player.is_small_blind"
+        [style.left.%]="getPlayerPosition(player.position).x - 5"
+        [style.top.%]="getPlayerPosition(player.position).y + 8"
+      >
+        <div class="blind-chip"></div>
+        <div class="blind-label">SB: {{ formatStack(handReplay.blinds.small) }}</div>
+      </div>
+      <div 
+        class="blind-chips big-blind" 
+        *ngFor="let player of currentPlayers"
+        *ngIf="player.is_big_blind"
+        [style.left.%]="getPlayerPosition(player.position).x - 5"
+        [style.top.%]="getPlayerPosition(player.position).y + 8"
+      >
+        <div class="blind-chip"></div>
+        <div class="blind-label">BB: {{ formatStack(handReplay.blinds.big) }}</div>
+      </div>
+
       <!-- Ação Atual -->
       <div class="current-action" *ngIf="getCurrentAction() as action">
         <div class="action-player">{{ action.player }}</div>
         <div class="action-description">{{ getActionDescription(action) }}</div>
+      </div>
+
+      <!-- Ganhador -->
+      <div class="winner-announcement" *ngIf="showWinnerAnimation && winner">
+        <div class="winner-content">
+          <div class="winner-icon">🏆</div>
+          <div class="winner-name">{{ winner }}</div>
+          <div class="winner-text">GANHOU!</div>
+          <div class="winner-amount">+{{ formatStack(currentPot) }}</div>
+        </div>
       </div>
 
     </div>
