@@ -50,7 +50,8 @@ export interface UploadResponse {
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8000/api';
+  //private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://ghunter-backend-djfcaycjd5eeeahu.brazilsouth-01.azurewebsites.net/api';
 
   constructor(private http: HttpClient) {}
 
