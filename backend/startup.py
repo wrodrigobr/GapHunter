@@ -138,7 +138,7 @@ def main():
             # Configurações simplificadas do Gunicorn para Azure
             gunicorn_cmd = [
                 "gunicorn",
-git status                "app:app",  # Usar app.py como entry point
+                "app:app",  # Usar app.py como entry point
                 "-w", "1",  # 1 worker para evitar problemas de memória
                 "-k", "uvicorn.workers.UvicornWorker",
                 "--bind", "0.0.0.0:8000",
