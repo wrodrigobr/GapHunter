@@ -138,7 +138,7 @@ def main():
             # Configurações simplificadas do Gunicorn para Azure
             gunicorn_cmd = [
                 "gunicorn",
-                "app:app",  # Usar app.py como entry point
+                "backend.app.main:app",  # Usar app.py como entry point
                 "-w", "1",  # 1 worker para evitar problemas de memória
                 "-k", "uvicorn.workers.UvicornWorker",
                 "--bind", "0.0.0.0:8000",
@@ -156,7 +156,7 @@ def main():
             # Fallback para Uvicorn se Gunicorn falhar
             subprocess.run([
                 "uvicorn", 
-                "app:app",  # Usar app.py como entry point
+                "backend.app.main:app",  # Usar app.py como entry point
                 "--host", "0.0.0.0", 
                 "--port", "8000",
                 "--log-level", "info"
@@ -167,7 +167,7 @@ def main():
         try:
             subprocess.run([
                 "uvicorn", 
-                "app:app",  # Usar app.py como entry point
+                "backend.app.main:app",  # Usar app.py como entry point
                 "--host", "0.0.0.0", 
                 "--port", "8000", 
                 "--reload"
