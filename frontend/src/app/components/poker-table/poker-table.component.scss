@@ -96,3 +96,163 @@ app-poker-replayer {
   }
 }
 
+/* Fichas Visuais */
+.poker-chips {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 10;
+  
+  .chip-stack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      position: relative;
+      margin-top: -8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      
+      &:first-child {
+        margin-top: 0;
+      }
+      
+      // Cores das fichas por valor
+      &.chip-1 {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+        border-color: #ccc;
+      }
+      
+      &.chip-5 {
+        background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+        border-color: #c44569;
+      }
+      
+      &.chip-10 {
+        background: linear-gradient(135deg, #3742fa 0%, #2f3542 100%);
+        border-color: #2f3542;
+      }
+      
+      &.chip-25 {
+        background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
+        border-color: #0984e3;
+      }
+      
+      &.chip-50 {
+        background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);
+        border-color: #e17055;
+      }
+      
+      &.chip-100 {
+        background: linear-gradient(135deg, #000000 0%, #2c2c54 100%);
+        border-color: #40407a;
+      }
+      
+      &.chip-500 {
+        background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+        border-color: #6c5ce7;
+      }
+      
+      &.chip-1000 {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border-color: #d35400;
+      }
+      
+      // Padrão para fichas especiais
+      &.ante-chip {
+        background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+        border-color: #2d3436;
+        width: 20px;
+        height: 20px;
+      }
+      
+      &.blind-chip {
+        background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        border-color: #00a085;
+      }
+    }
+  }
+  
+  .bet-amount {
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    &.ante-amount {
+      background: rgba(99, 110, 114, 0.9);
+      font-size: 0.65rem;
+    }
+    
+    &.blind-amount {
+      background: rgba(0, 184, 148, 0.9);
+    }
+  }
+}
+
+/* Posicionamento das fichas por jogador */
+.player-seat {
+  .poker-chips {
+    // Posicionar fichas próximas ao centro da mesa
+    &.chips-position-1 { bottom: -40px; left: 50%; transform: translateX(-50%); }
+    &.chips-position-2 { bottom: -30px; right: -20px; }
+    &.chips-position-3 { top: 50%; right: -40px; transform: translateY(-50%); }
+    &.chips-position-4 { top: -30px; right: -20px; }
+    &.chips-position-5 { top: -40px; left: 50%; transform: translateX(-50%); }
+    &.chips-position-6 { top: -30px; left: -20px; }
+    &.chips-position-7 { top: 50%; left: -40px; transform: translateY(-50%); }
+    &.chips-position-8 { bottom: -30px; left: -20px; }
+    &.chips-position-9 { bottom: -40px; right: 20%; }
+  }
+}
+
+/* Animações para fichas */
+@keyframes chipDrop {
+  0% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(5px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chipToPot {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(0) translateX(0) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+.chip-animate-in {
+  animation: chipDrop 0.5s ease-out;
+}
+
+.chip-animate-to-pot {
+  animation: chipToPot 0.8s ease-in forwards;
+}
+
