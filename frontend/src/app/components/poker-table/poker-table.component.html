@@ -138,9 +138,9 @@
           </div>
         </div>
         <div class="bet-amount">
-          {{ formatStack(player.current_bet) }}
+          {{ formatStack(player.current_bet || 0) }}
         </div>
-      </div>
+      </div> 
 
       <!-- Status de Ação -->
       <div class="action-status" *ngIf="player.is_active">
@@ -364,7 +364,7 @@
             </div>
           </div>
           <div class="bet-amount">
-            {{ formatStack(player.current_bet) }}
+            {{ formatStack(player.current_bet || 0) }}
           </div>
         </div>
 

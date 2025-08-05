@@ -40,6 +40,9 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   winner: string | null = null;
   showWinnerAnimation: boolean = false;
   
+  // Array para uso no template
+  Array = Array;
+  
   // Posições na mesa (coordenadas para 9 jogadores)
   seatPositions = [
     { x: 50, y: 90 },   // Seat 1 - Bottom center (mais baixo)
@@ -933,6 +936,36 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
     const hasCards = Boolean(player.cards && player.cards.length > 0);
     
     return isHero || (!isFolded && hasCards);
+  }
+
+  shouldShowChips(player: PlayerInfo): boolean {
+    return Boolean(player.current_bet && player.current_bet > 0);
+  }
+
+  getPlayerChips(player: PlayerInfo): Array<{count: number, class: string}> {
+    if (!player.current_bet || player.current_bet <= 0) {
+      return [];
+    }
+
+    const chipTypes = [
+      { value: 100, class: 'chip-red' },
+      { value: 25, class: 'chip-green' },
+      { value: 5, class: 'chip-blue' },
+      { value: 1, class: 'chip-white' }
+    ];
+
+    const chips: Array<{count: number, class: string}> = [];
+    let remainingBet = player.current_bet;
+
+    for (const chipType of chipTypes) {
+      if (remainingBet >= chipType.value) {
+        const count = Math.floor(remainingBet / chipType.value);
+        chips.push({ count, class: chipType.class });
+        remainingBet = remainingBet % chipType.value;
+      }
+    }
+
+    return chips;
   }
 
   isNewCard(cardIndex: number): boolean {
