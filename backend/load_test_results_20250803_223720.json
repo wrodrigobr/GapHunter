@@ -1,0 +1,33 @@
+{
+  "file_info": {
+    "file_path": "torneio_ingles.txt",
+    "size_bytes": 636987,
+    "size_mb": 0.607478141784668,
+    "total_lines": 18676,
+    "hand_count": 400,
+    "tournament_count": 400,
+    "player_count": 171,
+    "action_count": 3707,
+    "avg_hands_per_tournament": 1.0,
+    "avg_actions_per_hand": 9.2675
+  },
+  "performance_analysis": {
+    "parsing_duration": 0.08738327026367188,
+    "memory_used_mb": 1.84375,
+    "hands_parsed": 400,
+    "speed_hands_per_second": 4577.535251233247
+  },
+  "issues": [
+    "🃏 Muitas mãos (>100) - processamento pode ser lento"
+  ],
+  "recommendations": [
+    "📦 Implementar upload em chunks para arquivos grandes",
+    "🔄 Adicionar barra de progresso para feedback visual",
+    "⚡ Processar mãos em lotes para melhor performance",
+    "💾 Implementar cache para dados processados",
+    "🛡️ Adicionar validação de dados antes do processamento",
+    "📈 Implementar métricas de performance em tempo real",
+    "🎯 Otimizar regex patterns para parsing mais rápido",
+    "💡 Implementar lazy loading para mãos grandes"
+  ]
+}

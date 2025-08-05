@@ -18,11 +18,11 @@ from app.models.database import engine, Base
 load_dotenv()
 
 # Importar todos os modelos para criação das tabelas
-from app.models import user, hand, gap, tournament, coach
+from app.models import user, hand, hand_action, gap, tournament, coach
 from app.models import subscription as subscription_model
 
-# Criar tabelas do banco de dados
-Base.metadata.create_all(bind=engine)
+# Criar tabelas do banco de dados (comentado temporariamente para desenvolvimento)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="GapHunter API",

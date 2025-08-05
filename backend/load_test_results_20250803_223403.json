@@ -1,0 +1,68 @@
+{
+  "file_info": {
+    "file_path": "torneio_ingles.txt",
+    "size_bytes": 636987,
+    "size_mb": 0.607478141784668,
+    "total_lines": 18675,
+    "hand_count": 400
+  },
+  "upload_tests": [
+    {
+      "chunk_size": null,
+      "duration": 2.1135239601135254,
+      "memory_used_mb": 0.6484375,
+      "status_code": 403,
+      "success": false,
+      "error": "{\"detail\":\"Not authenticated\"}"
+    },
+    {
+      "chunk_size": "concurrent_0",
+      "duration": 2.0532710552215576,
+      "memory_used_mb": 1.28125,
+      "status_code": 400,
+      "success": false,
+      "error": "{\"detail\":\"Missing boundary in multipart.\"}"
+    },
+    {
+      "chunk_size": "concurrent_1",
+      "duration": 2.0757200717926025,
+      "memory_used_mb": 0.05078125,
+      "status_code": 400,
+      "success": false,
+      "error": "{\"detail\":\"Missing boundary in multipart.\"}"
+    }
+  ],
+  "performance_metrics": {
+    "avg_duration": 0,
+    "avg_memory": 0,
+    "success_rate": 0.0
+  },
+  "errors": [],
+  "recommendations": [
+    "🔧 Otimizar parser de hand history",
+    "📊 Implementar métricas de performance em tempo real",
+    "🛡️ Adicionar validação de dados antes do processamento"
+  ],
+  "concurrent_test": {
+    "num_concurrent": 2,
+    "total_duration": 2.1048994064331055,
+    "results": [
+      {
+        "chunk_size": "concurrent_0",
+        "duration": 2.0532710552215576,
+        "memory_used_mb": 1.28125,
+        "status_code": 400,
+        "success": false,
+        "error": "{\"detail\":\"Missing boundary in multipart.\"}"
+      },
+      {
+        "chunk_size": "concurrent_1",
+        "duration": 2.0757200717926025,
+        "memory_used_mb": 0.05078125,
+        "status_code": 400,
+        "success": false,
+        "error": "{\"detail\":\"Missing boundary in multipart.\"}"
+      }
+    ]
+  }
+}

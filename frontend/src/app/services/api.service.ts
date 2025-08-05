@@ -20,6 +20,15 @@ export interface Hand {
   pot_size?: number;
   bet_amount?: number;
   board_cards?: string;
+  actions?: Array<{
+    id: number;
+    street: string;
+    player_name: string;
+    action_type: string;
+    amount: number;
+    total_bet: number;
+    action_order: number;
+  }>;
 }
 
 export interface UserStats {
@@ -118,15 +127,15 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
-  // Obter dados de replay da mão
-  getHandReplay(handId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/hands/replay/${handId}`)
+  // Obter dados de replay da mão (on-demand)
+  getHandReplay(handId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hands/${handId}/replay`)
       .pipe(catchError(this.handleError));
   }
 
   // Analisar ação específica
-  analyzeSpecificAction(handId: number, actionData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/hands/replay/${handId}/analyze-action`, actionData)
+  analyzeSpecificAction(handId: string, actionData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/hands/${handId}/analyze-action`, actionData)
       .pipe(catchError(this.handleError));
   }
 

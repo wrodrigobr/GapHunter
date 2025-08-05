@@ -1,0 +1,1142 @@
+=== MÃO 1 ===
+PokerStars Hand #257045862415: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level V (40/80) - 2025/07/22 10:10:49 ET
+Table '3910307458 12' 9-max Seat #3 is the button
+Seat 1: jojosetubal (7835 in chips)
+Seat 2: Kaptahh (8377 in chips)
+Seat 3: Andrew Willian (1789 in chips)
+Seat 4: Maks19111979 (2900 in chips)
+Seat 5: SuKKinho (4058 in chips)
+Seat 6: petretudor (636 in chips)
+Seat 7: varen1k322 (2804 in chips)
+Seat 8: Cyan Diogenes (9040 in chips)
+Seat 9: phpro (3000 in chips)
+jojosetubal: posts the ante 10
+Kaptahh: posts the ante 10
+Andrew Willian: posts the ante 10
+Maks19111979: posts the ante 10
+SuKKinho: posts the ante 10
+petretudor: posts the ante 10
+varen1k322: posts the ante 10
+Cyan Diogenes: posts the ante 10
+phpro: posts the ante 10
+Maks19111979: posts small blind 40
+SuKKinho: posts big blind 80
+*** HOLE CARDS ***
+Dealt to phpro [9d Qc]
+petretudor: raises 546 to 626 and is all-in
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: folds
+jojosetubal: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+Uncalled bet (546) returned to petretudor
+petretudor collected 290 from pot
+petretudor: doesn't show hand
+*** SUMMARY ***
+Total pot 290 | Rake 0
+Seat 1: jojosetubal folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian (button) folded before Flop (didn't bet)
+Seat 4: Maks19111979 (small blind) folded before Flop
+Seat 5: SuKKinho (big blind) folded before Flop
+Seat 6: petretudor collected (290)
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 2 **************
+
+=== MÃO 2 ===
+PokerStars Hand #257045867083: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level V (40/80) - 2025/07/22 10:11:21 ET
+Table '3910307458 12' 9-max Seat #4 is the button
+Seat 1: jojosetubal (7825 in chips)
+Seat 2: Kaptahh (8367 in chips)
+Seat 3: Andrew Willian (1779 in chips)
+Seat 4: Maks19111979 (2850 in chips)
+Seat 5: SuKKinho (3968 in chips)
+Seat 7: varen1k322 (2794 in chips)
+Seat 8: Cyan Diogenes (9030 in chips)
+Seat 9: phpro (2990 in chips)
+jojosetubal: posts the ante 10
+Kaptahh: posts the ante 10
+Andrew Willian: posts the ante 10
+Maks19111979: posts the ante 10
+SuKKinho: posts the ante 10
+varen1k322: posts the ante 10
+Cyan Diogenes: posts the ante 10
+phpro: posts the ante 10
+SuKKinho: posts small blind 40
+varen1k322: posts big blind 80
+*** HOLE CARDS ***
+Dealt to phpro [9d 7c]
+Cyan Diogenes: folds
+phpro: folds
+jojosetubal: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: raises 80 to 160
+SuKKinho: folds
+varen1k322: calls 80
+*** FLOP *** [Ts 2c 9c]
+varen1k322: checks
+martelli1990 is disconnected
+Maks19111979: checks
+*** TURN *** [Ts 2c 9c] [Jc]
+varen1k322: bets 225
+Maks19111979: folds
+Uncalled bet (225) returned to varen1k322
+varen1k322 collected 440 from pot
+*** SUMMARY ***
+Total pot 440 | Rake 0
+Board [Ts 2c 9c Jc]
+Seat 1: jojosetubal folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 (button) folded on the Turn
+Seat 5: SuKKinho (small blind) folded before Flop
+Seat 7: varen1k322 (big blind) collected (440)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 3 **************
+
+=== MÃO 3 ===
+PokerStars Hand #257045873643: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:12:06 ET
+Table '3910307458 12' 9-max Seat #5 is the button
+Seat 1: jojosetubal (7815 in chips)
+Seat 2: Kaptahh (8357 in chips)
+Seat 3: Andrew Willian (1769 in chips)
+Seat 4: Maks19111979 (2680 in chips)
+Seat 5: SuKKinho (3918 in chips)
+Seat 6: martelli1990 (3000 in chips) out of hand (moved from another table into small blind)
+Seat 7: varen1k322 (3064 in chips)
+Seat 8: Cyan Diogenes (9020 in chips)
+Seat 9: phpro (2980 in chips)
+martelli1990 will be allowed to play after the button
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+varen1k322: posts small blind 50
+Cyan Diogenes: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [Td Kd]
+phpro: folds
+jojosetubal: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: raises 100 to 200
+SuKKinho: folds
+varen1k322: folds
+Cyan Diogenes: calls 100
+*** FLOP *** [3c 5h Jh]
+Cyan Diogenes: checks
+Maks19111979: bets 280
+Cyan Diogenes: calls 280
+*** TURN *** [3c 5h Jh] [8s]
+Cyan Diogenes: checks
+Maks19111979: bets 465
+Cyan Diogenes: folds
+Uncalled bet (465) returned to Maks19111979
+Maks19111979 collected 1106 from pot
+Maks19111979: doesn't show hand
+*** SUMMARY ***
+Total pot 1106 | Rake 0
+Board [3c 5h Jh 8s]
+Seat 1: jojosetubal folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 collected (1106)
+Seat 5: SuKKinho (button) folded before Flop (didn't bet)
+Seat 7: varen1k322 (small blind) folded before Flop
+Seat 8: Cyan Diogenes (big blind) folded on the Turn
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 4 **************
+
+=== MÃO 4 ===
+PokerStars Hand #257045883935: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:13:18 ET
+Table '3910307458 12' 9-max Seat #7 is the button
+Seat 1: jojosetubal (7803 in chips)
+Seat 2: Kaptahh (8345 in chips)
+Seat 3: Andrew Willian (1757 in chips)
+Seat 4: Maks19111979 (3294 in chips)
+Seat 5: SuKKinho (3906 in chips)
+Seat 6: martelli1990 (3000 in chips)
+Seat 7: varen1k322 (3002 in chips)
+Seat 8: Cyan Diogenes (8528 in chips)
+Seat 9: phpro (2968 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+Cyan Diogenes: posts small blind 50
+phpro: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [4c 5c]
+jojosetubal: raises 100 to 200
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: calls 200
+SuKKinho: folds
+martelli1990: folds
+varen1k322: folds
+Cyan Diogenes: raises 700 to 900
+phpro: folds
+jojosetubal: calls 700
+Maks19111979: calls 700
+*** FLOP *** [2d Td Kd]
+Cyan Diogenes: checks
+jojosetubal: checks
+Maks19111979: bets 960
+Cyan Diogenes: folds
+jojosetubal: calls 960
+*** TURN *** [2d Td Kd] [Jc]
+jojosetubal: checks
+Maks19111979: bets 1422 and is all-in
+jojosetubal: calls 1422
+*** RIVER *** [2d Td Kd Jc] [3c]
+*** SHOW DOWN ***
+jojosetubal: shows [Qc Ad] (a straight, Ten to Ace)
+Maks19111979: shows [As Qd] (a straight, Ten to Ace)
+jojosetubal collected 3836 from pot
+Maks19111979 collected 3836 from pot
+*** SUMMARY ***
+Total pot 7672 | Rake 0
+Board [2d Td Kd Jc 3c]
+Seat 1: jojosetubal showed [Qc Ad] and won (3836) with a straight, Ten to Ace
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 showed [As Qd] and won (3836) with a straight, Ten to Ace
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 folded before Flop (didn't bet)
+Seat 7: varen1k322 (button) folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes (small blind) folded on the Flop
+Seat 9: phpro (big blind) folded before Flop
+*********** # 5 **************
+
+=== MÃO 5 ===
+PokerStars Hand #257045898300: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:14:57 ET
+Table '3910307458 12' 9-max Seat #8 is the button
+Seat 1: jojosetubal (8345 in chips)
+Seat 2: Kaptahh (8333 in chips)
+Seat 3: Andrew Willian (1745 in chips)
+Seat 4: Maks19111979 (3836 in chips)
+Seat 5: SuKKinho (3894 in chips)
+Seat 6: martelli1990 (2988 in chips)
+Seat 7: varen1k322 (2990 in chips)
+Seat 8: Cyan Diogenes (7616 in chips)
+Seat 9: phpro (2856 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+phpro: posts small blind 50
+jojosetubal: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [3h 4c]
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: raises 100 to 200
+martelli1990: folds
+varen1k322: folds
+Cyan Diogenes: calls 200
+phpro: folds
+jojosetubal: folds
+*** FLOP *** [Qs Td 2d]
+SuKKinho: bets 349
+Cyan Diogenes: calls 349
+*** TURN *** [Qs Td 2d] [Ah]
+SuKKinho: checks
+Cyan Diogenes: bets 600
+SuKKinho: raises 2733 to 3333 and is all-in
+Cyan Diogenes: folds
+Uncalled bet (2733) returned to SuKKinho
+SuKKinho collected 2556 from pot
+*** SUMMARY ***
+Total pot 2556 | Rake 0
+Board [Qs Td 2d Ah]
+Seat 1: jojosetubal (big blind) folded before Flop
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho collected (2556)
+Seat 6: martelli1990 folded before Flop (didn't bet)
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes (button) folded on the Turn
+Seat 9: phpro (small blind) folded before Flop
+*********** # 6 **************
+
+=== MÃO 6 ===
+PokerStars Hand #257045912047: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:16:27 ET
+Table '3910307458 12' 9-max Seat #9 is the button
+Seat 1: jojosetubal (8233 in chips)
+Seat 2: Kaptahh (8321 in chips)
+Seat 3: Andrew Willian (1733 in chips)
+Seat 4: Maks19111979 (3824 in chips)
+Seat 5: SuKKinho (5289 in chips)
+Seat 6: martelli1990 (2976 in chips)
+Seat 7: varen1k322 (2978 in chips)
+Seat 8: Cyan Diogenes (6455 in chips)
+Seat 9: phpro (2794 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+jojosetubal: posts small blind 50
+Kaptahh: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [3d 7h]
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+martelli1990: raises 100 to 200
+varen1k322: calls 200
+Cyan Diogenes: folds
+phpro: folds
+jojosetubal: folds
+Kaptahh: folds
+*** FLOP *** [4s 6s Qh]
+martelli1990: bets 217
+varen1k322: folds
+Uncalled bet (217) returned to martelli1990
+martelli1990 collected 658 from pot
+martelli1990: doesn't show hand
+*** SUMMARY ***
+Total pot 658 | Rake 0
+Board [4s 6s Qh]
+Seat 1: jojosetubal (small blind) folded before Flop
+Seat 2: Kaptahh (big blind) folded before Flop
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 collected (658)
+Seat 7: varen1k322 folded on the Flop
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro (button) folded before Flop (didn't bet)
+*********** # 7 **************
+
+=== MÃO 7 ===
+PokerStars Hand #257045919085: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:17:13 ET
+Table '3910307458 12' 9-max Seat #1 is the button
+Seat 1: jojosetubal (8171 in chips)
+Seat 2: Kaptahh (8209 in chips)
+Seat 3: Andrew Willian (1721 in chips)
+Seat 4: Maks19111979 (3812 in chips)
+Seat 5: SuKKinho (5277 in chips)
+Seat 6: martelli1990 (3422 in chips)
+Seat 7: varen1k322 (2766 in chips)
+Seat 8: Cyan Diogenes (6443 in chips)
+Seat 9: phpro (2782 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+Kaptahh: posts small blind 50
+Andrew Willian: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [8s 8h]
+Maks19111979: raises 100 to 200
+SuKKinho: folds
+martelli1990: folds
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: calls 200
+jojosetubal: calls 200
+Kaptahh: folds
+Andrew Willian: calls 100
+*** FLOP *** [7s 6s 2c]
+Andrew Willian: checks
+Maks19111979: checks
+phpro: bets 316
+jojosetubal: calls 316
+Andrew Willian: folds
+Maks19111979: calls 316
+*** TURN *** [7s 6s 2c] [Jd]
+Maks19111979: checks
+phpro: checks
+jojosetubal: checks
+*** RIVER *** [7s 6s 2c Jd] [Ac]
+Maks19111979: checks
+phpro: checks
+jojosetubal: checks
+*** SHOW DOWN ***
+Maks19111979: shows [9h As] (a pair of Aces)
+phpro: mucks hand
+jojosetubal: mucks hand
+Maks19111979 collected 1906 from pot
+*** SUMMARY ***
+Total pot 1906 | Rake 0
+Board [7s 6s 2c Jd Ac]
+Seat 1: jojosetubal (button) mucked [Qc 6c]
+Seat 2: Kaptahh (small blind) folded before Flop
+Seat 3: Andrew Willian (big blind) folded on the Flop
+Seat 4: Maks19111979 showed [9h As] and won (1906) with a pair of Aces
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 folded before Flop (didn't bet)
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro mucked [8s 8h]
+*********** # 8 **************
+
+=== MÃO 8 ===
+PokerStars Hand #257045933884: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:18:49 ET
+Table '3910307458 12' 9-max Seat #2 is the button
+Seat 1: jojosetubal (7643 in chips)
+Seat 2: Kaptahh (8147 in chips)
+Seat 3: Andrew Willian (1509 in chips)
+Seat 4: Maks19111979 (5190 in chips)
+Seat 5: SuKKinho (5265 in chips)
+Seat 6: martelli1990 (3410 in chips)
+Seat 7: varen1k322 (2754 in chips)
+Seat 8: Cyan Diogenes (6431 in chips)
+Seat 9: phpro (2254 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+Andrew Willian: posts small blind 50
+Maks19111979: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [Jd Qs]
+SuKKinho: folds
+martelli1990: folds
+varen1k322: raises 100 to 200
+Cyan Diogenes: folds
+phpro: folds
+jojosetubal: calls 200
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+*** FLOP *** [Ks Qd Jh]
+varen1k322: checks
+jojosetubal: checks
+*** TURN *** [Ks Qd Jh] [6h]
+varen1k322: bets 329
+jojosetubal: folds
+Uncalled bet (329) returned to varen1k322
+varen1k322 collected 658 from pot
+*** SUMMARY ***
+Total pot 658 | Rake 0
+Board [Ks Qd Jh 6h]
+Seat 1: jojosetubal folded on the Turn
+Seat 2: Kaptahh (button) folded before Flop (didn't bet)
+Seat 3: Andrew Willian (small blind) folded before Flop
+Seat 4: Maks19111979 (big blind) folded before Flop
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 folded before Flop (didn't bet)
+Seat 7: varen1k322 collected (658)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 9 **************
+
+=== MÃO 9 ===
+PokerStars Hand #257045940964: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:19:35 ET
+Table '3910307458 12' 9-max Seat #3 is the button
+Seat 1: jojosetubal (7431 in chips)
+Seat 2: Kaptahh (8135 in chips)
+Seat 3: Andrew Willian (1447 in chips)
+Seat 4: Maks19111979 (5078 in chips)
+Seat 5: SuKKinho (5253 in chips)
+Seat 6: martelli1990 (3398 in chips)
+Seat 7: varen1k322 (3200 in chips)
+Seat 8: Cyan Diogenes (6419 in chips)
+Seat 9: phpro (2242 in chips)
+jojosetubal: posts the ante 12
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+Maks19111979: posts small blind 50
+SuKKinho: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [Qs Kd]
+martelli1990: raises 100 to 200
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: calls 200
+jojosetubal: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: raises 630 to 830
+martelli1990: calls 630
+phpro: folds
+*** FLOP *** [5d 6h Ad]
+SuKKinho: checks
+martelli1990: bets 666
+SuKKinho: raises 3745 to 4411 and is all-in
+martelli1990: folds
+Uncalled bet (3745) returned to SuKKinho
+SuKKinho collected 3350 from pot
+*** SUMMARY ***
+Total pot 3350 | Rake 0
+Board [5d 6h Ad]
+Seat 1: jojosetubal folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian (button) folded before Flop (didn't bet)
+Seat 4: Maks19111979 (small blind) folded before Flop
+Seat 5: SuKKinho (big blind) collected (3350)
+Seat 6: martelli1990 folded on the Flop
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop
+*********** # 10 **************
+
+=== MÃO 10 ===
+PokerStars Hand #257045958227: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VI (50/100) - 2025/07/22 10:21:26 ET
+Table '3910307458 12' 9-max Seat #4 is the button
+Seat 2: Kaptahh (8123 in chips)
+Seat 3: Andrew Willian (1435 in chips)
+Seat 4: Maks19111979 (5016 in chips)
+Seat 5: SuKKinho (7095 in chips)
+Seat 6: martelli1990 (1890 in chips)
+Seat 7: varen1k322 (3188 in chips)
+Seat 8: Cyan Diogenes (6407 in chips)
+Seat 9: phpro (2030 in chips)
+Kaptahh: posts the ante 12
+Andrew Willian: posts the ante 12
+Maks19111979: posts the ante 12
+SuKKinho: posts the ante 12
+martelli1990: posts the ante 12
+varen1k322: posts the ante 12
+Cyan Diogenes: posts the ante 12
+phpro: posts the ante 12
+SuKKinho: posts small blind 50
+martelli1990: posts big blind 100
+*** HOLE CARDS ***
+Dealt to phpro [4s Td]
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: folds
+Kaptahh: folds
+Andrew Willian: raises 1323 to 1423 and is all-in
+Maks19111979: calls 1423
+SuKKinho: folds
+martelli1990: folds
+*** FLOP *** [Kd 6c 7d]
+*** TURN *** [Kd 6c 7d] [2d]
+*** RIVER *** [Kd 6c 7d 2d] [Jh]
+*** SHOW DOWN ***
+Andrew Willian: shows [Qd Js] (a pair of Jacks)
+Maks19111979: shows [Th As] (high card Ace)
+Andrew Willian collected 3092 from pot
+Zahard23 is disconnected
+*** SUMMARY ***
+Total pot 3092 | Rake 0
+Board [Kd 6c 7d 2d Jh]
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian showed [Qd Js] and won (3092) with a pair of Jacks
+Seat 4: Maks19111979 (button) showed [Th As] and lost with high card Ace
+Seat 5: SuKKinho (small blind) folded before Flop
+Seat 6: martelli1990 (big blind) folded before Flop
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 11 **************
+
+=== MÃO 11 ===
+PokerStars Hand #257045965983: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:22:17 ET
+Table '3910307458 12' 9-max Seat #5 is the button
+Seat 1: Zahard23 (3000 in chips)
+Seat 2: Kaptahh (8111 in chips)
+Seat 3: Andrew Willian (3092 in chips)
+Seat 4: Maks19111979 (3581 in chips)
+Seat 5: SuKKinho (7033 in chips)
+Seat 6: martelli1990 (1778 in chips)
+Seat 7: varen1k322 (3176 in chips)
+Seat 8: Cyan Diogenes (6395 in chips)
+Seat 9: phpro (2018 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+martelli1990: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts the ante 15
+martelli1990: posts small blind 60
+varen1k322: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [As Jh]
+Cyan Diogenes: folds
+phpro: raises 120 to 240
+Zahard23: raises 120 to 360
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+martelli1990: folds
+varen1k322: folds
+phpro: calls 120
+*** FLOP *** [Qs 2h 9s]
+phpro: checks
+Zahard23: checks
+*** TURN *** [Qs 2h 9s] [9h]
+phpro: checks
+Zahard23: bets 240
+phpro: raises 240 to 480
+Zahard23: calls 240
+*** RIVER *** [Qs 2h 9s 9h] [5s]
+phpro: bets 658
+Zahard23: calls 658
+*** SHOW DOWN ***
+phpro: shows [As Jh] (a pair of Nines)
+Zahard23: shows [2c Ac] (two pair, Nines and Deuces)
+Zahard23 collected 3311 from pot
+*** SUMMARY ***
+Total pot 3311 | Rake 0
+Board [Qs 2h 9s 9h 5s]
+Seat 1: Zahard23 showed [2c Ac] and won (3311) with two pair, Nines and Deuces
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho (button) folded before Flop (didn't bet)
+Seat 6: martelli1990 (small blind) folded before Flop
+Seat 7: varen1k322 (big blind) folded before Flop
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro showed [As Jh] and lost with a pair of Nines
+*********** # 12 **************
+
+=== MÃO 12 ===
+PokerStars Hand #257045975775: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:23:20 ET
+Table '3910307458 12' 9-max Seat #6 is the button
+Seat 1: Zahard23 (4798 in chips)
+Seat 2: Kaptahh (8096 in chips)
+Seat 3: Andrew Willian (3077 in chips)
+Seat 4: Maks19111979 (3566 in chips)
+Seat 5: SuKKinho (7018 in chips)
+Seat 6: martelli1990 (1703 in chips)
+Seat 7: varen1k322 (3041 in chips)
+Seat 8: Cyan Diogenes (6380 in chips)
+Seat 9: phpro (505 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+martelli1990: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts the ante 15
+varen1k322: posts small blind 60
+Cyan Diogenes: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [As 8d]
+phpro: folds
+Zahard23: calls 120
+Kaptahh: folds
+Andrew Willian: raises 300 to 420
+Maks19111979: folds
+SuKKinho: folds
+martelli1990: folds
+varen1k322: calls 360
+Cyan Diogenes: folds
+Zahard23: calls 300
+*** FLOP *** [6h Tc 4c]
+varen1k322: checks
+Zahard23: checks
+Andrew Willian: checks
+*** TURN *** [6h Tc 4c] [7d]
+varen1k322: checks
+Zahard23: checks
+Andrew Willian: checks
+*** RIVER *** [6h Tc 4c 7d] [9h]
+varen1k322: checks
+Zahard23: checks
+Andrew Willian: checks
+*** SHOW DOWN ***
+varen1k322: shows [Qs 9s] (a pair of Nines)
+Zahard23: mucks hand
+Andrew Willian: mucks hand
+varen1k322 collected 1515 from pot
+*** SUMMARY ***
+Total pot 1515 | Rake 0
+Board [6h Tc 4c 7d 9h]
+Seat 1: Zahard23 mucked [5h 2d]
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian mucked [Kd Jc]
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 (button) folded before Flop (didn't bet)
+Seat 7: varen1k322 (small blind) showed [Qs 9s] and won (1515) with a pair of Nines
+Seat 8: Cyan Diogenes (big blind) folded before Flop
+Seat 9: phpro folded before Flop (didn't bet)
+*********** # 13 **************
+
+=== MÃO 13 ===
+PokerStars Hand #257045989172: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:24:47 ET
+Table '3910307458 12' 9-max Seat #7 is the button
+Seat 1: Zahard23 (4363 in chips)
+Seat 2: Kaptahh (8081 in chips)
+Seat 3: Andrew Willian (2642 in chips)
+Seat 4: Maks19111979 (3551 in chips)
+Seat 5: SuKKinho (7003 in chips)
+Seat 6: martelli1990 (1688 in chips)
+Seat 7: varen1k322 (4121 in chips)
+Seat 8: Cyan Diogenes (6245 in chips)
+Seat 9: phpro (490 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+martelli1990: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts the ante 15
+Cyan Diogenes: posts small blind 60
+phpro: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [8h Kd]
+Zahard23: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+martelli1990: raises 120 to 240
+varen1k322: raises 360 to 600
+Cyan Diogenes: calls 540
+phpro: folds
+martelli1990: calls 360
+*** FLOP *** [Js 9c 8s]
+Cyan Diogenes: checks
+martelli1990: checks
+varen1k322: checks
+*** TURN *** [Js 9c 8s] [Qs]
+Cyan Diogenes: checks
+martelli1990: bets 1073 and is all-in
+varen1k322: calls 1073
+Cyan Diogenes: folds
+*** RIVER *** [Js 9c 8s Qs] [Tc]
+*** SHOW DOWN ***
+martelli1990: shows [Qh 7h] (a straight, Eight to Queen)
+varen1k322: shows [Kh As] (a straight, Ten to Ace)
+varen1k322 collected 4201 from pot
+martelli1990 finished the tournament in 205th place
+*** SUMMARY ***
+Total pot 4201 | Rake 0
+Board [Js 9c 8s Qs Tc]
+Seat 1: Zahard23 folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: martelli1990 showed [Qh 7h] and lost with a straight, Eight to Queen
+Seat 7: varen1k322 (button) showed [Kh As] and won (4201) with a straight, Ten to Ace
+Seat 8: Cyan Diogenes (small blind) folded on the Turn
+Seat 9: phpro (big blind) folded before Flop
+*********** # 14 **************
+
+=== MÃO 14 ===
+PokerStars Hand #257045999912: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:25:57 ET
+Table '3910307458 12' 9-max Seat #8 is the button
+Seat 1: Zahard23 (4348 in chips)
+Seat 2: Kaptahh (8066 in chips)
+Seat 3: Andrew Willian (2627 in chips)
+Seat 4: Maks19111979 (3536 in chips)
+Seat 5: SuKKinho (6988 in chips)
+Seat 7: varen1k322 (6634 in chips)
+Seat 8: Cyan Diogenes (5630 in chips)
+Seat 9: phpro (355 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts the ante 15
+phpro: posts small blind 60
+Zahard23: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [9h 6s]
+Kaptahh: folds
+Andrew Willian: raises 120 to 240
+Maks19111979: folds
+SuKKinho: calls 240
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: folds
+Zahard23: folds
+*** FLOP *** [4c 8s Th]
+Andrew Willian: checks
+SuKKinho: bets 179
+Andrew Willian: calls 179
+*** TURN *** [4c 8s Th] [Td]
+Andrew Willian: checks
+SuKKinho: checks
+*** RIVER *** [4c 8s Th Td] [Qd]
+Andrew Willian: checks
+SuKKinho: checks
+*** SHOW DOWN ***
+Andrew Willian: shows [As Ks] (a pair of Tens)
+SuKKinho: shows [Qh Kd] (two pair, Queens and Tens)
+SuKKinho collected 1138 from pot
+*** SUMMARY ***
+Total pot 1138 | Rake 0
+Board [4c 8s Th Td Qd]
+Seat 1: Zahard23 (big blind) folded before Flop
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian showed [As Ks] and lost with a pair of Tens
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho showed [Qh Kd] and won (1138) with two pair, Queens and Tens
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes (button) folded before Flop (didn't bet)
+Seat 9: phpro (small blind) folded before Flop
+*********** # 15 **************
+
+=== MÃO 15 ===
+PokerStars Hand #257046008859: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:26:55 ET
+Table '3910307458 12' 9-max Seat #9 is the button
+Seat 1: Zahard23 (4213 in chips)
+Seat 2: Kaptahh (8051 in chips)
+Seat 3: Andrew Willian (2193 in chips)
+Seat 4: Maks19111979 (3521 in chips)
+Seat 5: SuKKinho (7692 in chips)
+Seat 7: varen1k322 (6619 in chips)
+Seat 8: Cyan Diogenes (5615 in chips)
+Seat 9: phpro (280 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts the ante 15
+Zahard23: posts small blind 60
+Kaptahh: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [3d 8h]
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+varen1k322: folds
+Cyan Diogenes: folds
+phpro: raises 120 to 240
+Zahard23: raises 120 to 360
+Kaptahh: folds
+phpro: calls 25 and is all-in
+Uncalled bet (95) returned to Zahard23
+*** FLOP *** [4h Ah 9d]
+*** TURN *** [4h Ah 9d] [7s]
+*** RIVER *** [4h Ah 9d 7s] [Td]
+*** SHOW DOWN ***
+Zahard23: shows [Th Ac] (two pair, Aces and Tens)
+phpro: shows [3d 8h] (high card Ace)
+Zahard23 collected 770 from pot
+phpro finished the tournament in 199th place
+*** SUMMARY ***
+Total pot 770 | Rake 0
+Board [4h Ah 9d 7s Td]
+Seat 1: Zahard23 (small blind) showed [Th Ac] and won (770) with two pair, Aces and Tens
+Seat 2: Kaptahh (big blind) folded before Flop
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro (button) showed [3d 8h] and lost with high card Ace
+*********** # 16 **************
+
+=== MÃO 16 ===
+PokerStars Hand #257046025443: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:28:44 ET
+Table '3910307458 12' 9-max Seat #2 is the button
+Seat 1: Zahard23 (4688 in chips)
+Seat 2: Kaptahh (7841 in chips)
+Seat 3: Andrew Willian (1083 in chips)
+Seat 4: Maks19111979 (3491 in chips)
+Seat 5: SuKKinho (7662 in chips)
+Seat 6: phpro (3000 in chips)
+Seat 7: varen1k322 (6589 in chips)
+Seat 8: Cyan Diogenes (6830 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+phpro: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+Andrew Willian: posts small blind 60
+Maks19111979: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [7d 3d]
+SuKKinho: raises 144 to 264
+phpro: folds
+varen1k322: calls 264
+Cyan Diogenes: calls 264
+Zahard23: calls 264
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+*** FLOP *** [4d Qd Jd]
+SuKKinho: checks
+varen1k322: checks
+Cyan Diogenes: checks
+Zahard23: bets 240
+SuKKinho: calls 240
+varen1k322: calls 240
+Cyan Diogenes: calls 240
+*** TURN *** [4d Qd Jd] [8h]
+SuKKinho: checks
+varen1k322: checks
+Cyan Diogenes: checks
+Zahard23: bets 1560
+SuKKinho: folds
+varen1k322: folds
+Cyan Diogenes: folds
+Uncalled bet (1560) returned to Zahard23
+Zahard23 collected 2316 from pot
+Zahard23: doesn't show hand
+*** SUMMARY ***
+Total pot 2316 | Rake 0
+Board [4d Qd Jd 8h]
+Seat 1: Zahard23 collected (2316)
+Seat 2: Kaptahh (button) folded before Flop (didn't bet)
+Seat 3: Andrew Willian (small blind) folded before Flop
+Seat 4: Maks19111979 (big blind) folded before Flop
+Seat 5: SuKKinho folded on the Turn
+Seat 6: phpro folded before Flop (didn't bet)
+Seat 7: varen1k322 folded on the Turn
+Seat 8: Cyan Diogenes folded on the Turn
+*********** # 17 **************
+
+=== MÃO 17 ===
+PokerStars Hand #257046040965: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:30:25 ET
+Table '3910307458 12' 9-max Seat #3 is the button
+Seat 1: Zahard23 (6485 in chips)
+Seat 2: Kaptahh (7826 in chips)
+Seat 3: Andrew Willian (1008 in chips)
+Seat 4: Maks19111979 (3356 in chips)
+Seat 5: SuKKinho (7143 in chips)
+Seat 6: phpro (2985 in chips)
+Seat 7: varen1k322 (6070 in chips)
+Seat 8: Cyan Diogenes (6311 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+phpro: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+Maks19111979: posts small blind 60
+SuKKinho: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [2c As]
+phpro: folds
+varen1k322: folds
+Cyan Diogenes: folds
+Zahard23: folds
+Kaptahh: folds
+Andrew Willian: raises 873 to 993 and is all-in
+Maks19111979: folds
+SuKKinho: folds
+Uncalled bet (873) returned to Andrew Willian
+Andrew Willian collected 420 from pot
+*** SUMMARY ***
+Total pot 420 | Rake 0
+Seat 1: Zahard23 folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian (button) collected (420)
+Seat 4: Maks19111979 (small blind) folded before Flop
+Seat 5: SuKKinho (big blind) folded before Flop
+Seat 6: phpro folded before Flop (didn't bet)
+Seat 7: varen1k322 folded before Flop (didn't bet)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+*********** # 18 **************
+
+=== MÃO 18 ===
+PokerStars Hand #257046046366: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:31:00 ET
+Table '3910307458 12' 9-max Seat #4 is the button
+Seat 1: Zahard23 (6470 in chips)
+Seat 2: Kaptahh (7811 in chips)
+Seat 3: Andrew Willian (1293 in chips)
+Seat 4: Maks19111979 (3281 in chips)
+Seat 5: SuKKinho (7008 in chips)
+Seat 6: phpro (2970 in chips)
+Seat 7: varen1k322 (6055 in chips)
+Seat 8: Cyan Diogenes (6296 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+phpro: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+SuKKinho: posts small blind 60
+phpro: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [5d 8s]
+varen1k322: raises 156 to 276
+Cyan Diogenes: folds
+Zahard23: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: folds
+phpro: folds
+Uncalled bet (156) returned to varen1k322
+varen1k322 collected 420 from pot
+*** SUMMARY ***
+Total pot 420 | Rake 0
+Seat 1: Zahard23 folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 (button) folded before Flop (didn't bet)
+Seat 5: SuKKinho (small blind) folded before Flop
+Seat 6: phpro (big blind) folded before Flop
+Seat 7: varen1k322 collected (420)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+*********** # 19 **************
+
+=== MÃO 19 ===
+PokerStars Hand #257046050855: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VII (60/120) - 2025/07/22 10:31:29 ET
+Table '3910307458 12' 9-max Seat #5 is the button
+Seat 1: Zahard23 (6455 in chips)
+Seat 2: Kaptahh (7796 in chips)
+Seat 3: Andrew Willian (1278 in chips)
+Seat 4: Maks19111979 (3266 in chips)
+Seat 5: SuKKinho (6933 in chips)
+Seat 6: phpro (2835 in chips)
+Seat 7: varen1k322 (6340 in chips)
+Seat 8: Cyan Diogenes (6281 in chips)
+Zahard23: posts the ante 15
+Kaptahh: posts the ante 15
+Andrew Willian: posts the ante 15
+Maks19111979: posts the ante 15
+SuKKinho: posts the ante 15
+phpro: posts the ante 15
+varen1k322: posts the ante 15
+Cyan Diogenes: posts the ante 15
+phpro: posts small blind 60
+varen1k322: posts big blind 120
+*** HOLE CARDS ***
+Dealt to phpro [3d 4s]
+Cyan Diogenes: folds
+Zahard23: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: folds
+SuKKinho: raises 120 to 240
+phpro: folds
+varen1k322: calls 120
+*** FLOP *** [6c 2h Th]
+varen1k322: checks
+SuKKinho: bets 218
+varen1k322: calls 218
+*** TURN *** [6c 2h Th] [9s]
+varen1k322: checks
+SuKKinho: bets 422
+varen1k322: calls 422
+*** RIVER *** [6c 2h Th 9s] [8h]
+varen1k322: bets 1940
+SuKKinho: calls 1940
+*** SHOW DOWN ***
+varen1k322: shows [Ks 7h] (a straight, Six to Ten)
+SuKKinho: shows [7d Ad] (a straight, Six to Ten)
+varen1k322 collected 2910 from pot
+SuKKinho collected 2910 from pot
+*** SUMMARY ***
+Total pot 5820 | Rake 0
+Board [6c 2h Th 9s 8h]
+Seat 1: Zahard23 folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho (button) showed [7d Ad] and won (2910) with a straight, Six to Ten
+Seat 6: phpro (small blind) folded before Flop
+Seat 7: varen1k322 (big blind) showed [Ks 7h] and won (2910) with a straight, Six to Ten
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+*********** # 20 **************
+
+=== MÃO 20 ===
+PokerStars Hand #257046057865: Tournament #3910307458, $0.98+$0.12 USD Hold'em No Limit - Level VIII (75/150) - 2025/07/22 10:32:14 ET
+Table '3910307458 12' 9-max Seat #6 is the button
+Seat 1: Zahard23 (6440 in chips)
+Seat 2: Kaptahh (7781 in chips)
+Seat 3: Andrew Willian (1263 in chips)
+Seat 4: Maks19111979 (3251 in chips)
+Seat 5: SuKKinho (7008 in chips)
+Seat 6: phpro (2760 in chips)
+Seat 7: varen1k322 (6415 in chips)
+Seat 8: Cyan Diogenes (6266 in chips)
+Zahard23: posts the ante 20
+Kaptahh: posts the ante 20
+Andrew Willian: posts the ante 20
+Maks19111979: posts the ante 20
+SuKKinho: posts the ante 20
+phpro: posts the ante 20
+varen1k322: posts the ante 20
+Cyan Diogenes: posts the ante 20
+varen1k322: posts small blind 75
+Cyan Diogenes: posts big blind 150
+*** HOLE CARDS ***
+Dealt to phpro [9d 5d]
+Zahard23: raises 300 to 450
+Kaptahh: folds
+Andrew Willian: raises 793 to 1243 and is all-in
+Maks19111979: folds
+SuKKinho: folds
+phpro: folds
+varen1k322: folds
+Cyan Diogenes: folds
+Zahard23: calls 793
+*** FLOP *** [2c 9c 9s]
+*** TURN *** [2c 9c 9s] [2h]
+*** RIVER *** [2c 9c 9s 2h] [Ac]
+*** SHOW DOWN ***
+Zahard23: shows [Td Ks] (two pair, Nines and Deuces)
+Andrew Willian: shows [5c 5s] (two pair, Nines and Fives)
+Andrew Willian collected 2871 from pot
+*** SUMMARY ***
+Total pot 2871 | Rake 0
+Board [2c 9c 9s 2h Ac]
+Seat 1: Zahard23 showed [Td Ks] and lost with two pair, Nines and Deuces
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian showed [5c 5s] and won (2871) with two pair, Nines and Fives
+Seat 4: Maks19111979 folded before Flop (didn't bet)
+Seat 5: SuKKinho folded before Flop (didn't bet)
+Seat 6: phpro (button) folded before Flop (didn't bet)
+Seat 7: varen1k322 (small blind) folded before Flop
+Seat 8: Cyan Diogenes (big blind) folded before Flop
+*********** # 21 **************
+

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean
 from sqlalchemy.sql import func
 from app.models.database import Base
+from sqlalchemy.orm import relationship
 
 class Tournament(Base):
     __tablename__ = "tournaments"
@@ -23,10 +24,9 @@ class Tournament(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # RELACIONAMENTOS REMOVIDOS TEMPORARIAMENTE PARA CORRIGIR ERRO 500
-    # Serão reativados após correção dos relacionamentos
-    # user = relationship("User", back_populates="tournaments")
-    # hands = relationship("Hand", back_populates="tournament")
+    # Relacionamentos simples
+    user = relationship("User")
+    hands = relationship("Hand", back_populates="tournament")
 
 class PerformanceStats(Base):
     __tablename__ = "performance_stats"

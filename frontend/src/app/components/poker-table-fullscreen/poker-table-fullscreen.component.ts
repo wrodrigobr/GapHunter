@@ -56,6 +56,9 @@ interface HandReplay {
   styleUrls: ['./poker-table-fullscreen.component.scss']
 })
 export class PokerTableFullscreenComponent implements OnInit {
+  // Expor Math para uso no template
+  Math = Math;
+  
   handReplay: HandReplay | null = null;
   currentStreetIndex: number = 0;
   currentActionIndex: number = 0;
@@ -64,17 +67,17 @@ export class PokerTableFullscreenComponent implements OnInit {
   currentPot: number = 0;
   currentStreet: string = 'preflop';
 
-  // Posições dos assentos na mesa (em porcentagem)
+  // Posições dos assentos na mesa (em porcentagem) - Ajustadas para limite da mesa
   seatPositions = [
-    { x: 50, y: 85 },  // Seat 1 - Bottom
-    { x: 20, y: 70 },  // Seat 2 - Bottom Left
-    { x: 10, y: 40 },  // Seat 3 - Left
-    { x: 20, y: 15 },  // Seat 4 - Top Left
-    { x: 50, y: 5 },   // Seat 5 - Top
-    { x: 80, y: 15 },  // Seat 6 - Top Right
-    { x: 90, y: 40 },  // Seat 7 - Right
-    { x: 80, y: 70 },  // Seat 8 - Bottom Right
-    { x: 65, y: 85 }   // Seat 9 - Bottom Right
+    { x: 50, y: 88 },  // Seat 1 - Bottom (mais próximo da borda)
+    { x: 18, y: 75 },  // Seat 2 - Bottom Left (no limite)
+    { x: 8, y: 45 },   // Seat 3 - Left (no limite)
+    { x: 18, y: 12 },  // Seat 4 - Top Left (no limite)
+    { x: 50, y: 2 },   // Seat 5 - Top (mais próximo da borda)
+    { x: 82, y: 12 },  // Seat 6 - Top Right (no limite)
+    { x: 92, y: 45 },  // Seat 7 - Right (no limite)
+    { x: 82, y: 75 },  // Seat 8 - Bottom Right (no limite)
+    { x: 68, y: 88 }   // Seat 9 - Bottom Right (mais próximo da borda)
   ];
 
   constructor(private route: ActivatedRoute) {}
@@ -282,7 +285,56 @@ export class PokerTableFullscreenComponent implements OnInit {
 
   // Métodos auxiliares
   getPlayerPosition(seat: number): { x: number, y: number } {
-    return this.seatPositions[seat - 1] || { x: 50, y: 50 };
+    return this.seatPositions[seat] || { x: 50, y: 50 };
+  }
+
+  /**
+   * Gera fichas visuais baseadas no valor da aposta
+   */
+  generateChips(betAmount: number): Array<{color: string, value: number, count: number}> {
+    const chips: Array<{color: string, value: number, count: number}> = [];
+    
+    // Valores padrão de fichas
+    const chipValues = [
+      { value: 1000, color: '#8B0000' }, // Vermelho escuro
+      { value: 500, color: '#FF0000' },  // Vermelho
+      { value: 100, color: '#0000FF' },  // Azul
+      { value: 25, color: '#008000' },   // Verde
+      { value: 5, color: '#FFD700' },    // Dourado
+      { value: 1, color: '#FFFFFF' }     // Branco
+    ];
+    
+    let remainingAmount = betAmount;
+    
+    for (const chip of chipValues) {
+      if (remainingAmount >= chip.value) {
+        const count = Math.floor(remainingAmount / chip.value);
+        chips.push({
+          color: chip.color,
+          value: chip.value,
+          count: count
+        });
+        remainingAmount -= count * chip.value;
+      }
+    }
+    
+    return chips;
+  }
+
+  /**
+   * Obtém cor da ficha baseada no valor
+   */
+  getChipColor(value: number): string {
+    const chipColors: {[key: number]: string} = {
+      1: '#FFFFFF',    // Branco
+      5: '#FFD700',    // Dourado
+      25: '#008000',   // Verde
+      100: '#0000FF',  // Azul
+      500: '#FF0000',  // Vermelho
+      1000: '#8B0000'  // Vermelho escuro
+    };
+    
+    return chipColors[value] || '#CCCCCC';
   }
 
   formatCards(cards: string): string {

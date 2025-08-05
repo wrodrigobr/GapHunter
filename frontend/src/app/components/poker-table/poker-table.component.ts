@@ -1,63 +1,33 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface PlayerInfo {
-  name: string;
-  position: number;  // Mudado de string para number
-  stack: number;
-  cards?: string;    // Tornado opcional
-  is_hero: boolean;
-  is_button: boolean;
-  is_small_blind: boolean;
-  is_big_blind: boolean;
-  current_bet?: number;
-  is_active?: boolean;
-  is_folded?: boolean;
-}
-
-interface PlayerAction {
-  player: string;     // Mudado de player_name para player
-  action: string;     // Mudado de action_type para action
-  amount: number;
-  total_bet: number;  // Adicionado
-  timestamp: number;  // Adicionado
-}
-
-interface GameStreet {
-  name: string;
-  cards: string[];    // Mudado de board_cards string para cards array
-  actions: PlayerAction[];
-}
-
-interface HandReplay {
-  hand_id: string;
-  tournament_id: string;
-  table_name: string;
-  level: string;      // Adicionado
-  blinds: {           // Mudado de campos separados para objeto
-    small: number;
-    big: number;
-    ante: number;
-  };
-  players: PlayerInfo[];
-  streets: GameStreet[];
-  hero_name: string;
-  hero_cards: string[];  // Mudado de string para array
-  local_analysis?: string;
-}
+import { FormsModule } from '@angular/forms';
+import { POKERSTARS_CONFIG, CLASSIC_CONFIG, MODERN_CONFIG, PokerTableConfig, PokerTableUtils, POKERSTARS_ELEMENTS, OPEN_SOURCE_ELEMENTS } from './poker-stars-config';
+import { RiropoParserService, RiropoHand } from '../../services/riropo-parser.service';
+import { PokerReplayerComponent } from '../poker-replayer/poker-replayer.component';
+import { HandReplay, PlayerInfo, PlayerAction, GameStreet } from '../../models/hand-replay.model';
 
 @Component({
   selector: 'app-poker-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, PokerReplayerComponent],
   templateUrl: './poker-table.component.html',
   styleUrls: ['./poker-table.component.scss']
 })
-export class PokerTableComponent implements OnInit, OnChanges {
+export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() handReplay: HandReplay | null = null;
   @Input() currentStreetIndex: number = 0;
   @Input() currentActionIndex: number = 0;
 
+  // Configuração da mesa
+  tableConfig: PokerTableConfig = POKERSTARS_CONFIG;
+  
+  // Elementos open source para uso no template
+  readonly openSourceElements = OPEN_SOURCE_ELEMENTS;
+  
+  // RIROPO Replayer properties
+  handHistoryText: string = '';
+  showReplayer: boolean = false;
+  
   // Estado atual da mesa
   currentPlayers: PlayerInfo[] = [];
   currentBoardCards: string[] = [];
@@ -86,10 +56,252 @@ export class PokerTableComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.initializeTable();
     this.setupKeyboardShortcuts();
+    this.applyPokerStarsTheme();
+  }
+
+  /**
+   * Load hand history into RIROPO replayer
+   */
+  loadHandHistory(): void {
+    if (this.handHistoryText.trim()) {
+      this.showReplayer = true;
+    }
+  }
+
+  /**
+   * Load hand from database and convert to RIROPO format
+   */
+  loadHandFromDatabase(): void {
+    if (this.handReplay) {
+      console.log('📊 Convertendo dados para formato RIROPO...');
+      const riropoHandText = this.convertHandReplayToRiropoFormat(this.handReplay);
+      this.handHistoryText = riropoHandText;
+      this.showReplayer = true;
+      console.log('✅ Mesa RIROPO carregada com sucesso!');
+      console.log('📝 Hand history convertido:', riropoHandText.substring(0, 200) + '...');
+    } else {
+      console.log('❌ Nenhum handReplay disponível para carregar');
+    }
+  }
+
+  /**
+   * Convert HandReplay from database to RIROPO format
+   */
+  private convertHandReplayToRiropoFormat(handReplay: HandReplay): string {
+    console.log('🔍 DEBUG: Convertendo HandReplay para formato RIROPO...');
+    console.log('📊 DEBUG: HandReplay original:', handReplay);
+    
+    let riropoText = '';
+    
+    // Header - formato exato do PokerStars
+    riropoText += `PokerStars Hand #${handReplay.hand_id}: Hold'em No Limit ($${handReplay.blinds.small}/${handReplay.blinds.big})\n`;
+    riropoText += `Table '${handReplay.table_name}' ${handReplay.level}\n`;
+    
+    // Encontrar button
+    const buttonPlayer = handReplay.players.find(p => p.is_button);
+    console.log('🔍 DEBUG: Button player encontrado:', buttonPlayer);
+    riropoText += `Seat #${buttonPlayer?.position || 1} is the button\n`;
+    
+    // Players - formato exato
+    handReplay.players.forEach((player, index) => {
+      console.log(`🔍 DEBUG: Player ${index + 1} - ${player.name}:`);
+      console.log(`  - Position: ${player.position}`);
+      console.log(`  - is_button: ${player.is_button}`);
+      console.log(`  - is_small_blind: ${player.is_small_blind}`);
+      console.log(`  - is_big_blind: ${player.is_big_blind}`);
+      console.log(`  - is_hero: ${player.is_hero}`);
+      
+      // Adicionar informações de blind diretamente no texto do jogador
+      let playerText = `Seat ${player.position}: ${player.name} ($${player.stack} in chips)`;
+      
+      if (player.is_button) {
+        playerText += ' [BTN]';
+      }
+      if (player.is_small_blind) {
+        playerText += ' [SB]';
+      }
+      if (player.is_big_blind) {
+        playerText += ' [BB]';
+      }
+      
+      riropoText += playerText + '\n';
+    });
+    
+    // Blinds - formato exato
+    const sbPlayer = handReplay.players.find(p => p.is_small_blind);
+    const bbPlayer = handReplay.players.find(p => p.is_big_blind);
+    console.log('🔍 DEBUG: Small blind player:', sbPlayer);
+    console.log('🔍 DEBUG: Big blind player:', bbPlayer);
+    
+    if (sbPlayer) {
+      riropoText += `${sbPlayer.name}: posts small blind $${handReplay.blinds.small}\n`;
+    }
+    if (bbPlayer) {
+      riropoText += `${bbPlayer.name}: posts big blind $${handReplay.blinds.big}\n`;
+    }
+    
+    // Hole cards
+    riropoText += '\n*** HOLE CARDS ***\n';
+    const heroPlayer = handReplay.players.find(p => p.is_hero);
+    if (heroPlayer && handReplay.hero_cards && handReplay.hero_cards.length > 0) {
+      riropoText += `Dealt to ${heroPlayer.name} [${handReplay.hero_cards.join(' ')}]\n`;
+    }
+    
+    // Streets and actions
+    handReplay.streets.forEach(street => {
+      console.log(`🔍 DEBUG: Processando street: ${street.name}`);
+      console.log(`🔍 DEBUG: Cartas da street:`, street.cards);
+      
+      riropoText += `\n*** ${street.name.toUpperCase()} ***\n`;
+      
+      // Board cards - formato correto
+      if (street.cards && street.cards.length > 0) {
+        console.log(`🔍 DEBUG: Board cards for ${street.name}:`, street.cards);
+        riropoText += `[${street.cards.join(' ')}]\n`;
+      } else {
+        console.log(`⚠️  DEBUG: No board cards for ${street.name}`);
+      }
+      
+      // Actions - formato exato
+      street.actions.forEach(action => {
+        let actionText = `${action.player}: `;
+        switch (action.action.toLowerCase()) {
+          case 'fold':
+            actionText += 'folds';
+            break;
+          case 'check':
+            actionText += 'checks';
+            break;
+          case 'call':
+            actionText += `calls $${action.amount}`;
+            break;
+          case 'bet':
+            actionText += `bets $${action.amount}`;
+            break;
+          case 'raise':
+            actionText += `raises $${action.amount} to $${action.total_bet}`;
+            break;
+          case 'all-in':
+            actionText += `all-in $${action.amount}`;
+            break;
+          default:
+            actionText += action.action;
+        }
+        riropoText += actionText + '\n';
+      });
+    });
+    
+    // Summary - formato exato
+    riropoText += '\n*** SUMMARY ***\n';
+    const totalPot = this.calculateTotalPot(handReplay);
+    riropoText += `Total pot $${totalPot} | Rake $0\n`;
+    
+    // Board final
+    const allBoardCards = handReplay.streets.flatMap(s => s.cards);
+    if (allBoardCards.length > 0) {
+      riropoText += `Board [${allBoardCards.join(' ')}]\n`;
+    }
+    
+    // Player summaries
+    handReplay.players.forEach(player => {
+      let summary = `Seat ${player.position}: ${player.name}`;
+      
+      if (player.is_button) {
+        summary += ' (button)';
+      } else if (player.is_small_blind) {
+        summary += ' (small blind)';
+      } else if (player.is_big_blind) {
+        summary += ' (big blind)';
+      }
+      
+      // Determinar resultado
+      const lastAction = this.getLastActionForPlayer(player.name, handReplay.streets);
+      if (lastAction && lastAction.street) {
+        if (lastAction.action.toLowerCase() === 'fold') {
+          summary += ` folded on the ${this.getStreetName(lastAction.street)}`;
+        } else if (lastAction.action.toLowerCase() === 'call' || lastAction.action.toLowerCase() === 'check') {
+          summary += ` showed and won ($${totalPot})`;
+        }
+      } else {
+        summary += ' folded before Flop';
+      }
+      
+      riropoText += summary + '\n';
+    });
+    
+    return riropoText;
+  }
+
+  /**
+   * Get last action for a specific player
+   */
+  private getLastActionForPlayer(playerName: string, streets: GameStreet[]): PlayerAction | null {
+    for (let i = streets.length - 1; i >= 0; i--) {
+      const street = streets[i];
+      for (let j = street.actions.length - 1; j >= 0; j--) {
+        const action = street.actions[j];
+        if (action.player === playerName) {
+          // Adicionar a propriedade street se não existir
+          if (!action.street) {
+            action.street = street.name;
+          }
+          return action;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get street name for summary
+   */
+  private getStreetName(street: string): string {
+    switch (street.toLowerCase()) {
+      case 'preflop': return 'Preflop';
+      case 'flop': return 'Flop';
+      case 'turn': return 'Turn';
+      case 'river': return 'River';
+      default: return street;
+    }
+  }
+
+  /**
+   * Calculate total pot from all streets
+   */
+  private calculateTotalPot(handReplay: HandReplay): number {
+    let total = handReplay.blinds.small + handReplay.blinds.big;
+    if (handReplay.blinds.ante) {
+      total += handReplay.blinds.ante;
+    }
+    
+    handReplay.streets.forEach(street => {
+      street.actions.forEach(action => {
+        if (action.amount > 0) {
+          total += action.amount;
+        }
+      });
+    });
+    
+    return total;
+  }
+
+  /**
+   * Handle hand completion from RIROPO replayer
+   */
+  onHandComplete(hand: RiropoHand): void {
+    console.log('Hand completed:', hand);
+    // You can add additional logic here when hand replay is complete
   }
 
   ngOnDestroy() {
     this.removeKeyboardShortcuts();
+  }
+
+  /**
+   * Aplica tema do PokerStars
+   */
+  private applyPokerStarsTheme(): void {
+    PokerTableUtils.applyTheme(this.tableConfig);
   }
 
   private setupKeyboardShortcuts() {
@@ -147,6 +359,12 @@ export class PokerTableComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['handReplay'] || changes['currentStreetIndex'] || changes['currentActionIndex']) {
       this.updateTableState();
+      
+      // Se há dados do handReplay, automaticamente carregar a mesa RIROPO
+      if (changes['handReplay'] && this.handReplay) {
+        console.log('🔄 Carregando mesa RIROPO automaticamente...');
+        this.loadHandFromDatabase();
+      }
     }
   }
 
@@ -186,7 +404,7 @@ export class PokerTableComponent implements OnInit, OnChanges {
 
     // Aplicar ações até o ponto atual (apenas se não for a primeira ação)
     if (this.currentStreetIndex > 0 || this.currentActionIndex > 0) {
-      this.applyActionsUpToCurrentPoint();
+    this.applyActionsUpToCurrentPoint();
     }
 
     // Atualizar board cards
@@ -266,7 +484,7 @@ export class PokerTableComponent implements OnInit, OnChanges {
         const callAmount = action.amount - (player.current_bet || 0);
         if (callAmount > 0) {
           player.stack = Math.max(0, player.stack - callAmount);
-          player.current_bet = action.amount;
+        player.current_bet = action.amount;
         }
         break;
       case 'raise':
@@ -275,7 +493,7 @@ export class PokerTableComponent implements OnInit, OnChanges {
         const betAmount = action.amount - (player.current_bet || 0);
         if (betAmount > 0) {
           player.stack = Math.max(0, player.stack - betAmount);
-          player.current_bet = action.amount;
+        player.current_bet = action.amount;
         }
         break;
       case 'check':
@@ -483,8 +701,12 @@ export class PokerTableComponent implements OnInit, OnChanges {
     return { blinds, antes, bets };
   }
 
+  /**
+   * Obtém posição do jogador usando configuração
+   */
   getPlayerPosition(seat: number): { x: number, y: number } {
-    return this.seatPositions[seat - 1] || { x: 50, y: 50 };
+    const position = PokerTableUtils.getPlayerPosition(seat, this.tableConfig);
+    return { x: position.x, y: position.y };
   }
 
   getPlayerPositionName(playerNameOrSeat: string | number): any {
@@ -498,18 +720,14 @@ export class PokerTableComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Formata cartas usando configuração do PokerStars
+   */
   formatCards(cards: string): string {
     if (!cards) return '';
     
     return cards.replace(/([AKQJT98765432])([shdc])/g, (match, rank, suit) => {
-      const suitIcons: { [key: string]: string } = {
-        's': '♠',
-        'h': '♥',
-        'd': '♦',
-        'c': '♣'
-      };
-      
-      return rank + suitIcons[suit];
+      return PokerTableUtils.formatCard(match, this.tableConfig.cardStyle);
     });
   }
 
@@ -802,6 +1020,46 @@ export class PokerTableComponent implements OnInit, OnChanges {
     };
     
     return positionNames[relativePosition] || `Pos${relativePosition + 1}`;
+  }
+
+  /**
+   * Obtém cor da ficha baseada no valor
+   */
+  getChipColor(value: number): string {
+    return PokerTableUtils.getChipColor(value);
+  }
+
+  /**
+   * Reproduz efeito sonoro
+   */
+  playSound(soundType: string): void {
+    if (this.tableConfig.animations.cardFlip) {
+      PokerTableUtils.playSound(soundType, this.tableConfig);
+    }
+  }
+
+  /**
+   * Muda o tema da mesa
+   */
+  changeTheme(event: Event): void {
+    const theme = (event.target as HTMLSelectElement).value;
+    
+    switch (theme) {
+      case 'pokerstars':
+        this.tableConfig = POKERSTARS_CONFIG;
+        break;
+      case 'classic':
+        this.tableConfig = CLASSIC_CONFIG;
+        break;
+      case 'modern':
+        this.tableConfig = MODERN_CONFIG;
+        break;
+      case 'dark':
+        this.tableConfig = { ...POKERSTARS_CONFIG, theme: 'dark', tableColor: '#1a1a1a' };
+        break;
+    }
+    
+    this.applyPokerStarsTheme();
   }
 
   // Método para abrir mesa em tela cheia

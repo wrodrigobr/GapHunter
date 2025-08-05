@@ -28,6 +28,7 @@ class Action:
     total_bet: float = 0.0  # Total apostado na street
     street: str = 'preflop'  # 'preflop', 'flop', 'turn', 'river'
     timestamp: int = 0  # Ordem sequencial da ação
+    cards: str = "" # Adicionado para armazenar cartas do showdown
 
 @dataclass
 class Street:
@@ -78,43 +79,43 @@ class AdvancedPokerParser:
     """Parser avançado para extrair todas as informações da mão"""
     
     def __init__(self):
-        # Padrões regex para extração
+        # Padrões regex para extração em inglês
         self.patterns = {
-            'hand_header': r'Mão PokerStars #(\d+): Torneio #(\d+), .+ - Nível ([IVX]+) \((\d+)/(\d+)\) - (.+)',
-            'table_info': r"Mesa '([^']+)' (\d+)-max Lugar #(\d+) é o botão",
-            'player_seat': r'Lugar (\d+): ([^(]+) \((\d+) em fichas\)',
-            'ante': r'([^:]+): coloca ante (\d+)',
-            'blind': r'([^:]+): paga o (small|big) blind (\d+)',
-            'hero_cards': r'([^:]+) recebe \[([^\]]+)\]',
-            'action': r'([^:]+): (desiste|passa|iguala|aumenta|aposta|está all-in)(?:\s+(\d+))?(?:\s+para\s+(\d+))?',
+            'hand_header': r'PokerStars Hand #(\d+): Tournament #(\d+), .+ - Level ([IVX]+) \((\d+)/(\d+)\) - (.+)',
+            'table_info': r"Table '([^']+)' (\d+)-max Seat #(\d+) is the button",
+            'player_seat': r'Seat (\d+): ([^(]+) \((\d+) in chips\)',
+            'ante': r'([^:]+): posts the ante (\d+)',
+            'blind': r'([^:]+): posts (small|big) blind (\d+)',
+            'hero_cards': r'Dealt to ([^[]+) \[([^\]]+)\]',
+            'action': r'([^:]+): (folds|calls|raises|bets|checks|all-in)(?:\s+(\d+))?(?:\s+to\s+(\d+))?',
             'flop': r'\*\*\* FLOP \*\*\* \[([^\]]+)\]',
             'turn': r'\*\*\* TURN \*\*\* \[([^\]]+)\] \[([^\]]+)\]',
             'river': r'\*\*\* RIVER \*\*\* \[([^\]]+)\] \[([^\]]+)\]',
-            'showdown': r'([^:]+): mostra \[([^\]]+)\] e (ganhou|perdeu)',
-            'pot_summary': r'Total pote (\d+)',
+            'showdown': r'([^:]+): shows \[([^\]]+)\]',
+            'pot_summary': r'Total pot (\d+)',
         }
         
-        # Mapeamento de ações em português
+        # Mapeamento de ações em inglês
         self.action_mapping = {
-            'desiste': 'fold',
-            'passa': 'check',
-            'iguala': 'call',
-            'aumenta': 'raise',
-            'aposta': 'bet',
-            'está all-in': 'all-in'
+            'folds': 'fold',
+            'checks': 'check',
+            'calls': 'call',
+            'raises': 'raise',
+            'bets': 'bet',
+            'all-in': 'all-in'
         }
         
-        # Posições relativas ao botão
-        self.position_names = {
-            0: 'BTN',    # Botão
-            1: 'SB',     # Small Blind
-            2: 'BB',     # Big Blind
-            3: 'UTG',    # Under The Gun
-            4: 'UTG+1',  # UTG+1
-            5: 'MP',     # Middle Position
-            6: 'MP+1',   # Middle Position+1
-            7: 'CO',     # Cut-off
-            8: 'HJ'      # Hijack
+        # Mapeamento de posições
+        self.position_mapping = {
+            1: 'UTG',   # Under the Gun
+            2: 'UTG+1', # Under the Gun +1
+            3: 'MP',    # Middle Position
+            4: 'MP+1',  # Middle Position +1
+            5: 'CO',    # Cutoff
+            6: 'BTN',   # Button
+            7: 'SB',    # Small Blind
+            8: 'BB',    # Big Blind
+            9: 'BB'     # Big Blind (9-max)
         }
     
     def parse_hand_for_replay(self, hand_text: str) -> Optional[HandReplay]:
@@ -175,6 +176,14 @@ class AdvancedPokerParser:
             if match:
                 hand_id, tournament_id, level, small_blind, big_blind, date_str = match.groups()
                 
+                print(f"🔍 DEBUG: Extraindo hand info da linha: {line.strip()}")
+                print(f"🔍 DEBUG: hand_id: {hand_id}")
+                print(f"🔍 DEBUG: tournament_id: {tournament_id}")
+                print(f"🔍 DEBUG: level: {level}")
+                print(f"🔍 DEBUG: small_blind: {small_blind}")
+                print(f"🔍 DEBUG: big_blind: {big_blind}")
+                print(f"🔍 DEBUG: date_str: {date_str}")
+                
                 # Parse da data
                 try:
                     date_played = datetime.strptime(date_str, '%Y/%m/%d %H:%M:%S ET')
@@ -212,12 +221,18 @@ class AdvancedPokerParser:
         players = []
         button_position = None
         
+        print(f"🔍 DEBUG: Extraindo jogadores...")
+        
         # Encontrar posição do botão
         for line in lines:
             table_match = re.search(self.patterns['table_info'], line)
             if table_match:
                 button_position = int(table_match.group(3))
+                print(f"🔍 DEBUG: Button encontrado na posição {button_position} da linha: {line.strip()}")
                 break
+        
+        if button_position is None:
+            print(f"⚠️  DEBUG: Button não encontrado!")
         
         # Extrair jogadores
         for line in lines:
@@ -227,11 +242,15 @@ class AdvancedPokerParser:
                 name = match.group(2).strip()
                 stack = int(match.group(3))
                 
+                is_button = (position == button_position)
+                if is_button:
+                    print(f"🔍 DEBUG: Jogador {name} (pos {position}) marcado como button")
+                
                 player = Player(
                     name=name,
                     position=position,
                     stack=stack,
-                    is_button=(position == button_position)
+                    is_button=is_button
                 )
                 
                 players.append(player)
@@ -246,12 +265,15 @@ class AdvancedPokerParser:
                     # Small blind é a próxima posição
                     next_idx = (i + 1) % len(players)
                     players[next_idx].is_small_blind = True
+                    print(f"🔍 DEBUG: Jogador {players[next_idx].name} (pos {players[next_idx].position}) marcado como small blind")
                     
                     # Big blind é a posição seguinte
                     bb_idx = (i + 2) % len(players)
                     players[bb_idx].is_big_blind = True
+                    print(f"🔍 DEBUG: Jogador {players[bb_idx].name} (pos {players[bb_idx].position}) marcado como big blind")
                     break
         
+        print(f"🔍 DEBUG: Total de jogadores extraídos: {len(players)}")
         return players
     
     def _extract_hero_info(self, lines: List[str]) -> tuple:
@@ -266,66 +288,177 @@ class AdvancedPokerParser:
         return None, None
     
     def _extract_streets_and_actions(self, lines: List[str], players: List[Player]) -> List[Street]:
-        """Extrai todas as streets e ações"""
+        """Extrai streets e ações do hand history"""
         streets = []
-        current_street = Street(name='preflop')
-        action_counter = 0
+        current_street = None
+        
+        print(f"🔍 DEBUG: Processando {len(lines)} linhas para extrair streets e ações")
         
         i = 0
         while i < len(lines):
             line = lines[i].strip()
             
-            # Detectar início de nova street
-            if '*** FLOP ***' in line:
-                streets.append(current_street)
-                flop_match = re.search(self.patterns['flop'], line)
-                current_street = Street(
-                    name='flop',
-                    cards=self._parse_cards(flop_match.group(1)) if flop_match else []
-                )
-            elif '*** TURN ***' in line:
-                streets.append(current_street)
-                turn_match = re.search(self.patterns['turn'], line)
-                if turn_match:
-                    # Apenas a carta do turn (segunda parte do match)
-                    turn_card = self._parse_cards(turn_match.group(2))
-                    current_street = Street(
-                        name='turn',
-                        cards=turn_card
-                    )
-            elif '*** RIVER ***' in line:
-                streets.append(current_street)
-                river_match = re.search(self.patterns['river'], line)
-                if river_match:
-                    # Apenas a carta do river (segunda parte do match)
-                    river_card = self._parse_cards(river_match.group(2))
-                    current_street = Street(
-                        name='river',
-                        cards=river_card
-                    )
-            elif '*** SUMÁRIO ***' in line:
-                streets.append(current_street)
-                break
+            if not line:
+                i += 1
+                continue
             
-            # Extrair ações
-            action_match = re.search(self.patterns['action'], line)
-            if action_match:
-                player_name = action_match.group(1).strip()
-                action_pt = action_match.group(2)
-                amount = int(action_match.group(3)) if action_match.group(3) else 0
-                total_bet = int(action_match.group(4)) if action_match.group(4) else amount
+            print(f"🔍 DEBUG: Linha {i}: '{line}'")
+            
+            # Detectar início de nova street
+            if '*** HOLE CARDS ***' in line:
+                if current_street:
+                    streets.append(current_street)
+                current_street = Street(name='preflop')
+                print(f"🔍 DEBUG: Iniciando street: preflop")
                 
-                action = Action(
-                    player=player_name,
-                    action_type=self.action_mapping.get(action_pt, action_pt),
-                    amount=amount,
-                    total_bet=total_bet,
-                    street=current_street.name,
-                    timestamp=action_counter
-                )
+            elif '*** FLOP ***' in line:
+                if current_street:
+                    streets.append(current_street)
+                print(f"🔍 FLOP: '{line}'")
+                if '[' in line and ']' in line:
+                    start_idx = line.find('[')
+                    end_idx = line.find(']')
+                    if start_idx != -1 and end_idx != -1:
+                        cards_str = line[start_idx + 1:end_idx]
+                        parsed_cards = self._parse_cards(cards_str)
+                        print(f"✅ FLOP cards: {parsed_cards}")
+                        current_street = Street(name='flop', cards=parsed_cards)
+                    else:
+                        current_street = Street(name='flop', cards=[])
+                else:
+                    current_street = Street(name='flop', cards=[])
+                print(f"🔍 DEBUG: Street mudou para: flop")
+                    
+            elif '*** TURN ***' in line:
+                if current_street:
+                    streets.append(current_street)
+                print(f"🔍 TURN: '{line}'")
+                if '[' in line and ']' in line:
+                    # Encontrar o segundo par de colchetes (carta do turn)
+                    bracket_count = 0
+                    start_idx = -1
+                    end_idx = -1
+                    
+                    for j, char in enumerate(line):
+                        if char == '[':
+                            bracket_count += 1
+                            if bracket_count == 2:  # Segundo par de colchetes
+                                start_idx = j
+                        elif char == ']':
+                            if bracket_count == 2:  # Segundo par de colchetes
+                                end_idx = j
+                                break
+                    
+                    if start_idx != -1 and end_idx != -1:
+                        cards_str = line[start_idx + 1:end_idx]
+                        parsed_cards = self._parse_cards(cards_str)
+                        print(f"✅ TURN card: {parsed_cards}")
+                        current_street = Street(name='turn', cards=parsed_cards)
+                    else:
+                        current_street = Street(name='turn', cards=[])
+                else:
+                    current_street = Street(name='turn', cards=[])
+                    
+            elif '*** RIVER ***' in line:
+                if current_street:
+                    streets.append(current_street)
+                print(f"🔍 RIVER: '{line}'")
+                if '[' in line and ']' in line:
+                    # Encontrar o segundo par de colchetes (carta do river)
+                    bracket_count = 0
+                    start_idx = -1
+                    end_idx = -1
+                    
+                    for j, char in enumerate(line):
+                        if char == '[':
+                            bracket_count += 1
+                            if bracket_count == 2:  # Segundo par de colchetes
+                                start_idx = j
+                        elif char == ']':
+                            if bracket_count == 2:  # Segundo par de colchetes
+                                end_idx = j
+                                break
+                    
+                    if start_idx != -1 and end_idx != -1:
+                        cards_str = line[start_idx + 1:end_idx]
+                        parsed_cards = self._parse_cards(cards_str)
+                        print(f"✅ RIVER card: {parsed_cards}")
+                        current_street = Street(name='river', cards=parsed_cards)
+                    else:
+                        print(f"⚠️  DEBUG: Não foi possível extrair carta do river da linha: '{line}'")
+                        current_street = Street(name='river', cards=[])
+                else:
+                    print(f"⚠️  DEBUG: River sem colchetes na linha: '{line}'")
+                    current_street = Street(name='river', cards=[])
+                    
+            elif '*** SHOW DOWN ***' in line:
+                print(f"🔍 DEBUG: Encontrou SHOW DOWN na linha {i}")
+                if current_street:
+                    streets.append(current_street)
+                # Criar street para showdown
+                current_street = Street(name='showdown')
                 
-                current_street.actions.append(action)
-                action_counter += 1
+                # Log das próximas linhas para debug
+                print(f"🔍 DEBUG: Próximas linhas após SHOW DOWN:")
+                for j in range(i + 1, min(i + 10, len(lines))):
+                    print(f"  Linha {j}: '{lines[j].strip()}'")
+                    if lines[j].strip().startswith('*** SUMMARY ***'):
+                        break
+                
+            elif '*** SUMMARY ***' in line:
+                print(f"🔍 DEBUG: Encontrou SUMMARY na linha {i}")
+                if current_street:
+                    streets.append(current_street)
+                # Criar street para summary
+                current_street = Street(name='summary')
+                
+                # Processar linhas do summary para extrair informações do vencedor
+                i += 1
+                while i < len(lines):
+                    summary_line = lines[i].strip()
+                    if not summary_line or summary_line.startswith('==='):
+                        break
+                    
+                    print(f"🔍 DEBUG: Processando linha do summary: '{summary_line}'")
+                    
+                    # Extrair informações do vencedor
+                    won_match = re.search(r'Seat \d+: ([^(]+) \(.*\) showed \[([^\]]+)\] and won \(([0-9,]+)\)', summary_line)
+                    if won_match:
+                        player_name = won_match.group(1).strip()
+                        cards = won_match.group(2)
+                        amount = int(won_match.group(3).replace(',', ''))
+                        print(f"🏆 DEBUG: Vencedor encontrado: {player_name} com cartas {cards} ganhou ${amount}")
+                        
+                        action = Action(
+                            player=player_name,
+                            action_type='won',
+                            amount=amount,
+                            total_bet=amount,
+                            street='summary',
+                            timestamp=0,
+                            cards=cards
+                        )
+                        current_street.actions.append(action)
+                    
+                    i += 1
+                continue
+            
+            # Processar ações se estamos em uma street
+            elif current_street and line and not line.startswith('***'):
+                print(f"🔍 DEBUG: Processando linha de ação: '{line}' para street: {current_street.name}")
+                print(f"🔍 DEBUG: current_street: {current_street.name}, line: '{line}'")
+                
+                # Extrair ação
+                action = self._parse_action_line(line, current_street.name)
+                if action:
+                    current_street.actions.append(action)
+                    print(f"🔍 DEBUG: Ação adicionada à street '{current_street.name}': {action.player} {action.action_type} ${action.amount}")
+                    print(f"🔍 DEBUG: Street atual: {current_street.name}")
+                    print(f"🔍 DEBUG: Linha processada: '{line}'")
+                else:
+                    print(f"⚠️  DEBUG: Falha ao processar linha: '{line}'")
+            else:
+                print(f"🔍 DEBUG: Linha ignorada: '{line}' (current_street: {current_street.name if current_street else 'None'})")
             
             i += 1
         
@@ -333,7 +466,77 @@ class AdvancedPokerParser:
         if current_street and current_street not in streets:
             streets.append(current_street)
         
+        print(f"🔍 DEBUG: Total de streets extraídas: {len(streets)}")
+        for i, street in enumerate(streets):
+            print(f"🔍 DEBUG: Street {i+1}: {street.name} - {len(street.cards)} cartas - {len(street.actions)} ações")
+            for j, action in enumerate(street.actions):
+                cards_info = f" (cartas: {action.cards})" if action.cards else ""
+                print(f"      {j+1}. {action.player}: {action.action_type} {action.amount}{cards_info}")
+        
         return streets
+    
+    def _parse_action_line(self, line: str, street_name: str) -> Optional[Action]:
+        """Parse uma linha de ação"""
+        print(f"🔍 DEBUG: Parseando linha: '{line}' para street: {street_name}")
+        
+        # Padrões para diferentes tipos de ação
+        patterns = {
+            'ante': r'^([^:]+): posts the ante ([0-9,]+)',
+            'small_blind': r'^([^:]+): posts small blind ([0-9,]+)',
+            'big_blind': r'^([^:]+): posts big blind ([0-9,]+)',
+            'fold': r'^([^:]+): folds',
+            'check': r'^([^:]+): checks',
+            'call': r'^([^:]+): calls ([0-9,]+)',
+            'bet': r'^([^:]+): bets ([0-9,]+)',
+            'raise': r'^([^:]+): raises ([0-9,]+) to ([0-9,]+)',
+            'all-in': r'^([^:]+): bets ([0-9,]+) and is all-in',
+            'shows': r'^([^:]+): shows \[([^\]]+)\]',
+            'mucks': r'^([^:]+): mucks hand',
+            'collected': r'^([^:]+) collected ([0-9,]+) from pot'
+        }
+        
+        for action_type, pattern in patterns.items():
+            match = re.search(pattern, line)
+            if match:
+                player_name = match.group(1).strip()
+                amount = 0
+                total_bet = 0
+                cards = ""
+                
+                print(f"🔍 DEBUG: Match encontrado para {action_type}: {match.groups()}")
+                
+                if action_type in ['ante', 'small_blind', 'big_blind', 'call', 'bet', 'all-in']:
+                    amount = int(match.group(2).replace(',', ''))
+                    total_bet = amount
+                elif action_type == 'raise':
+                    amount = int(match.group(2).replace(',', ''))
+                    total_bet = int(match.group(3).replace(',', ''))
+                elif action_type == 'collected':
+                    amount = int(match.group(2).replace(',', ''))
+                    total_bet = amount
+                elif action_type == 'shows':
+                    # Extrair cartas do showdown
+                    cards = match.group(2)
+                    print(f"🔍 DEBUG: Cartas extraídas do showdown para {player_name}: {cards}")
+                elif action_type == 'mucks':
+                    # Para mucks, não há cartas
+                    print(f"🔍 DEBUG: {player_name} mucks hand")
+                
+                action = Action(
+                    player=player_name,
+                    action_type=action_type,
+                    amount=amount,
+                    total_bet=total_bet,
+                    street=street_name,
+                    timestamp=0,  # Será atualizado depois
+                    cards=cards
+                )
+                
+                print(f"🔍 DEBUG: Ação criada: {player_name} {action_type} ${amount} cartas: '{cards}'")
+                return action
+        
+        print(f"⚠️  DEBUG: Nenhum padrão encontrado para linha: '{line}'")
+        return None
     
     def _parse_cards(self, cards_str: str) -> List[str]:
         """Parse de cartas (ex: 'As Kh' -> ['As', 'Kh'])"""

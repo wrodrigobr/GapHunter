@@ -1,0 +1,179 @@
+<div class="riropo-replayer" *ngIf="currentHand">
+  <!-- Main Container -->
+  <div class="replayer-container">
+    
+    <!-- Main Content Area -->
+    <div class="main-content">
+      
+      <!-- Header Info -->
+      <div class="main-info">
+        <div class="table-info">
+          <span class="table-name">{{ currentHand.tableName }}</span>
+          <span class="game-type">{{ currentHand.gameMode }} {{ currentHand.gameType }}</span>
+        </div>
+        <div class="hand-info">
+          <span class="hand-number">Hand #{{ currentHand.handId }}</span>
+          <span class="blinds">{{ formatAmount(currentHand.blinds.small) }}/{{ formatAmount(currentHand.blinds.big) }}</span>
+        </div>
+        <div class="logo">
+          <span class="logo-text">RIROPO</span>
+        </div>
+      </div>
+
+      <!-- Poker Table Area -->
+      <div class="poker-table-area">
+        <!-- Poker Table -->
+        <div class="poker-table">
+          
+          <!-- Table Background -->
+          <div class="table-felt">
+            <!-- Community Cards -->
+            <div class="community-cards">
+              <div class="board-cards">
+                <div 
+                  *ngFor="let card of board; let i = index" 
+                  class="card board-card"
+                  [class.visible]="true"
+                  [class.red]="getCardColor(card) === 'red'"
+                  [class.black]="getCardColor(card) === 'black'"
+                  [attr.data-suit]="getCardSuit(card)">
+                  {{ formatCard(card) }}
+                </div>
+                <div 
+                  *ngFor="let i of [0, 1, 2, 3, 4]; let index = index" 
+                  class="card board-card empty"
+                  [style.display]="index >= board.length ? 'flex' : 'none'">
+                  🂠
+                </div>
+              </div>
+            </div>
+
+            <!-- Pot -->
+            <div class="pot-container">
+              <div class="pot-label">Pot</div>
+              <div class="pot-amount">{{ formatAmount(pot) }}</div>
+            </div>
+
+            <!-- Players -->
+            <div class="players-container">
+              <div 
+                *ngFor="let player of currentHand.players; let i = index" 
+                class="player"
+                [class.active]="player.isActive"
+                [class.folded]="player.isFolded"
+                [class.hero]="player.isHero"
+                [style.left.%]="getPlayerPosition(i).x"
+                [style.top.%]="getPlayerPosition(i).y">
+                
+                <!-- Player Avatar -->
+                <div class="player-avatar">
+                  <div class="avatar-circle">
+                    <span class="player-initial">{{ player.name.charAt(0).toUpperCase() }}</span>
+                  </div>
+                </div>
+
+                <!-- Player Info -->
+                <div class="player-info">
+                  <div class="player-name">{{ player.name }}</div>
+                  <div class="player-stack">{{ formatAmount(player.stack) }}</div>
+                </div>
+
+                <!-- Player Cards -->
+                <div class="player-cards" *ngIf="player.cards && player.cards.trim() !== '' && (Array.isArray(player.cards) ? player.cards.length > 0 : player.cards.split(' ').length > 0)">
+                  <div 
+                    *ngFor="let card of (Array.isArray(player.cards) ? player.cards : player.cards?.split(' ') || [])" 
+                    class="card player-card"
+                    [class.red]="getCardColor(card) === 'red'"
+                    [class.black]="getCardColor(card) === 'black'"
+                    [attr.data-suit]="getCardSuit(card)">
+                    {{ formatCard(card) }}
+                  </div>
+                </div>
+
+                <!-- Player Bet -->
+                <div class="player-bet" *ngIf="player.bet > 0">
+                  <!-- Valor da aposta -->
+                  <div class="bet-amount">{{ formatAmount(player.bet) }}</div>
+                </div>
+
+                <!-- Player Status -->
+                <div class="player-status">
+                  <div *ngIf="player.isButton" class="button">BTN</div>
+                  <div *ngIf="player.isSmallBlind" class="small-blind">SB</div>
+                  <div *ngIf="player.isBigBlind" class="big-blind">BB</div>
+                  <div *ngIf="player.isFolded" class="folded">FOLD</div>
+                  <div *ngIf="player.isAllIn" class="all-in">ALL-IN</div>
+                  <div *ngIf="player.isChecked" class="checked">CHECK</div>
+                  <div *ngIf="player.isWinner" class="winner">WIN POT</div>
+                  <!-- DEBUG: {{ player.name }} - isChecked: {{ player.isChecked }} -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Area - Apenas controles -->
+      <div class="controls-area">
+        <!-- Fullscreen Button - Canto superior direito -->
+        <div class="fullscreen-control">
+          <button class="fullscreen-btn" (click)="toggleFullscreen()" title="Tela Cheia">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+
+        <!-- Controles de Navegação -->
+        <div class="navigation-controls">
+          <button class="nav-btn primary" (click)="resetToStart()" title="Reiniciar">
+            <i class="fas fa-redo"></i>
+          </button>
+          <button class="nav-btn" (click)="previousStreet()" title="Street Anterior" [disabled]="!canGoPreviousStreet()">
+            <i class="fas fa-step-backward"></i>
+          </button>
+          <button class="nav-btn" (click)="previousAction()" title="Ação Anterior" [disabled]="!canGoPrevious()">
+            <i class="fas fa-backward"></i>
+          </button>
+          <button class="nav-btn play-pause" [class.paused]="isPaused" (click)="togglePlayPause()" title="Play/Pause">
+            <i class="fas" [class.fa-play]="isPaused" [class.fa-pause]="!isPaused"></i>
+          </button>
+          <button class="nav-btn" (click)="nextAction()" title="Próxima Ação" [disabled]="!canGoNext()">
+            <i class="fas fa-forward"></i>
+          </button>
+          <button class="nav-btn" (click)="nextStreet()" title="Próxima Street" [disabled]="!canGoNextStreet()">
+            <i class="fas fa-step-forward"></i>
+          </button>
+          <button class="nav-btn primary" (click)="goToEnd()" title="Ir para o Final">
+            <i class="fas fa-fast-forward"></i>
+          </button>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+          </div>
+          <div class="progress-text">
+            {{ currentActionIndex + 1 }} / {{ totalActions }} ações
+          </div>
+        </div>
+
+        <!-- Speed Control - Botões em vez de select -->
+        <div class="speed-control">
+          <label>Velocidade:</label>
+          <div class="speed-buttons">
+            <button class="speed-btn" [class.active]="speed === 0.5" (click)="speed = 0.5">0.5x</button>
+            <button class="speed-btn" [class.active]="speed === 1" (click)="speed = 1">1x</button>
+            <button class="speed-btn" [class.active]="speed === 2" (click)="speed = 2">2x</button>
+            <button class="speed-btn" [class.active]="speed === 3" (click)="speed = 3">3x</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-state" *ngIf="!currentHand">
+  <div class="loading-spinner"></div>
+  <p>Loading hand history...</p>
+</div> 

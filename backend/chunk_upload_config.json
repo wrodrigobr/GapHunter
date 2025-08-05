@@ -1,0 +1,5 @@
+{
+  "chunk_size_mb": 0.1,
+  "max_concurrent_chunks": 3,
+  "progress_update_interval": 0.5
+}

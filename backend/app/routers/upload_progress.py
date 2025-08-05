@@ -11,15 +11,18 @@ from datetime import datetime
 from app.models.database import get_db
 from app.models.user import User
 from app.models.hand import Hand
+from app.models.hand_action import HandAction
 from app.models.tournament import Tournament
 from app.models.schemas import UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
+from app.utils.advanced_poker_parser import AdvancedPokerParser
 from app.services.ai_service import AIAnalysisService
 from app.services.local_analysis_service import LocalAnalysisService
 
 router = APIRouter()
 parser = PokerStarsParser()
+advanced_parser = AdvancedPokerParser()
 ai_service = AIAnalysisService()
 local_service = LocalAnalysisService()
 
@@ -54,11 +57,14 @@ async def upload_hand_history_async(
         "result": None
     }
     
-    # Processar arquivo em background
+    print(f"📤 Upload iniciado: {upload_id} para usuário {current_user.id}")
+    
+    # Processar arquivo em background (não aguardar)
     asyncio.create_task(process_upload_background(
         upload_id, file, current_user.id
     ))
     
+    # Retornar imediatamente
     return {"upload_id": upload_id, "message": "Upload iniciado"}
 
 async def process_upload_background(
@@ -81,7 +87,7 @@ async def process_upload_background(
         upload_progress[upload_id]["message"] = "Lendo arquivo..."
         print(f"📖 Status atualizado: reading_file")
         
-        # Ler conteúdo do arquivo
+        # Ler conteúdo do arquivo de forma assíncrona
         content = await file.read()
         content = content.decode('utf-8')
         
@@ -94,6 +100,9 @@ async def process_upload_background(
         upload_progress[upload_id]["status"] = "parsing"
         upload_progress[upload_id]["message"] = "Analisando estrutura do arquivo..."
         print(f"🔍 Iniciando parse do arquivo...")
+        
+        # Permitir que outras tarefas executem durante o parse
+        await asyncio.sleep(0)
         
         parsed_hands = parser.parse_file(content)
         print(f"🔍 Parse concluído: {len(parsed_hands)} mãos encontradas")
@@ -117,6 +126,10 @@ async def process_upload_background(
         
         for i, hand_data in enumerate(parsed_hands):
             try:
+                # Permitir que outras tarefas executem (incluindo polling) a cada 5 mãos
+                if i % 5 == 0:
+                    await asyncio.sleep(0)
+                
                 # Atualizar progresso
                 progress_percent = 20 + int((i / total_hands) * 70)  # 20-90%
                 upload_progress[upload_id]["progress"] = progress_percent
@@ -125,7 +138,7 @@ async def process_upload_background(
                 upload_progress[upload_id]["message"] = f"Processando mão {i+1}/{total_hands}"
                 
                 if i % 5 == 0:  # Log a cada 5 mãos
-                    print(f"📊 Processando mão {i+1}/{total_hands}")
+                    print(f"📊 Processando mão {i+1}/{total_hands} - Progresso: {progress_percent}%")
                 
                 # Verificar se mão já existe
                 existing_hand = db.query(Hand).filter(
@@ -216,18 +229,29 @@ Esta é uma análise básica para debug.
                 )
                 
                 db.add(db_hand)
+                db.flush()  # Flush para obter o ID sem fazer commit
+                
+                # REMOVIDO: Parse avançado durante upload para economizar espaço no banco
+                # As ações serão geradas on-demand quando o usuário clicar em "Ver Análise"
+                
+                # Commit da mão (sem ações)
+                db.commit()
+                
+                # Permitir que outras tarefas executem após o commit
+                await asyncio.sleep(0)
+                
                 processed_hands.append(db_hand)
                 
-                # Commit a cada 5 mãos para debug
-                if (i + 1) % 5 == 0:
-                    db.commit()
-                    upload_progress[upload_id]["message"] = f"Salvando progresso... ({i+1}/{total_hands})"
-                    print(f"💾 Commit realizado: {i+1} mãos")
+                # Atualizar progresso após cada mão processada
+                upload_progress[upload_id]["processed_hands"] = i + 1
+                upload_progress[upload_id]["message"] = f"Mão {i+1}/{total_hands} processada com sucesso"
                 
             except Exception as e:
                 error_msg = f"Erro na mão {i+1}: {str(e)}"
                 upload_progress[upload_id]["errors"].append(error_msg)
                 print(f"❌ {error_msg}")
+                # Continuar processando outras mãos em vez de parar
+                continue
         
         # Commit final
         print(f"💾 Commit final...")
@@ -250,6 +274,7 @@ Esta é uma análise básica para debug.
         }
         
         print(f"✅ Upload {upload_id} concluído: {len(processed_hands)} mãos processadas")
+        print(f"✅ Status final: completed=True, progress=100%")
         
     except Exception as e:
         upload_progress[upload_id]["status"] = "error"
@@ -267,10 +292,16 @@ Esta é uma análise básica para debug.
 async def get_upload_progress(upload_id: str):
     """Retorna progresso atual do upload"""
     
+    print(f"📊 Requisição de progresso para: {upload_id}")
+    
     if upload_id not in upload_progress:
+        print(f"❌ Upload {upload_id} não encontrado")
         raise HTTPException(status_code=404, detail="Upload não encontrado")
     
-    return upload_progress[upload_id]
+    progress = upload_progress[upload_id]
+    print(f"📈 Retornando progresso: {progress['status']} - {progress['progress']}% - {progress['message']} - completed: {progress['completed']}")
+    
+    return progress
 
 @router.get("/debug/uploads")
 async def debug_uploads():

@@ -16,36 +16,9 @@
 
   <!-- Main Content -->
   <main class="dashboard-main">
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">🃏</div>
-        <div class="stat-content">
-          <h3>{{ totalHands }}</h3>
-          <p>Mãos Analisadas</p>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon">🎯</div>
-        <div class="stat-content">
-          <h3>{{ gapsFound }}</h3>
-          <p>Gaps Encontrados</p>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon">📈</div>
-        <div class="stat-content">
-          <h3>{{ gapPercentage }}%</h3>
-          <p>Taxa de Gaps</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Upload Section -->
     <div class="upload-section">
-      <h2>Upload de Hand History</h2>
+      <h2>📁 Upload de Hand History</h2>
       
       <div 
         class="upload-area"
@@ -100,23 +73,66 @@
       </div>
     </div>
 
-    <!-- Statistics Section -->
-    <div *ngIf="userStats && (positionStats.length > 0 || actionStats.length > 0)" class="statistics-section">
-      <h2>📊 Estatísticas Detalhadas</h2>
+    <!-- Navigation Button -->
+    <div class="navigation-section">
+      <button class="history-button" (click)="goToHistory()">
+        📊 Ver Histórico Completo
+      </button>
+    </div>
+
+    <!-- Performance Overview -->
+    <div class="performance-overview">
+      <h2>🎯 Visão Geral de Performance</h2>
       
-      <div class="stats-row">
-        <!-- Position Stats -->
-        <div *ngIf="positionStats.length > 0" class="stats-card position-stats">
-          <div class="stats-header">
-            <h3>🎯 Distribuição por Posição</h3>
-            <span class="stats-subtitle">Onde você joga mais</span>
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="card-icon">🃏</div>
+          <div class="card-content">
+            <h3>{{ totalHands }}</h3>
+            <p>Total de Mãos</p>
           </div>
-          <div class="stats-chart">
-            <div *ngFor="let stat of positionStats" class="stat-bar">
-              <div class="stat-info">
-                <span class="stat-label">{{ getPositionName(stat.position) }}</span>
-                <span class="stat-value">{{ stat.count }} mãos</span>
-                <span class="stat-percentage">({{ getPercentage(stat.count, totalHands) }}%)</span>
+        </div>
+        
+        <div class="overview-card">
+          <div class="card-icon">⚠️</div>
+          <div class="card-content">
+            <h3>{{ gapsFound }}</h3>
+            <p>Gaps Identificados</p>
+          </div>
+        </div>
+        
+        <div class="overview-card">
+          <div class="card-icon">📈</div>
+          <div class="card-content">
+            <h3>{{ (100 - gapPercentage).toFixed(1) }}%</h3>
+            <p>Taxa de Acerto</p>
+          </div>
+        </div>
+        
+        <div class="overview-card">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <h3>{{ averagePot | currency:'USD' }}</h3>
+            <p>Pot Médio</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Performance Indicators -->
+    <div class="kpi-section">
+      <h2>📊 Indicadores de Performance</h2>
+      
+      <div class="kpi-grid">
+        <!-- Position Performance -->
+        <div class="kpi-card">
+          <h3>🎯 Performance por Posição</h3>
+          <div class="kpi-chart">
+            <div *ngFor="let stat of positionStats" class="kpi-bar">
+              <div class="kpi-info">
+                <span class="kpi-label">{{ getPositionName(stat.position) }}</span>
+                <span class="kpi-value">{{ stat.count }} mãos</span>
+                <span class="kpi-percentage">({{ getPercentage(stat.count, totalHands) }}%)</span>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" [style.width.%]="getPercentage(stat.count, totalHands)"></div>
@@ -125,138 +141,127 @@
           </div>
         </div>
 
-        <!-- Action Stats -->
-        <div *ngIf="actionStats.length > 0" class="stats-card action-stats">
-          <div class="stats-header">
-            <h3>⚡ Distribuição por Ação</h3>
-            <span class="stats-subtitle">Suas decisões mais comuns</span>
-          </div>
-          <div class="stats-chart">
-            <div *ngFor="let stat of actionStats" class="stat-bar">
-              <div class="stat-info">
-                <span class="stat-label">{{ getActionName(stat.action) }}</span>
-                <span class="stat-value">{{ stat.count }} vezes</span>
-                <span class="stat-percentage">({{ getPercentage(stat.count, totalHands) }}%)</span>
+        <!-- Action Distribution -->
+        <div class="kpi-card">
+          <h3>⚡ Distribuição de Ações</h3>
+          <div class="kpi-chart">
+            <div *ngFor="let stat of actionStats" class="kpi-bar">
+              <div class="kpi-info">
+                <span class="kpi-label">{{ getActionName(stat.action) }}</span>
+                <span class="kpi-value">{{ stat.count }} vezes</span>
+                <span class="kpi-percentage">({{ getPercentage(stat.count, totalActions) }}%)</span>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" 
-                     [style.width.%]="getPercentage(stat.count, totalHands)"
+                     [style.width.%]="getPercentage(stat.count, totalActions)"
                      [class]="'action-' + stat.action"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Performance Summary -->
-      <div class="performance-summary">
-        <div class="summary-card">
-          <div class="summary-icon">🎯</div>
-          <div class="summary-content">
-            <h4>Taxa de Acerto</h4>
-            <span class="summary-value">{{ (100 - gapPercentage).toFixed(1) }}%</span>
-            <span class="summary-subtitle">{{ totalHands - gapsFound }} de {{ totalHands }} mãos</span>
+    <!-- Gap Analysis -->
+    <div class="gap-analysis">
+      <h2>🔍 Análise de Gaps</h2>
+      
+      <div class="gap-grid">
+        <div class="gap-card">
+          <h3>⚠️ Gaps por Street</h3>
+          <div class="gap-chart">
+            <div *ngFor="let gap of streetGaps" class="gap-item">
+              <span class="gap-street">{{ gap.street }}</span>
+              <span class="gap-count">{{ gap.count }}</span>
+              <span class="gap-percentage">({{ gap.percentage }}%)</span>
+            </div>
           </div>
         </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">⚠️</div>
-          <div class="summary-content">
-            <h4>Gaps Identificados</h4>
-            <span class="summary-value">{{ gapsFound }}</span>
-            <span class="summary-subtitle">{{ gapPercentage.toFixed(1) }}% das mãos</span>
-          </div>
-        </div>
-        
-        <div class="summary-card">
-          <div class="summary-icon">📈</div>
-          <div class="summary-content">
-            <h4>Mãos Analisadas</h4>
-            <span class="summary-value">{{ totalHands }}</span>
-            <span class="summary-subtitle">Total processado</span>
+
+        <div class="gap-card">
+          <h3>🎯 Gaps por Posição</h3>
+          <div class="gap-chart">
+            <div *ngFor="let gap of positionGaps" class="gap-item">
+              <span class="gap-position">{{ getPositionName(gap.position) }}</span>
+              <span class="gap-count">{{ gap.count }}</span>
+              <span class="gap-percentage">({{ gap.percentage }}%)</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Recent Hands -->
-    <div class="hands-section">
-      <h2>Mãos Recentes</h2>
+    <!-- Improvement Areas -->
+    <div class="improvement-areas">
+      <h2>📈 Áreas de Melhoria</h2>
       
-      <div *ngIf="isLoading" class="loading-state">
-        <div class="spinner"></div>
-        <p>Carregando mãos...</p>
-      </div>
+      <div class="improvement-grid">
+        <div class="improvement-card">
+          <div class="improvement-icon">🎯</div>
+          <h3>Posições Premium</h3>
+          <p>Foque em melhorar sua performance nas posições late (BTN, CO, HJ)</p>
+          <div class="improvement-stats">
+            <span class="stat">Taxa de Agressão: {{ premiumPositionAggression }}%</span>
+          </div>
+        </div>
 
-      <div *ngIf="!isLoading && recentHands.length === 0" class="empty-state">
-        <div class="empty-icon">🎲</div>
-        <h3>Nenhuma mão analisada ainda</h3>
-        <p>Faça upload de um arquivo de hand history para começar</p>
-      </div>
+        <div class="improvement-card">
+          <div class="improvement-icon">💰</div>
+          <h3>Bet Sizing</h3>
+          <p>Analise se seus tamanhos de aposta estão otimizados</p>
+          <div class="improvement-stats">
+            <span class="stat">Pot Médio: {{ averagePot | currency:'USD' }}</span>
+          </div>
+        </div>
 
-      <!-- Tabela de Mãos Recentes -->
-      <div *ngIf="!isLoading && recentHands.length > 0" class="recent-hands-table">
-        <table class="hands-table">
-          <thead>
-            <tr>
-              <th>Data/Hora</th>
-              <th>Mão ID</th>
-              <th>Posição</th>
-              <th>Cartas</th>
-              <th>Ação</th>
-              <th>Board</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let hand of recentHands" class="hand-row">
-              <td class="date-cell">
-                {{formatDate(hand.date_played)}}
-              </td>
-              <td class="hand-id-cell">
-                <span class="hand-id">{{hand.hand_id}}</span>
-              </td>
-              <td class="position-cell">
-                <span class="position-badge" [class]="'position-' + (hand.hero_position || 'unknown')">
-                  {{hand.hero_position || '-'}}
-                </span>
-              </td>
-              <td class="cards-cell">
-                <span class="cards" [ngClass]="getCardClass(hand.hero_cards || '')">{{formatCards(hand.hero_cards || '')}}</span>
-              </td>
-              <td class="action-cell">
-                <span class="action-badge" [class]="'action-' + (hand.hero_action || 'unknown')">
-                  {{hand.hero_action || '-'}}
-                </span>
-              </td>
-              <td class="board-cell">
-                <span class="board" [ngClass]="getCardClass(hand.board_cards || '')">{{formatCards(hand.board_cards || '')}}</span>
-              </td>
-              <td class="status-cell">
-                <span class="status-badge" [class.has-gap]="hand.has_gap">
-                  {{ hand.has_gap ? '⚠️ Gap' : '✅ OK' }}
-                </span>
-              </td>
-              <td class="actions-cell">
-                <button class="btn-analysis" (click)="viewHandDetails(hand)">
-                  🔍 Ver Análise
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="improvement-card">
+          <div class="improvement-icon">🔄</div>
+          <h3>Continuation Bet</h3>
+          <p>Verifique sua taxa de C-Bet no flop</p>
+          <div class="improvement-stats">
+            <span class="stat">Taxa C-Bet: {{ cbetRate }}%</span>
+          </div>
+        </div>
 
-      <!-- View All Hands Button -->
-      <div *ngIf="totalHands > recentHands.length" class="view-all-section">
-        <button class="view-all-button" (click)="viewAllHands()">
-          Ver Todas as {{ totalHands }} Mãos
-        </button>
+        <div class="improvement-card">
+          <div class="improvement-icon">⚡</div>
+          <h3>3-Bet Strategy</h3>
+          <p>Analise sua frequência de 3-bet</p>
+          <div class="improvement-stats">
+            <span class="stat">Taxa 3-Bet: {{ threeBetRate }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Progress -->
+    <div class="monthly-progress">
+      <h2>📅 Progresso Mensal</h2>
+      
+      <div class="progress-chart">
+        <div class="chart-container">
+          <canvas #progressChart></canvas>
+        </div>
+        <div class="progress-stats">
+          <div class="progress-stat">
+            <span class="stat-label">Mãos este mês:</span>
+            <span class="stat-value">{{ handsThisMonth }}</span>
+          </div>
+          <div class="progress-stat">
+            <span class="stat-label">Gaps este mês:</span>
+            <span class="stat-value">{{ gapsThisMonth }}</span>
+          </div>
+          <div class="progress-stat">
+            <span class="stat-label">Melhoria:</span>
+            <span class="stat-value" [class.positive]="monthlyImprovement > 0" [class.negative]="monthlyImprovement < 0">
+              {{ monthlyImprovement > 0 ? '+' : '' }}{{ monthlyImprovement }}%
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </main>
 </div>
 
-<!-- Componente de Progresso de Upload - aparece apenas durante upload -->
-<app-upload-progress *ngIf="isUploadingInProgress"></app-upload-progress>
+  <!-- Componente de Progresso de Upload -->
+  <app-upload-progress #progressComponent *ngIf="isUploadingInProgress"></app-upload-progress>

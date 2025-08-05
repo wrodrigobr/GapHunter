@@ -7,17 +7,17 @@ logger = logging.getLogger(__name__)
 
 class PokerStarsParser:
     def __init__(self):
-        # Padrões para PokerStars em português
-        self.hand_pattern = r"Mão PokerStars #(\d+):"
-        self.tournament_pattern = r"Torneio #(\d+),"
-        self.table_pattern = r"Mesa '([^']+)'"
+        # Patterns for PokerStars in English
+        self.hand_pattern = r"PokerStars Hand #(\d+):"
+        self.tournament_pattern = r"Tournament #(\d+),"
+        self.table_pattern = r"Table '([^']+)'"
         self.date_pattern = r"(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})"
-        self.seat_pattern = r"Lugar (\d+): ([^(]+) \((\d+) em fichas\)"
-        self.hole_cards_pattern = r"(\w+) recebe \[([^\]]+)\]"
-        self.action_pattern = r"([^:]+): (desiste|passa|iguala|aumenta|aposta|está all-in)"
-        self.pot_pattern = r"Total pote (\d+)"
-        self.board_pattern = r"Mesa \[([^\]]+)\]"
-        self.button_pattern = r"Lugar #(\d+) é o botão"
+        self.seat_pattern = r"Seat (\d+): ([^(]+) \((\d+) in chips\)"
+        self.hole_cards_pattern = r"Dealt to ([^[]+) \[([^\]]+)\]"
+        self.action_pattern = r"([^:]+): (folds|calls|raises|bets|checks|all-in)"
+        self.pot_pattern = r"Total pot (\d+)"
+        self.board_pattern = r"Board \[([^\]]+)\]"
+        self.button_pattern = r"Seat #(\d+) is the button"
 
     def parse_file(self, content: str) -> List[Dict]:
         logger.info(f"Iniciando parse de arquivo com {len(content)} caracteres")
@@ -38,7 +38,7 @@ class PokerStarsParser:
 
     def _split_hands(self, content: str) -> List[str]:
         hands = re.split(r'\*{10,}[^*]*\*{10,}', content)
-        return [h.strip() for h in hands if h.strip() and 'Mão PokerStars' in h]
+        return [h.strip() for h in hands if h.strip() and 'PokerStars Hand' in h]
 
     def _parse_single_hand(self, hand_text: str) -> Optional[Dict]:
         try:
@@ -120,7 +120,7 @@ class PokerStarsParser:
         return hero_info
 
     def _find_hero_stack(self, text: str, hero_name: str) -> Optional[float]:
-        pattern = rf"Lugar \d+: {re.escape(hero_name)} \((\d+) em fichas\)"
+        pattern = rf"Seat \d+: {re.escape(hero_name)} \((\d+) in chips\)"
         match = re.search(pattern, text)
         if match:
             try:
@@ -134,7 +134,7 @@ class PokerStarsParser:
         if not button_match:
             return "EP"
         button_seat = int(button_match.group(1))
-        hero_seat_match = re.search(rf"Lugar (\d+): {re.escape(hero_name)}", text)
+        hero_seat_match = re.search(rf"Seat (\d+): {re.escape(hero_name)}", text)
         if not hero_seat_match:
             return "EP"
         hero_seat = int(hero_seat_match.group(1))
@@ -151,24 +151,24 @@ class PokerStarsParser:
 
     def _find_hero_action(self, text: str, hero_name: str) -> Optional[str]:
         action_patterns = [
-            rf"{re.escape(hero_name)}: desiste",
-            rf"{re.escape(hero_name)}: passa",
-            rf"{re.escape(hero_name)}: iguala",
-            rf"{re.escape(hero_name)}: aumenta",
-            rf"{re.escape(hero_name)}: aposta"
+            rf"{re.escape(hero_name)}: folds",
+            rf"{re.escape(hero_name)}: checks",
+            rf"{re.escape(hero_name)}: calls",
+            rf"{re.escape(hero_name)}: raises",
+            rf"{re.escape(hero_name)}: bets"
         ]
         last_action = None
         for pattern in action_patterns:
             matches = re.findall(pattern, text)
             if matches:
-                if "desiste" in pattern:
+                if "folds" in pattern:
                     last_action = "fold"
-                elif "passa" in pattern:
+                elif "checks" in pattern:
                     last_action = "check"
-                elif "iguala" in pattern:
+                elif "calls" in pattern:
                     last_action = "call"
-                elif "aumenta" in pattern:
+                elif "raises" in pattern:
                     last_action = "raise"
-                elif "aposta" in pattern:
+                elif "bets" in pattern:
                     last_action = "bet"
         return last_action

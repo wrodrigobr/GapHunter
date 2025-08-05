@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, BigInteger
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.models.database import Base
 
 class Hand(Base):
@@ -26,8 +27,8 @@ class Hand(Base):
     ai_analysis = Column(Text)  # Análise da IA
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # RELACIONAMENTO REMOVIDO TEMPORARIAMENTE PARA CORRIGIR ERRO 500
-    # Será reativado após correção dos relacionamentos
-    # user = relationship("User", back_populates="hands")
-    # tournament = relationship("Tournament", back_populates="hands")
+    # Relacionamentos
+    user = relationship("User")
+    tournament = relationship("Tournament", back_populates="hands")
+    actions = relationship("HandAction", back_populates="hand", cascade="all, delete-orphan")
 

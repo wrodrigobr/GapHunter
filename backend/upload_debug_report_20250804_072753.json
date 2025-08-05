@@ -1,0 +1,12 @@
+{
+  "total_hands_found": 400,
+  "hands_processed": 9,
+  "hands_saved": 9,
+  "errors": [
+    "Mão 1: Hand ID não encontrado"
+  ],
+  "debug_info": {
+    "file_size": 618279,
+    "total_lines": 18676
+  }
+}

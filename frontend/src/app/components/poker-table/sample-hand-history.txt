@@ -1,0 +1,38 @@
+PokerStars Hand #206007550592: Hold'em No Limit (€0.01/€0.02 EUR) - 2024/01/15 20:30:15 CET [2024/01/15 14:30:15 ET]
+Table 'Akiyama II' 6-max Seat #5 is the button
+Seat 1: Player1 (€2.00 in chips)
+Seat 2: Player2 (€1.85 in chips)
+Seat 3: Player3 (€3.20 in chips)
+Seat 4: Hero (€2.50 in chips)
+Seat 5: Player5 (€1.95 in chips)
+Seat 6: Player6 (€2.10 in chips)
+Player6: posts small blind €0.01
+Player1: posts big blind €0.02
+*** HOLE CARDS ***
+Dealt to Hero [Ah Kh]
+Player2: folds
+Player3: calls €0.02
+Hero: raises €0.06 to €0.08
+Player5: folds
+Player6: folds
+Player1: folds
+Player3: calls €0.06
+*** FLOP *** [As 7h 2c]
+Player3: checks
+Hero: bets €0.12
+Player3: calls €0.12
+*** TURN *** [As 7h 2c] [Qd]
+Player3: checks
+Hero: bets €0.24
+Player3: folds
+Uncalled bet (€0.24) returned to Hero
+Hero collected €0.52 from pot
+*** SUMMARY ***
+Total pot €0.52 | Rake €0.00
+Board [As 7h 2c Qd]
+Seat 1: Player1 (big blind) folded before Flop
+Seat 2: Player2 folded before Flop
+Seat 3: Player3 folded on the Turn
+Seat 4: Hero collected (€0.52)
+Seat 5: Player5 (button) folded before Flop
+Seat 6: Player6 (small blind) folded before Flop 

@@ -1,0 +1,8 @@
+{
+  "hand_start": "^PokerStars Hand #(\\d+):",
+  "tournament": "Tournament #(\\d+),",
+  "player_seat": "Seat (\\d+): (.+?) \\((\\d+)\\)",
+  "action": "(.+?): (folds|calls|raises|bets|checks|all-in)",
+  "board_cards": "Board \\[(.+?)\\]",
+  "pot": "Total pot (\\d+)"
+}

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-08-03T22:46:07.158516",
+  "before_file": "load_test_results_20250803_223252.json",
+  "after_file": "load_test_results_20250803_224257.json",
+  "metrics": {
+    "duration_before": 0,
+    "duration_after": 0.06056642532348633,
+    "duration_improvement": 0,
+    "memory_before": 0,
+    "memory_after": 1.86328125,
+    "memory_improvement": 0,
+    "speed_before": 0,
+    "speed_after": 6604.319106891204,
+    "speed_improvement": 0
+  },
+  "issues": {
+    "before_count": 0,
+    "after_count": 1,
+    "before_issues": [],
+    "after_issues": [
+      "🃏 Muitas mãos (>100) - processamento pode ser lento"
+    ]
+  },
+  "improvements": [
+    "❌ Tempo de parsing piorou em 0.0%",
+    "❌ Uso de memória piorou em 0.0%",
+    "❌ Velocidade piorou em 0.0%",
+    "❌ Aumento de 1 problemas"
+  ]
+}

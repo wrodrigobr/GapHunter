@@ -25,22 +25,27 @@ class LocalAnalysisService:
 
         # Verifica coerência posição x ação
         position_action_comment = ""
-        if hero_position.lower() in ["early", "utg", "utg+1"]:
-            if hero_action.lower() in ["call", "limp"]:
+        hero_position_lower = (hero_position or "").lower()
+        hero_action_lower = (hero_action or "").lower()
+        
+        if hero_position_lower in ["early", "utg", "utg+1"]:
+            if hero_action_lower in ["call", "limp"]:
                 position_action_comment = "Jogada passiva em posição inicial pode ser ruim. Prefira abrir raise ou fold."
-            elif hero_action.lower() in ["raise"]:
+            elif hero_action_lower in ["raise"]:
                 position_action_comment = "Ação agressiva em posição inicial é ok, desde que o range seja tight."
-        elif hero_position.lower() in ["late", "button", "cutoff"]:
-            if hero_action.lower() in ["raise"]:
+        elif hero_position_lower in ["late", "button", "cutoff"]:
+            if hero_action_lower in ["raise"]:
                 position_action_comment = "Boa agressividade em posição final."
-            elif hero_action.lower() in ["call"]:
+            elif hero_action_lower in ["call"]:
                 position_action_comment = "Call em posição final é aceitável, mas avalie odds e agressividade."
 
         # Avalia força pré-flop se possível (super simplificado)
         hand_strength_comment = ""
-        if hero_cards != "Não identificadas":
+        hero_cards_str = str(hero_cards) if hero_cards is not None else ""
+        if hero_cards_str and hero_cards_str != "Não identificadas" and hero_cards_str != "None":
             strong_hands = ["AA", "KK", "QQ", "AK", "JJ", "AQ"]
-            if any(strong in hero_cards.replace(" ", "") for strong in strong_hands):
+            hero_cards_clean = hero_cards_str.replace(" ", "")
+            if any(strong in hero_cards_clean for strong in strong_hands):
                 hand_strength_comment = "Mão forte pré-flop."
             else:
                 hand_strength_comment = "Mão de força média/baixa — jogue com cautela."
@@ -49,10 +54,10 @@ class LocalAnalysisService:
         decision_ok = "Inconclusivo"
         explanation = ""
 
-        if "Mão forte" in hand_strength_comment and "raise" in hero_action.lower():
+        if "Mão forte" in hand_strength_comment and "raise" in hero_action_lower:
             decision_ok = "Decisão correta"
             explanation = "Ação agressiva com mão forte está de acordo com estratégia."
-        elif "Mão de força média" in hand_strength_comment and hero_action.lower() == "call":
+        elif "Mão de força média" in hand_strength_comment and hero_action_lower == "call":
             decision_ok = "Aceitável"
             explanation = "Call com mão média pode ser ok, mas depende de posição e tamanho de stack."
         elif "Jogada passiva" in position_action_comment:

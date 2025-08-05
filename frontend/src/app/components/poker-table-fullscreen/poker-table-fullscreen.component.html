@@ -27,7 +27,6 @@
       
       <!-- Cartas Comunitárias -->
       <div class="community-cards">
-        <div class="board-label">{{ currentStreet.toUpperCase() }}</div>
         <div class="cards-container">
           <div 
             class="community-card" 
@@ -71,7 +70,26 @@
 
       <!-- Aposta Atual -->
       <div class="player-bet" *ngIf="player.current_bet && player.current_bet > 0">
-        {{ formatStack(player.current_bet) }}
+        <!-- Fichas Visuais -->
+        <div class="chips-container">
+          <div 
+            *ngFor="let chip of generateChips(player.current_bet); let i = index" 
+            class="chip-stack"
+            [style.z-index]="i">
+            <div 
+              *ngFor="let j of [].constructor(Math.min(chip.count, 3)); let chipIndex = index"
+              class="chip"
+              [style.background-color]="chip.color"
+              [style.transform]="'translateY(' + (chipIndex * -2) + 'px)'"
+              [style.z-index]="chipIndex">
+              <span class="chip-value" *ngIf="chipIndex === 0">{{ chip.value }}</span>
+            </div>
+            <div class="chip-count" *ngIf="chip.count > 3">+{{ chip.count - 3 }}</div>
+          </div>
+        </div>
+        
+        <!-- Valor da aposta -->
+        <div class="bet-amount">{{ formatStack(player.current_bet) }}</div>
       </div>
 
       <!-- Indicador de Posição -->
@@ -96,7 +114,6 @@
     </div>
     
     <div class="progress-info">
-      <span class="street-info">{{ currentStreet.toUpperCase() }}</span>
       <span class="action-info">Ação {{ currentActionIndex + 1 }}</span>
     </div>
     

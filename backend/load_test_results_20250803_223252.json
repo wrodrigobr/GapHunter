@@ -1,0 +1,68 @@
+{
+  "file_info": {
+    "file_path": "torneio_ingles.txt",
+    "size_bytes": 636987,
+    "size_mb": 0.607478141784668,
+    "total_lines": 18675,
+    "hand_count": 400
+  },
+  "upload_tests": [
+    {
+      "chunk_size": null,
+      "duration": 2.057905435562134,
+      "memory_used_mb": 0.64453125,
+      "status_code": 404,
+      "success": false,
+      "error": "{\"detail\":\"Not Found\"}"
+    },
+    {
+      "chunk_size": "concurrent_0",
+      "duration": 2.123103141784668,
+      "memory_used_mb": 1.27734375,
+      "status_code": 404,
+      "success": false,
+      "error": "{\"detail\":\"Not Found\"}"
+    },
+    {
+      "chunk_size": "concurrent_1",
+      "duration": 2.099323034286499,
+      "memory_used_mb": 0.02734375,
+      "status_code": 404,
+      "success": false,
+      "error": "{\"detail\":\"Not Found\"}"
+    }
+  ],
+  "performance_metrics": {
+    "avg_duration": 0,
+    "avg_memory": 0,
+    "success_rate": 0.0
+  },
+  "errors": [],
+  "recommendations": [
+    "🔧 Otimizar parser de hand history",
+    "📊 Implementar métricas de performance em tempo real",
+    "🛡️ Adicionar validação de dados antes do processamento"
+  ],
+  "concurrent_test": {
+    "num_concurrent": 2,
+    "total_duration": 2.2814042568206787,
+    "results": [
+      {
+        "chunk_size": "concurrent_0",
+        "duration": 2.123103141784668,
+        "memory_used_mb": 1.27734375,
+        "status_code": 404,
+        "success": false,
+        "error": "{\"detail\":\"Not Found\"}"
+      },
+      {
+        "chunk_size": "concurrent_1",
+        "duration": 2.099323034286499,
+        "memory_used_mb": 0.02734375,
+        "status_code": 404,
+        "success": false,
+        "error": "{\"detail\":\"Not Found\"}"
+      }
+    ]
+  }
+}

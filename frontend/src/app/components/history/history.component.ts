@@ -253,7 +253,7 @@ export class HistoryComponent implements OnInit {
   openAnalysisModal(hand: Hand) {
     this.selectedHand = hand;
     this.showAnalysisModal = true;
-    this.loadHandReplayData(hand.id);
+    this.loadHandReplayData(hand.hand_id);
   }
 
   closeAnalysisModal() {
@@ -264,7 +264,7 @@ export class HistoryComponent implements OnInit {
     this.resetReplayPosition();
   }
 
-  async loadHandReplayData(handId: number) {
+  async loadHandReplayData(handId: string) {
     this.loadingReplay = true;
     this.handReplayData = null;
     
@@ -329,7 +329,7 @@ export class HistoryComponent implements OnInit {
         is_hero: currentAction.player === this.handReplayData.hero_name
       };
 
-      this.apiService.analyzeSpecificAction(this.selectedHand.id, actionData).subscribe({
+      this.apiService.analyzeSpecificAction(this.selectedHand.hand_id, actionData).subscribe({
         next: (analysis) => {
           this.currentActionAnalysis = analysis.action_analysis;
         },

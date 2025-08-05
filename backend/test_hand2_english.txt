@@ -1,0 +1,50 @@
+PokerStars Hand #257045867083: Tournament #3910307458, $ 0.98+$ 0.12 USD Hold'em No Limit - Level V (40/80) - 2025/07/22 10:11:21 ET
+Table '3910307458 12' 9-max Seat #4 is the button
+Seat 1: jojosetubal (7825 in chips)
+Seat 2: Kaptahh (8367 in chips)
+Seat 3: Andrew Willian (1779 in chips)
+Seat 4: Maks19111979 (2850 in chips)
+Seat 5: SuKKinho (3968 in chips)
+Seat 7: varen1k322 (2794 in chips)
+Seat 8: Cyan Diogenes (9030 in chips)
+Seat 9: phpro (2990 in chips)
+jojosetubal: posts the ante 10
+Kaptahh: posts the ante 10
+Andrew Willian: posts the ante 10
+Maks19111979: posts the ante 10
+SuKKinho: posts the ante 10
+varen1k322: posts the ante 10
+Cyan Diogenes: posts the ante 10
+phpro: posts the ante 10
+SuKKinho: posts small blind 40
+varen1k322: posts big blind 80
+*** HOLE CARDS ***
+phpro Dealt to [9d 7c]
+Cyan Diogenes: folds
+phpro: folds
+jojosetubal: folds
+Kaptahh: folds
+Andrew Willian: folds
+Maks19111979: raises 80 para 160
+SuKKinho: folds
+varen1k322: calls 80
+*** FLOP *** [Ts 2c 9c]
+varen1k322: checks
+martelli1990 is disconnected
+Maks19111979: checks
+*** TURN *** [Ts 2c 9c] [Jc]
+varen1k322: bets 225
+Maks19111979: folds
+Aposta não-callsda (225) returned para varen1k322
+varen1k322 collected 440 do pote
+*** SUMMARY ***
+Total pot 440 | Rake 0
+Table [Ts 2c 9c Jc]
+Seat 1: jojosetubal folded before Flop (didn't bet)
+Seat 2: Kaptahh folded before Flop (didn't bet)
+Seat 3: Andrew Willian folded before Flop (didn't bet)
+Seat 4: Maks19111979 (button) folded on the Turn
+Seat 5: SuKKinho (small blind) folded before Flop
+Seat 7: varen1k322 (big blind) collected (440)
+Seat 8: Cyan Diogenes folded before Flop (didn't bet)
+Seat 9: phpro folded before Flop (didn't bet)

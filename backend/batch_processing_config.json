@@ -1,0 +1,6 @@
+{
+  "batch_size": 10,
+  "max_batches": 40,
+  "batch_timeout": 30,
+  "retry_attempts": 3
+}

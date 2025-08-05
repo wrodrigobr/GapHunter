@@ -1,25 +1,36 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 from typing import List, Optional
 from datetime import datetime
+import sys
 import os
+from pathlib import Path
+
+# Adicionar o diretório raiz ao path para importar o validador
+backend_root = Path(__file__).parent.parent.parent
+sys.path.append(str(backend_root))
 
 from app.models.database import get_db
 from app.models.user import User
 from app.models.hand import Hand
+from app.models.hand_action import HandAction
 from app.models.tournament import Tournament
 from app.models.schemas import Hand as HandSchema, UploadResponse
 from app.services.auth import get_current_active_user
 from app.utils.poker_parser import PokerStarsParser
+from app.utils.advanced_poker_parser import AdvancedPokerParser
 from app.utils.advanced_poker_parser import parse_hand_for_table_replay
 from app.services.ai_service import AIAnalysisService
 from app.services.local_analysis_service import LocalAnalysisService
+from app.services.validation_service import ValidationService
 
 router = APIRouter()
 parser = PokerStarsParser()
+advanced_parser = AdvancedPokerParser()
 ai_service = AIAnalysisService()
 local_analysis_service = LocalAnalysisService()
+validation_service = ValidationService()
 
 def get_or_create_tournament(db: Session, user_id: int, tournament_data: dict) -> Optional[Tournament]:
     """Busca ou cria um torneio na tabela tournaments"""
@@ -76,6 +87,23 @@ async def upload_hand_history(
         content = content.decode('utf-8')
         
         print(f"📁 Arquivo recebido: {file.filename} ({len(content)} caracteres)")
+        
+        # Validar o arquivo
+        validation_result = await validation_service.validate_hand_history_file(content, file.filename)
+        if not validation_result["is_valid"]:
+            error_response = validation_service.get_validation_error_response(validation_result)
+            raise HTTPException(
+                status_code=400, 
+                detail={
+                    "error": error_response["error"],
+                    "title": error_response["title"],
+                    "message": error_response["message"],
+                    "solutions": error_response["solutions"],
+                    "instructions": error_response.get("instructions", [])
+                }
+            )
+        
+        print(f"✅ Arquivo validado: {validation_result['language']}")
         
         # Parse das mãos
         parsed_hands = parser.parse_file(content)
@@ -165,6 +193,28 @@ Para análise mais detalhada, configure a integração com OpenRouter.
             db.add(db_hand)
             processed_hands.append(db_hand)
             print(f"✅ Mão {hand_id} adicionada ao banco (torneio_id: {tournament_db_id})")
+            
+            # Parse avançado para extrair ações detalhadas
+            advanced_replay = advanced_parser.parse_hand_for_replay(hand_data.get("raw_hand", ""))
+            
+            # Salvar ações no banco
+            if advanced_replay:
+                action_order = 0
+                for street in advanced_replay.streets:
+                    for action in street.actions:
+                        db_action = HandAction(
+                            hand_id=db_hand.id,  # Será definido após o commit
+                            street=action.street,
+                            player_name=action.player,
+                            action_type=action.action_type,
+                            amount=action.amount or 0.0,
+                            total_bet=action.total_bet or 0.0,
+                            action_order=action_order
+                        )
+                        db.add(db_action)
+                        action_order += 1
+                
+                print(f"✅ {action_order} ações salvas para mão {hand_id}")
         
         db.commit()
         
@@ -579,4 +629,165 @@ async def analyze_specific_action(
             ],
             'error': str(e)
         }
+
+@router.get("/{hand_id}/replay")
+async def get_hand_replay(
+    hand_id: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Gera dados de replay on-demand para uma mão específica"""
+    
+    # Buscar a mão no banco
+    hand = db.query(Hand).filter(
+        Hand.hand_id == hand_id,
+        Hand.user_id == current_user.id
+    ).first()
+    
+    if not hand:
+        raise HTTPException(status_code=404, detail="Mão não encontrada")
+    
+    try:
+        # Log do raw_hand para debug
+        print(f"🔍 DEBUG: Raw hand para mão {hand_id}:")
+        print("=" * 80)
+        print(hand.raw_hand)
+        print("=" * 80)
+        
+        # Gerar replay on-demand (sem salvar no banco)
+        advanced_replay = advanced_parser.parse_hand_for_replay(hand.raw_hand)
+        
+        if not advanced_replay:
+            raise HTTPException(status_code=400, detail="Não foi possível processar a mão para reprodução")
+        
+        # Log do resultado do parsing
+        print(f"🔍 DEBUG: Resultado do parsing para mão {hand_id}:")
+        print(f"  - Hand ID: {advanced_replay.hand_id}")
+        print(f"  - Tournament ID: {advanced_replay.tournament_id}")
+        print(f"  - Table Name: {advanced_replay.table_name}")
+        print(f"  - Players: {len(advanced_replay.players)}")
+        print(f"  - Streets: {len(advanced_replay.streets)}")
+        print(f"  - Hero Name: {advanced_replay.hero_name}")
+        print(f"  - Hero Cards: {advanced_replay.hero_cards}")
+        
+        # Log detalhado dos jogadores
+        print("  - Players details:")
+        for i, player in enumerate(advanced_replay.players):
+            print(f"    {i+1}. {player.name} - Pos: {player.position} - Stack: {player.stack} - Hero: {player.is_hero}")
+        
+        # Log detalhado das streets
+        print("  - Streets details:")
+        for i, street in enumerate(advanced_replay.streets):
+            print(f"    {i+1}. {street.name} - Cards: {street.cards} - Actions: {len(street.actions)}")
+            if street.cards:
+                print(f"      Cards: {street.cards}")
+                print(f"      Cards length: {len(street.cards)}")
+            for j, action in enumerate(street.actions):
+                cards_info = f" (cartas: {action.cards})" if action.cards else ""
+                print(f"      {j+1}. {action.player}: {action.action_type} {action.amount}{cards_info}")
+        
+        print("=" * 80)
+        
+        # Log das blinds extraídas
+        print(f"🔍 DEBUG: Blinds extraídas: {advanced_replay.blinds}")
+        print(f"🔍 DEBUG: Level extraído: {advanced_replay.level}")
+        
+        # Converter para formato esperado pelo frontend
+        replay_data = {
+            "hand_id": hand.hand_id,
+            "tournament_id": hand.pokerstars_tournament_id,
+            "table_name": hand.table_name,
+            "level": getattr(advanced_replay, 'level', 'V'),
+            "blinds": getattr(advanced_replay, 'blinds', {"small": 10, "big": 20, "ante": 0}),
+            "players": [],
+            "streets": [],
+            "hero_name": hand.hero_name or "Unknown",
+            "hero_cards": advanced_replay.hero_cards if hasattr(advanced_replay, 'hero_cards') else [],
+            "action_sequence": [],
+            "gaps_identified": []
+        }
+        
+        # Processar jogadores com verificação defensiva
+        for player in advanced_replay.players:
+            player_data = {
+                "name": getattr(player, 'name', 'Unknown'),
+                "position": getattr(player, 'position', 0),
+                "stack": getattr(player, 'stack', 0),
+                "is_hero": getattr(player, 'is_hero', False),
+                "is_button": getattr(player, 'is_button', False),
+                "is_small_blind": getattr(player, 'is_small_blind', False),
+                "is_big_blind": getattr(player, 'is_big_blind', False)
+            }
+            replay_data["players"].append(player_data)
+        
+        # Processar streets e ações
+        for street in advanced_replay.streets:
+            street_data = {
+                "name": street.name,
+                "cards": street.cards if hasattr(street, 'cards') else [],
+                "actions": []
+            }
+            
+            for action in street.actions:
+                street_data["actions"].append({
+                    "player": action.player,
+                    "action": action.action_type,
+                    "amount": action.amount or 0,
+                    "total_bet": action.total_bet or 0,
+                    "cards": action.cards or ""  # Adicionar cartas das ações
+                })
+            
+            replay_data["streets"].append(street_data)
+        
+        return replay_data
+        
+    except Exception as e:
+        print(f"❌ Erro ao gerar replay para mão {hand_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro interno ao processar replay")
+
+@router.get("/{hand_id}/replay-test")
+async def get_hand_replay_test(
+    hand_id: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Endpoint de teste para verificar a estrutura do replay"""
+    
+    # Buscar a mão no banco
+    hand = db.query(Hand).filter(
+        Hand.hand_id == hand_id,
+        Hand.user_id == current_user.id
+    ).first()
+    
+    if not hand:
+        raise HTTPException(status_code=404, detail="Mão não encontrada")
+    
+    try:
+        # Gerar replay on-demand (sem salvar no banco)
+        advanced_replay = advanced_parser.parse_hand_for_replay(hand.raw_hand)
+        
+        if not advanced_replay:
+            raise HTTPException(status_code=400, detail="Não foi possível processar a mão para reprodução")
+        
+        # Retornar estrutura simplificada para debug
+        return {
+            "hand_id": hand.hand_id,
+            "tournament_id": hand.pokerstars_tournament_id,
+            "table_name": hand.table_name,
+            "level": "V",
+            "blinds": {"small": 10, "big": 20, "ante": 0},
+            "players_count": len(advanced_replay.players),
+            "streets_count": len(advanced_replay.streets),
+            "hero_name": hand.hero_name,
+            "debug_info": {
+                "player_attributes": list(advanced_replay.players[0].__dict__.keys()) if advanced_replay.players else [],
+                "first_player": advanced_replay.players[0].__dict__ if advanced_replay.players else None
+            }
+        }
+        
+    except Exception as e:
+        print(f"❌ Erro ao gerar replay para mão {hand_id}: {str(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 

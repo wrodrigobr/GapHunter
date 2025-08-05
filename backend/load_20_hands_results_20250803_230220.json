@@ -1,0 +1,86 @@
+{
+  "hands_loaded": [],
+  "database_inserts": [
+    {
+      "hand_id": "257045862415",
+      "success": true
+    },
+    {
+      "hand_id": "257045867083",
+      "success": true
+    },
+    {
+      "hand_id": "257045873643",
+      "success": true
+    },
+    {
+      "hand_id": "257045883935",
+      "success": true
+    },
+    {
+      "hand_id": "257045898300",
+      "success": true
+    },
+    {
+      "hand_id": "257045912047",
+      "success": true
+    },
+    {
+      "hand_id": "257045919085",
+      "success": true
+    },
+    {
+      "hand_id": "257045933884",
+      "success": true
+    },
+    {
+      "hand_id": "257045940964",
+      "success": true
+    },
+    {
+      "hand_id": "257045958227",
+      "success": true
+    },
+    {
+      "hand_id": "257045965983",
+      "success": true
+    },
+    {
+      "hand_id": "257045975775",
+      "success": true
+    },
+    {
+      "hand_id": "257045989172",
+      "success": true
+    },
+    {
+      "hand_id": "257045999912",
+      "success": true
+    },
+    {
+      "hand_id": "257046008859",
+      "success": true
+    },
+    {
+      "hand_id": "257046025443",
+      "success": true
+    },
+    {
+      "hand_id": "257046040965",
+      "success": true
+    },
+    {
+      "hand_id": "257046046366",
+      "success": true
+    },
+    {
+      "hand_id": "257046050855",
+      "success": true
+    },
+    {
+      "hand_id": "257046057865",
+      "success": true
+    }
+  ],
+  "errors": []
+}
