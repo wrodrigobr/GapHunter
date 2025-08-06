@@ -1077,16 +1077,36 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
     
     switch (theme) {
       case 'pokerstars':
-        this.tableConfig = POKERSTARS_CONFIG;
+        // Configurar mesa PokerStars
+        this.tableConfig = { 
+          theme: 'pokerstars', 
+          tableColor: '#0d5016',
+          feltTexture: 'smooth'
+        };
         break;
       case 'classic':
-        this.tableConfig = CLASSIC_CONFIG;
+        // Configurar mesa clássica
+        this.tableConfig = { 
+          theme: 'classic', 
+          tableColor: '#0d5016',
+          feltTexture: 'smooth'
+        };
         break;
       case 'modern':
-        this.tableConfig = MODERN_CONFIG;
+        // Configurar mesa moderna
+        this.tableConfig = { 
+          theme: 'modern', 
+          tableColor: '#0d5016',
+          feltTexture: 'smooth'
+        };
         break;
-      case 'dark':
-        this.tableConfig = { ...POKERSTARS_CONFIG, theme: 'dark', tableColor: '#1a1a1a' };
+      default:
+        // Configurar mesa padrão
+        this.tableConfig = { 
+          theme: 'dark', 
+          tableColor: '#0d5016',
+          feltTexture: 'smooth'
+        };
         break;
     }
     

@@ -455,5 +455,6 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   }
 
   Array = Array; // Para usar no template
+  Math = Math; // Para usar no template
 }
 
