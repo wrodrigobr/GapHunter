@@ -250,6 +250,47 @@ export class HistoryComponent implements OnInit {
     });
   }
 
+  formatCardsWithColors(cards: string): Array<{text: string, isRed: boolean}> {
+    if (!cards) return [];
+    
+    // Mapear naipes para ícones
+    const suitIcons: { [key: string]: string } = {
+      's': '♠', // spades (preto)
+      'h': '♥', // hearts (vermelho)
+      'd': '♦', // diamonds (vermelho)
+      'c': '♣'  // clubs (preto)
+    };
+    
+    const result: Array<{text: string, isRed: boolean}> = [];
+    
+    // Encontrar todas as cartas no formato rank+suit
+    const cardMatches = cards.match(/([AKQJT98765432])([shdc])/g);
+    
+    if (cardMatches) {
+      cardMatches.forEach((card, index) => {
+        const rank = card.charAt(0);
+        const suit = card.charAt(1);
+        const icon = suitIcons[suit] || suit;
+        const isRed = suit === 'h' || suit === 'd';
+        
+        result.push({
+          text: `${rank}${icon}`,
+          isRed: isRed
+        });
+        
+        // Adicionar espaço entre cartas (exceto na última)
+        if (index < cardMatches.length - 1) {
+          result.push({
+            text: ' ',
+            isRed: false
+          });
+        }
+      });
+    }
+    
+    return result;
+  }
+
   openAnalysisModal(hand: Hand) {
     this.selectedHand = hand;
     this.showAnalysisModal = true;
@@ -420,6 +461,16 @@ export class HistoryComponent implements OnInit {
   getCardClass(card: string): string {
     if (!card) return '';
     
+    // Verificar se a string contém naipes vermelhos (h ou d)
+    if (card.includes('h') || card.includes('d')) {
+      return 'red-suit';
+    }
+    // Verificar se a string contém naipes pretos (s ou c)
+    if (card.includes('s') || card.includes('c')) {
+      return 'black-suit';
+    }
+    
+    // Fallback: verificar o último caractere
     const suit = card.slice(-1);
     if (suit === 'h' || suit === 'd') {
       return 'red-suit';

@@ -28,8 +28,8 @@ export interface UploadStartResponse {
   providedIn: 'root'
 })
 export class UploadService {
-  //private apiUrl = 'http://localhost:8000/api';
-  private apiUrl = 'https://ghunter-backend-djfcaycjd5eeeahu.brazilsouth-01.azurewebsites.net/api';
+  private apiUrl = 'http://localhost:8000/api';
+  //private apiUrl = 'https://ghunter-backend-djfcaycjd5eeeahu.brazilsouth-01.azurewebsites.net/api';
   public progressSubject = new BehaviorSubject<UploadProgress | null>(null);
   public progress$ = this.progressSubject.asObservable();
   public uploadCompletedSubject = new BehaviorSubject<boolean>(false);

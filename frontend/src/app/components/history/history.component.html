@@ -117,7 +117,12 @@
             </span>
           </td>
           <td class="cards-cell">
-            <span class="cards-badge cards" [ngClass]="getCardClass(hand.hero_cards || '')">{{formatCards(hand.hero_cards || '')}}</span>
+            <span class="cards-badge cards">
+              <span *ngFor="let cardPart of formatCardsWithColors(hand.hero_cards || '')" 
+                    [class]="cardPart.isRed ? 'red-suit' : 'black-suit'">
+                {{cardPart.text}}
+              </span>
+            </span>
           </td>
           <td class="action-cell">
             <span class="action-badge" [class]="'action-' + (hand.hero_action || 'unknown')">
@@ -125,7 +130,12 @@
             </span>
           </td>
           <td class="board-cell">
-            <span class="board-badge board" [ngClass]="getCardClass(hand.board_cards || '')">{{formatCards(hand.board_cards || '')}}</span>
+            <span class="board-badge board">
+              <span *ngFor="let cardPart of formatCardsWithColors(hand.board_cards || '')" 
+                    [class]="cardPart.isRed ? 'red-suit' : 'black-suit'">
+                {{cardPart.text}}
+              </span>
+            </span>
           </td>
           <td class="status-cell">
             <span class="status-badge" [class]="getGapStatusClass(getGapStatus(hand.ai_analysis || ''))">

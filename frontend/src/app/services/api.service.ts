@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Hand {
   id: number;
@@ -50,8 +51,7 @@ export interface UploadResponse {
   providedIn: 'root'
 })
 export class ApiService {
-  //private apiUrl = 'http://localhost:8000/api';
-  private apiUrl = 'https://ghunter-backend-djfcaycjd5eeeahu.brazilsouth-01.azurewebsites.net/api';
+  private apiUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
