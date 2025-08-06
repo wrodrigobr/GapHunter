@@ -1,9 +1,9 @@
-import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { POKERSTARS_CONFIG, CLASSIC_CONFIG, MODERN_CONFIG, PokerTableConfig, PokerTableUtils, POKERSTARS_ELEMENTS, OPEN_SOURCE_ELEMENTS } from './poker-stars-config';
-import { RiropoParserService, RiropoHand } from '../../services/riropo-parser.service';
+import { ApiService } from '../../services/api.service';
 import { PokerReplayerComponent } from '../poker-replayer/poker-replayer.component';
+import { RiropoParserService, RiropoHand } from '../../services/riropo-parser.service';
 import { HandReplay, PlayerInfo, PlayerAction, GameStreet } from '../../models/hand-replay.model';
 
 @Component({
@@ -405,10 +405,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
       this.applyBlinds();
     }
 
-    // Aplicar ações até o ponto atual (apenas se não for a primeira ação)
-    if (this.currentStreetIndex > 0 || this.currentActionIndex > 0) {
+    // Aplicar ações até o ponto atual
     this.applyActionsUpToCurrentPoint();
-    }
 
     // Atualizar board cards
     this.updateBoardCards();
