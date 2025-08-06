@@ -9,6 +9,183 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   max-width: 888px;
   margin: 0 auto;
+  
+  /* Estilos para Fullscreen */
+  &:fullscreen,
+  &.fullscreen-active {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    margin: 0;
+    
+    .replayer-container {
+      height: 100vh;
+      min-height: 100vh;
+    }
+    
+    .main-content {
+      height: 100vh;
+      
+      .main-info {
+        height: 60px;
+        padding: 0 30px;
+        
+        .table-info {
+          .table-name {
+            font-size: 16px;
+          }
+          
+          .game-type {
+            font-size: 12px;
+          }
+        }
+        
+        .hand-info {
+          .hand-number {
+            font-size: 16px;
+          }
+          
+          .blinds {
+            font-size: 12px;
+          }
+        }
+        
+        .logo {
+          .logo-text {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+    
+    .poker-table-area {
+      flex: 1;
+      min-height: 70vh;
+      padding: 40px;
+    }
+    
+    .poker-table {
+      max-width: 90vw;
+      max-height: 70vh;
+      width: 90vw;
+      height: 70vh;
+    }
+    
+    .table-felt {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      min-width: 600px;
+      min-height: 400px;
+      
+      /* Ajustes para cartas em fullscreen */
+      .board-cards {
+        .board-card {
+          width: 60px;
+          height: 80px;
+          font-size: 24px;
+          margin: 0 8px;
+        }
+      }
+      
+      /* Ajustes para jogadores em fullscreen */
+      .players-container {
+        .player {
+          .player-avatar {
+            .avatar-circle {
+              width: 50px;
+              height: 50px;
+              font-size: 18px;
+            }
+          }
+          
+          .player-info {
+            .player-name {
+              font-size: 14px;
+            }
+            
+            .player-stack {
+              font-size: 12px;
+            }
+          }
+          
+          .player-cards {
+            .player-card {
+              width: 40px;
+              height: 55px;
+              font-size: 16px;
+              margin: 0 2px;
+            }
+          }
+          
+          .player-bet {
+            .bet-amount {
+              font-size: 14px;
+              padding: 4px 8px;
+            }
+          }
+          
+          .player-status {
+            div {
+              font-size: 10px;
+              padding: 2px 6px;
+            }
+          }
+        }
+      }
+      
+      /* Ajuste do pote em fullscreen */
+      .pot-container {
+        .pot-label {
+          font-size: 16px;
+        }
+        
+        .pot-amount {
+          font-size: 20px;
+        }
+      }
+    }
+    
+    .controls-area {
+      min-height: 120px;
+      padding: 30px;
+    }
+    
+    .navigation-controls {
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .nav-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 18px;
+      
+      &.play-pause {
+        width: 70px;
+        height: 70px;
+        font-size: 20px;
+      }
+    }
+    
+    .progress-container {
+      margin-top: 20px;
+    }
+    
+    .speed-control {
+      margin-top: 20px;
+      
+      .speed-buttons {
+        gap: 10px;
+      }
+      
+      .speed-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+    }
+  }
 }
 
 /* Container Principal */

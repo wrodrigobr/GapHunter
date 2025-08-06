@@ -544,13 +544,35 @@
 }
 
 /* Aplicar cores aos naipes nas cartas */
+.cards-badge.red-suit,
+.board-badge.red-suit {
+  color: #ff0000 !important;
+}
+
+.cards-badge.black-suit,
+.board-badge.black-suit {
+  color: #000000 !important;
+}
+
+/* Aplicar cores aos naipes nas cartas (fallback) */
 .cards.red-suit,
 .board.red-suit {
-  color: #ff0000;
+  color: #ff0000 !important;
 }
 
 .cards.black-suit,
 .board.black-suit {
-  color: #000000;
+  color: #000000 !important;
+}
+
+/* Cores para spans individuais dentro das cartas */
+.cards-badge .red-suit,
+.board-badge .red-suit {
+  color: #ff0000 !important;
+}
+
+.cards-badge .black-suit,
+.board-badge .black-suit {
+  color: #000000 !important;
 }
 

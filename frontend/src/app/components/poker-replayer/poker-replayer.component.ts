@@ -58,6 +58,15 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
     } else if (this.handHistory) {
       this.loadHand(this.handHistory);
     }
+    
+    // Listener para detectar saída do fullscreen
+    document.addEventListener('fullscreenchange', () => {
+      const element = document.querySelector('.riropo-replayer') as HTMLElement;
+      if (element && !document.fullscreenElement) {
+        console.log('🔍 DEBUG: Detectou saída do fullscreen');
+        element.classList.remove('fullscreen-active');
+      }
+    });
   }
 
   /**
@@ -105,8 +114,9 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
     let timestamp = 0;
     
     for (const street of backendData.streets || []) {
+      console.log(`🔍 DEBUG: Processando street: ${street.name} com ${street.actions.length} ações`);
       for (const action of street.actions) {
-        allActions.push({
+        const riropoAction = {
           player: action.player,
           action: action.action,
           amount: action.amount,
@@ -114,11 +124,19 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
           timestamp: timestamp++,
           cards: action.cards || '',
           total_bet: action.total_bet // Adicionar total_bet para o raise
-        });
+        };
+        allActions.push(riropoAction);
+        console.log(`🔍 DEBUG: Ação criada: ${action.player} - ${action.action} - street: ${street.name}`);
       }
     }
     
     hand.actions = allActions;
+    
+    // Log detalhado das actions criadas
+    console.log('🔍 DEBUG: Actions criadas:');
+    allActions.forEach((action, index) => {
+      console.log(`  ${index}: ${action.player} - ${action.action} - street: "${action.street}"`);
+    });
     
     // Construir board a partir das streets
     const allBoardCards: string[] = [];
@@ -134,6 +152,12 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
     console.log('🔍 DEBUG: Streets disponíveis:', this.currentHand.streets);
     console.log('🔍 DEBUG: Board criado:', this.currentHand.board);
     console.log('🔍 DEBUG: Hero cards:', this.currentHand.heroCards);
+    
+    // Log detalhado dos jogadores e suas cartas
+    console.log('🔍 DEBUG: Jogadores e suas cartas:');
+    this.currentHand.players.forEach(player => {
+      console.log(`  ${player.name} (Hero: ${player.isHero}): cards="${player.cards}"`);
+    });
     
     this.resetReplay();
     if (this.autoPlay) {
@@ -303,19 +327,19 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
   private processAction(action: RiropoAction): void {
     console.log(`🔍 DEBUG: processAction INÍCIO - ${action.player} - ${action.action} - $${action.amount}`);
     console.log(`🔍 DEBUG: processAction - action.street: ${action.street}, currentStreet: ${this.currentStreet}`);
+    console.log(`🔍 DEBUG: processAction - Comparação: "${action.street}" !== "${this.currentStreet}" = ${action.street !== this.currentStreet}`);
     
-    // Update street if needed
-    if (action.street !== this.currentStreet) {
+    // Update street if needed (normalizar strings para comparação)
+    const normalizedActionStreet = action.street?.trim().toLowerCase();
+    const normalizedCurrentStreet = this.currentStreet?.trim().toLowerCase();
+    
+    if (normalizedActionStreet !== normalizedCurrentStreet) {
       console.log(`🔍 DEBUG: Mudando de street: ${this.currentStreet} -> ${action.street}`);
       this.currentStreet = action.street;
       this.updateBoard();
       this.clearPlayerBets(); // Limpar apostas ao mudar de street
-      
-      // Se estamos navegando manualmente, parar aqui para mostrar apenas as cartas
-      if (!this.isPlaying || this.isPaused) {
-        console.log(`🔍 DEBUG: Street mudou para ${action.street} - cartas mostradas, aguardando próxima ação`);
-        return; // Não processar a ação ainda
-      }
+    } else {
+      console.log(`🔍 DEBUG: Street não mudou, continuando com: ${this.currentStreet}`);
     }
 
     // Update pot (somar ao pote existente)
@@ -385,11 +409,14 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
   private clearPlayerBets(): void {
     if (!this.currentHand) return;
 
-    console.log('🔍 DEBUG: Limpando apostas dos jogadores');
+    console.log('🔍 DEBUG: Limpando apostas e estados dos jogadores');
     this.currentHand.players.forEach(player => {
       player.currentBet = 0;
       player.bet = 0;
-      // NÃO resetar isChecked aqui para manter o badge de CHECK visível
+      player.isChecked = false; // Limpar badge de CHECK
+      player.isActive = false; // Limpar indicador de ação ativa
+      // NÃO limpar isFolded pois o jogador continua foldado
+      // NÃO limpar isAllIn pois o jogador continua all-in
     });
   }
 
@@ -581,7 +608,13 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
       player.isAllIn = false; // Resetar all-in status
       player.isChecked = false; // Resetar check também
       player.isWinner = false; // Resetar vencedor
-      player.cards = ''; // Resetar cartas
+      
+      // NÃO limpar cartas do hero - elas devem sempre estar visíveis
+      if (!player.isHero) {
+        player.cards = ''; // Resetar cartas apenas para jogadores não-hero
+      } else {
+        console.log(`🔍 DEBUG: Preservando cartas do hero ${player.name}: "${player.cards}"`);
+      }
     });
     
     // Configurar apostas iniciais dos blinds
@@ -895,13 +928,25 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
    * Toggle fullscreen
    */
   toggleFullscreen(): void {
+    const element = document.querySelector('.riropo-replayer') as HTMLElement;
+    if (!element) return;
+    
     if (!document.fullscreenElement) {
-      const element = document.querySelector('.riropo-replayer');
-      if (element) {
-        element.requestFullscreen();
-      }
+      // Entrar em fullscreen
+      element.requestFullscreen().then(() => {
+        console.log('🔍 DEBUG: Entrou em fullscreen');
+        element.classList.add('fullscreen-active');
+      }).catch(err => {
+        console.error('❌ DEBUG: Erro ao entrar em fullscreen:', err);
+      });
     } else {
-      document.exitFullscreen();
+      // Sair do fullscreen
+      document.exitFullscreen().then(() => {
+        console.log('🔍 DEBUG: Saiu do fullscreen');
+        element.classList.remove('fullscreen-active');
+      }).catch(err => {
+        console.error('❌ DEBUG: Erro ao sair do fullscreen:', err);
+      });
     }
   }
 
@@ -942,17 +987,7 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
       const action = this.currentHand.actions[this.currentActionIndex];
       console.log(`🔍 DEBUG: nextAction - processando ação ${this.currentActionIndex}: ${action.player} - ${action.action}`);
       
-      // Se a street mudou, primeiro mostrar apenas as cartas
-      if (action.street !== this.currentStreet) {
-        console.log(`🔍 DEBUG: nextAction - mudando street: ${this.currentStreet} -> ${action.street}`);
-        this.currentStreet = action.street;
-        this.updateBoard();
-        this.clearPlayerBets();
-        console.log(`🔍 DEBUG: nextAction - cartas da nova street mostradas`);
-        return; // Parar aqui, próxima ação processará a primeira ação da nova street
-      }
-      
-      // Processar a ação normalmente
+      // Processar a ação (que inclui mudança de street se necessário)
       this.processAction(action);
       this.visibleActions.push(action);
     }
@@ -976,8 +1011,24 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
    * Reset to start of hand
    */
   resetToStart(): void {
+    console.log('🔍 DEBUG: resetToStart - Reiniciando mão do zero');
+    
+    // Parar replay se estiver rodando
+    this.stopReplay();
+    
+    // Resetar índices
     this.currentActionIndex = -1;
-    this.updateReplayState();
+    this.visibleActions = [];
+    
+    // Resetar estado da mesa
+    this.resetBoard();
+    this.resetPot();
+    this.resetPlayerStates();
+    
+    // Processar antes se houver
+    this.processAntes();
+    
+    console.log('🔍 DEBUG: resetToStart - Mão reiniciada com sucesso');
   }
 
   /**
@@ -985,8 +1036,30 @@ export class PokerReplayerComponent implements OnInit, OnDestroy {
    */
   goToEnd(): void {
     if (this.currentHand) {
+      console.log('🔍 DEBUG: goToEnd - Indo para o final da mão');
+      
+      // Parar replay se estiver rodando
+      this.stopReplay();
+      
+      // Ir para a última ação
       this.currentActionIndex = this.currentHand.actions.length - 1;
-      this.updateReplayState();
+      
+      // Resetar estado da mesa
+      this.resetBoard();
+      this.resetPot();
+      this.resetPlayerStates();
+      
+      // Processar antes se houver
+      this.processAntes();
+      
+      // Processar todas as ações até o final
+      for (let i = 0; i <= this.currentActionIndex; i++) {
+        const action = this.currentHand.actions[i];
+        this.processAction(action);
+        this.visibleActions.push(action);
+      }
+      
+      console.log('🔍 DEBUG: goToEnd - Final da mão alcançado');
     }
   }
 

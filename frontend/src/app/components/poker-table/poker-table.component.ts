@@ -405,10 +405,11 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
       this.applyBlinds();
     }
 
-    // Aplicar ações até o ponto atual (apenas se não for a primeira ação)
-    if (this.currentStreetIndex > 0 || this.currentActionIndex > 0) {
+    // Aplicar ações até o ponto atual
     this.applyActionsUpToCurrentPoint();
-    }
+
+    // Atualizar currentStreet
+    this.updateCurrentStreet();
 
     // Atualizar board cards
     this.updateBoardCards();
@@ -462,6 +463,17 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
 
         this.applyAction(action);
       }
+    }
+  }
+
+  updateCurrentStreet() {
+    if (!this.handReplay) return;
+    
+    const currentStreetData = this.handReplay.streets[this.currentStreetIndex];
+    if (currentStreetData) {
+      this.currentStreet = currentStreetData.name;
+    } else {
+      this.currentStreet = 'preflop';
     }
   }
 
