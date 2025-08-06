@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RiropoParserService, RiropoHand, RiropoPlayer, RiropoStreet, RiropoAction } from '../../services/riropo-parser.service';
+import { RiropoOriginalParserService, RiropoHand } from '../../services/riropo-original-parser.service';
 
 @Component({
   selector: 'app-poker-replayer',
@@ -35,7 +35,7 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   isAnimating: boolean = false;
   lastAction: RiropoAction | null = null;
 
-  constructor(private riropoParser: RiropoParserService) {}
+  constructor(private riropoParser: RiropoOriginalParserService) {}
 
   ngOnInit() {
     this.initializeReplayer();
