@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://gaphunter-backend.azurewebsites.net'  // Backend Azure para produção
+  apiUrl: 'http://localhost:8000'  // Temporário: usando localhost até backend Azure ser configurado
 }; 
