@@ -23,7 +23,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
     theme: 'professional',
     cardStyle: 'classic',
     chipStyle: 'casino',
-    tableColor: '#0d5016'
+    tableColor: '#0d5016',
+    feltTexture: 'smooth'
   };
   
   // RIROPO Replayer properties
