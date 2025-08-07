@@ -132,12 +132,25 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
 
     console.log('🔍 DEBUG: Resetando para início...');
     console.log('🔍 DEBUG: parsedHand.players:', this.parsedHand.players);
+    console.log('🔍 DEBUG: parsedHand.heroCards:', this.parsedHand.heroCards);
     
     this.currentStreetIndex = 0;
     this.currentActionIndex = -1;
     
     // Ordenar jogadores por seat para posicionamento correto
     this.currentPlayers = [...this.parsedHand.players].sort((a, b) => a.seat - b.seat);
+    
+    // Verificar se herói tem cartas
+    this.currentPlayers.forEach(player => {
+      if (player.isHero) {
+        console.log('🔍 DEBUG: Herói encontrado:', player.name);
+        console.log('🔍 DEBUG: Cartas do herói no player:', player.cards);
+        if (this.parsedHand!.heroCards) {
+          player.cards = this.parsedHand!.heroCards;
+          console.log('🔍 DEBUG: Cartas do herói definidas:', player.cards);
+        }
+      }
+    });
     
     this.currentBoard = [];
     this.currentPot = 0;
@@ -156,23 +169,32 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   applyBlinds() {
     if (!this.parsedHand) return;
 
+    console.log('🔍 DEBUG: Aplicando blinds...');
+    console.log('🔍 DEBUG: Blinds:', this.parsedHand.blinds);
+
     this.currentPlayers.forEach(player => {
       if (player.isSmallBlind && this.parsedHand!.blinds.small > 0) {
         this.currentBets[player.name] = this.parsedHand!.blinds.small;
         player.stack -= this.parsedHand!.blinds.small;
         this.currentPot += this.parsedHand!.blinds.small;
+        console.log('🔍 DEBUG: SB aplicado:', player.name, this.parsedHand!.blinds.small);
       }
       if (player.isBigBlind && this.parsedHand!.blinds.big > 0) {
         this.currentBets[player.name] = this.parsedHand!.blinds.big;
         player.stack -= this.parsedHand!.blinds.big;
         this.currentPot += this.parsedHand!.blinds.big;
+        console.log('🔍 DEBUG: BB aplicado:', player.name, this.parsedHand!.blinds.big);
       }
       if (this.parsedHand!.blinds.ante && this.parsedHand!.blinds.ante > 0) {
         this.currentBets[player.name] = (this.currentBets[player.name] || 0) + this.parsedHand!.blinds.ante;
         player.stack -= this.parsedHand!.blinds.ante;
         this.currentPot += this.parsedHand!.blinds.ante;
+        console.log('🔍 DEBUG: Ante aplicado:', player.name, this.parsedHand!.blinds.ante);
       }
     });
+
+    console.log('🔍 DEBUG: Pot após blinds:', this.currentPot);
+    console.log('🔍 DEBUG: Bets após blinds:', this.currentBets);
   }
 
   nextAction() {
@@ -244,49 +266,71 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   }
 
   clearBetsToNewStreet() {
-    // Move all current bets to pot
-    Object.values(this.currentBets).forEach(bet => {
-      this.currentPot += bet;
-    });
+    // Move all current bets to pot (already counted, just clear bets)
     this.currentBets = {};
   }
 
   applyAction(action: RiropoAction) {
     if (!action) return;
 
-    this.lastAction = action;
-    const player = this.currentPlayers.find(p => p.name === action.player);
-    if (!player) return;
-
+    console.log('🔍 DEBUG: Aplicando ação:', action);
+    
     this.isAnimating = true;
+    this.lastAction = action;
+
+    const player = this.currentPlayers.find(p => p.name === action.player);
+    if (!player) {
+      console.error('❌ DEBUG: Jogador não encontrado:', action.player);
+      return;
+    }
 
     switch (action.action) {
       case 'fold':
-        // Player folds - no money movement
+        // Player folds, no money changes
         break;
-      
+        
       case 'check':
-        // Player checks - no money movement
+        // Player checks, no money changes
         break;
-      
+        
       case 'call':
-        if (action.amount && action.amount > 0) {
-          this.currentBets[player.name] = (this.currentBets[player.name] || 0) + action.amount;
-          player.stack -= action.amount;
-          this.currentPot += action.amount;
+        if (action.amount > 0) {
+          const currentBet = this.currentBets[player.name] || 0;
+          const additionalBet = action.amount;
+          
+          this.currentBets[player.name] = currentBet + additionalBet;
+          player.stack -= additionalBet;
+          this.currentPot += additionalBet;
+          
+          console.log('🔍 DEBUG: Call - Pot incrementado:', additionalBet, 'Total pot:', this.currentPot);
         }
         break;
-      
+        
       case 'bet':
       case 'raise':
-        if (action.totalBet) {
+        if (action.amount > 0) {
           const currentBet = this.currentBets[player.name] || 0;
-          const additionalBet = action.totalBet - currentBet;
-          if (additionalBet > 0) {
-            this.currentBets[player.name] = action.totalBet;
-            player.stack -= additionalBet;
-            this.currentPot += additionalBet;
-          }
+          const additionalBet = action.amount;
+          
+          this.currentBets[player.name] = currentBet + additionalBet;
+          player.stack -= additionalBet;
+          this.currentPot += additionalBet;
+          
+          console.log('🔍 DEBUG: Bet/Raise - Pot incrementado:', additionalBet, 'Total pot:', this.currentPot);
+        }
+        break;
+        
+      default:
+        // Handle other actions (blinds, antes, etc.)
+        if (action.amount > 0) {
+          const currentBet = this.currentBets[player.name] || 0;
+          const additionalBet = action.amount;
+          
+          this.currentBets[player.name] = currentBet + additionalBet;
+          player.stack -= additionalBet;
+          this.currentPot += additionalBet;
+          
+          console.log('🔍 DEBUG: Ação genérica - Pot incrementado:', additionalBet, 'Total pot:', this.currentPot);
         }
         break;
     }
@@ -338,6 +382,20 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   }
 
   updateDisplay() {
+    console.log('🔍 DEBUG: updateDisplay chamado');
+    console.log('🔍 DEBUG: currentBoard:', this.currentBoard);
+    console.log('🔍 DEBUG: currentPot:', this.currentPot);
+    console.log('🔍 DEBUG: currentBets:', this.currentBets);
+    
+    // Update board cards based on current street
+    if (this.parsedHand && this.currentStreetIndex >= 0) {
+      const currentStreet = this.parsedHand.streets[this.currentStreetIndex];
+      if (currentStreet && currentStreet.cards) {
+        this.currentBoard = [...currentStreet.cards];
+        console.log('🔍 DEBUG: Board atualizado para street', this.currentStreetIndex, ':', this.currentBoard);
+      }
+    }
+    
     // Force change detection
     this.currentPlayers = [...this.currentPlayers];
   }

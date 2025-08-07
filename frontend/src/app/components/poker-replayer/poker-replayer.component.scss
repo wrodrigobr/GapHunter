@@ -208,59 +208,52 @@
   filter: drop-shadow(0 0 10px #00d4aa);
 }
 
-/* Posicionamento dos assentos para mesa de 9 jogadores */
+/* Posicionamento dos assentos para mesa de 9 jogadores - Layout oval */
 .seat-1 { 
-  top: 5%; 
+  top: 8%; 
   left: 50%; 
   transform: translateX(-50%); 
 }
 
 .seat-2 { 
-  top: 15%; 
-  right: 20%; 
-  transform: translateX(50%);
+  top: 18%; 
+  right: 25%; 
 }
 
 .seat-3 { 
-  top: 35%; 
-  right: 8%; 
-  transform: translateX(50%);
+  top: 38%; 
+  right: 12%; 
 }
 
 .seat-4 { 
-  bottom: 35%; 
-  right: 8%; 
-  transform: translateX(50%);
+  bottom: 38%; 
+  right: 12%; 
 }
 
 .seat-5 { 
-  bottom: 15%; 
-  right: 20%; 
-  transform: translateX(50%);
+  bottom: 18%; 
+  right: 25%; 
 }
 
 .seat-6 { 
-  bottom: 5%; 
+  bottom: 8%; 
   left: 50%; 
   transform: translateX(-50%); 
 }
 
 .seat-7 { 
-  bottom: 15%; 
-  left: 20%; 
-  transform: translateX(-50%);
+  bottom: 18%; 
+  left: 25%; 
 }
 
 .seat-8 { 
-  bottom: 35%; 
-  left: 8%; 
-  transform: translateX(-50%);
+  bottom: 38%; 
+  left: 12%; 
 }
 
 .seat-9 { 
-  top: 35%; 
-  left: 8%; 
-  transform: translateX(-50%);
+  top: 38%; 
+  left: 12%; 
 }
 
 /* Avatar do Jogador */
