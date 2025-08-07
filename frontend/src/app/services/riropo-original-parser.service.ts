@@ -140,7 +140,15 @@ export class RiropoOriginalParserService {
    * Get button seat - original RIROPO logic
    */
   private getButtonSeat(lines: string[]): number {
-    // Table 'Akiyama II' 6-max Seat #5 is the button
+    // Procura por "Seat #X is the button" em qualquer linha
+    for (const line of lines) {
+      const match = line.match(/Seat #(\d+) is the button/);
+      if (match) {
+        return Number(match[1]);
+      }
+    }
+    
+    // Se não encontrar, procura na linha da mesa
     const buttonLine = lines[1];
     const match = buttonLine.match(/#(\d+)/);
     return match ? Number(match[1]) : 1;
@@ -181,15 +189,30 @@ export class RiropoOriginalParserService {
 
   private parseTableInfo(lines: string[]) {
     // Table 'Akiyama II' 6-max Seat #5 is the button
+    // ou Table '3910307458 12' VI
     for (const line of lines) {
-      const tableRegex = /Table '([^']+)'\s+(\d+)-max\s+Seat #(\d+) is the button/;
-      const match = line.match(tableRegex);
+      // Primeiro tenta o formato padrão
+      let tableRegex = /Table '([^']+)'\s+(\d+)-max\s+Seat #(\d+) is the button/;
+      let match = line.match(tableRegex);
       
       if (match) {
         return {
           tableName: match[1],
           maxSeats: parseInt(match[2]),
           buttonSeat: parseInt(match[3])
+        };
+      }
+
+      // Tenta formato alternativo (torneios)
+      tableRegex = /Table '([^']+)'\s+(\w+)/;
+      match = line.match(tableRegex);
+      
+      if (match) {
+        // Para torneios, assume 9-max por padrão
+        return {
+          tableName: match[1],
+          maxSeats: 9,
+          buttonSeat: 1 // Será corrigido pelo getButtonSeat
         };
       }
     }
