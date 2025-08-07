@@ -194,7 +194,9 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  z-index: 5;
+  min-width: 120px;
+  max-width: 140px;
 }
 
 .player-seat.active {
@@ -206,16 +208,60 @@
   filter: drop-shadow(0 0 10px #00d4aa);
 }
 
-/* Posicionamento dos assentos */
-.seat-1 { top: 10%; left: 50%; transform: translateX(-50%); }
-.seat-2 { top: 20%; right: 15%; }
-.seat-3 { top: 40%; right: 5%; }
-.seat-4 { bottom: 40%; right: 5%; }
-.seat-5 { bottom: 20%; right: 15%; }
-.seat-6 { bottom: 10%; left: 50%; transform: translateX(-50%); }
-.seat-7 { bottom: 20%; left: 15%; }
-.seat-8 { bottom: 40%; left: 5%; }
-.seat-9 { top: 40%; left: 5%; }
+/* Posicionamento dos assentos para mesa de 9 jogadores */
+.seat-1 { 
+  top: 5%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+.seat-2 { 
+  top: 15%; 
+  right: 20%; 
+  transform: translateX(50%);
+}
+
+.seat-3 { 
+  top: 35%; 
+  right: 8%; 
+  transform: translateX(50%);
+}
+
+.seat-4 { 
+  bottom: 35%; 
+  right: 8%; 
+  transform: translateX(50%);
+}
+
+.seat-5 { 
+  bottom: 15%; 
+  right: 20%; 
+  transform: translateX(50%);
+}
+
+.seat-6 { 
+  bottom: 5%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+.seat-7 { 
+  bottom: 15%; 
+  left: 20%; 
+  transform: translateX(-50%);
+}
+
+.seat-8 { 
+  bottom: 35%; 
+  left: 8%; 
+  transform: translateX(-50%);
+}
+
+.seat-9 { 
+  top: 35%; 
+  left: 8%; 
+  transform: translateX(-50%);
+}
 
 /* Avatar do Jogador */
 .player-avatar {

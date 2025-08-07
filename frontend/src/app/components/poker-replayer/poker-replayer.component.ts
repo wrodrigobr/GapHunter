@@ -135,14 +135,17 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
     
     this.currentStreetIndex = 0;
     this.currentActionIndex = -1;
-    this.currentPlayers = [...this.parsedHand.players];
+    
+    // Ordenar jogadores por seat para posicionamento correto
+    this.currentPlayers = [...this.parsedHand.players].sort((a, b) => a.seat - b.seat);
+    
     this.currentBoard = [];
     this.currentPot = 0;
     this.currentBets = {};
     this.lastAction = null;
     this.isPlaying = false;
 
-    console.log('🔍 DEBUG: currentPlayers após reset:', this.currentPlayers);
+    console.log('🔍 DEBUG: currentPlayers após reset (ordenados):', this.currentPlayers);
     console.log('🔍 DEBUG: currentPlayers.length:', this.currentPlayers.length);
 
     // Apply blinds
