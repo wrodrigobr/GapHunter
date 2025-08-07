@@ -112,7 +112,7 @@
           <!-- Ação atual -->
           <div class="player-action" *ngIf="lastAction?.player === player.name">
             <div class="action-bubble">
-              {{ getActionDescription(lastAction) }}
+              {{ lastAction ? getActionDescription(lastAction) : 'Nenhuma ação' }}
             </div>
           </div>
 

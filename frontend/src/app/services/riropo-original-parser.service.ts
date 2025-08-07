@@ -197,7 +197,7 @@ export class RiropoOriginalParserService {
   }
 
   private parseBlinds(lines: string[], startIndex: number) {
-    const blinds = { small: 0, big: 0 };
+    const blinds: { small: number; big: number; ante?: number } = { small: 0, big: 0 };
 
     for (let i = startIndex; i < lines.length; i++) {
       const line = lines[i];

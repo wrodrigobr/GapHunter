@@ -335,7 +335,7 @@ export class RiropoParserService {
   }
 
   private parseSummary(lines: string[]): { totalPot: number; rake: number; board?: string[] } {
-    const summary = { totalPot: 0, rake: 0 };
+    const summary: { totalPot: number; rake: number; board?: string[] } = { totalPot: 0, rake: 0 };
 
     for (const line of lines) {
       // Total pot 290 | Rake 0

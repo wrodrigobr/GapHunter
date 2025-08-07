@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -22,7 +22,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   tableConfig = {
     theme: 'professional',
     cardStyle: 'classic',
-    chipStyle: 'casino'
+    chipStyle: 'casino',
+    tableColor: '#0d5016'
   };
   
   // RIROPO Replayer properties
@@ -61,6 +62,10 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
     this.initializeTable();
     this.setupKeyboardShortcuts();
     this.applyPokerStarsTheme();
+  }
+
+  private applyPokerStarsTheme() {
+    console.log('Aplicando tema PokerStars');
   }
 
   /**
@@ -299,14 +304,6 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.removeKeyboardShortcuts();
-  }
-
-  /**
-   * Aplica tema do PokerStars
-   */
-  ngOnInit() {
-    // Aplicar tema da mesa
-    console.log('Mesa de poker inicializada com tema:', this.tableConfig.theme);
   }
 
   private setupKeyboardShortcuts() {
@@ -1141,7 +1138,6 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
         break;
     }
     
-    this.applyPokerStarsTheme();
   }
 
   // Método para abrir mesa em tela cheia
