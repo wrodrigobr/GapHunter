@@ -259,15 +259,23 @@ export class RiropoOriginalParserService {
     const players: RiropoPlayer[] = [];
     let playersEndIndex = 0;
 
+    console.log('🔍 DEBUG: Iniciando parsePlayers...');
+    console.log('🔍 DEBUG: Total de linhas:', lines.length);
+
     // Seat 1: jojosetubal (7835 in chips)
-    const seatRegex = /Seat (\d+):\s+([^(]+)\s+\((\d+) in chips\)/;
+    // Seat 5: SuKKinho ($3918 in chips) [BTN]
+    // Seat 6: martelli1990 ($3000 in chips) [SB]
+    const seatRegex = /Seat (\d+):\s+([^($]+)\s+\([\$]?(\d+) in chips\)/;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
+      console.log(`🔍 DEBUG: Linha ${i}: "${line}"`);
+      
       const match = line.match(seatRegex);
       
       if (match) {
-        players.push({
+        console.log('🔍 DEBUG: Match encontrado:', match);
+        const player = {
           seat: parseInt(match[1]),
           name: match[2].trim(),
           stack: parseInt(match[3]),
@@ -275,13 +283,24 @@ export class RiropoOriginalParserService {
           isSmallBlind: false,
           isBigBlind: false,
           isHero: false
-        });
+        };
+        
+        // Check for position indicators in the line
+        if (line.includes('[BTN]')) player.isButton = true;
+        if (line.includes('[SB]')) player.isSmallBlind = true;
+        if (line.includes('[BB]')) player.isBigBlind = true;
+        
+        players.push(player);
         playersEndIndex = i + 1;
+        console.log('🔍 DEBUG: Jogador adicionado:', player);
       } else if (line.includes('*** HOLE CARDS ***')) {
+        console.log('🔍 DEBUG: Encontrou HOLE CARDS, parando parsing de jogadores');
         break;
       }
     }
 
+    console.log('🔍 DEBUG: Total de jogadores encontrados:', players.length);
+    console.log('🔍 DEBUG: Jogadores:', players);
     return { players, playersEndIndex };
   }
 
