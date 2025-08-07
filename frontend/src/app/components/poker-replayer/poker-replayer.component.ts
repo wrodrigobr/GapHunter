@@ -48,19 +48,31 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   }
 
   initializeReplayer() {
+    console.log('🔍 DEBUG: Inicializando replayer...');
+    console.log('🔍 DEBUG: handHistory:', this.handHistory);
+    console.log('🔍 DEBUG: backendData:', this.backendData);
+    
     if (this.handHistory) {
       // Parse hand history text
+      console.log('🔍 DEBUG: Fazendo parse do hand history...');
       this.parsedHand = this.riropoParser.parseHandHistory(this.handHistory);
+      console.log('🔍 DEBUG: parsedHand resultado:', this.parsedHand);
     } else if (this.backendData) {
       // Use backend data directly
+      console.log('🔍 DEBUG: Convertendo dados do backend...');
       this.parsedHand = this.convertBackendData(this.backendData);
+      console.log('🔍 DEBUG: parsedHand convertido:', this.parsedHand);
     }
 
     if (this.parsedHand) {
+      console.log('🔍 DEBUG: Jogadores encontrados:', this.parsedHand.players?.length);
+      console.log('🔍 DEBUG: Streets encontradas:', this.parsedHand.streets?.length);
       this.resetToStart();
       if (this.autoPlay) {
         this.startAutoPlay();
       }
+    } else {
+      console.error('❌ DEBUG: parsedHand é null!');
     }
   }
 
@@ -113,8 +125,14 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
   }
 
   resetToStart() {
-    if (!this.parsedHand) return;
+    if (!this.parsedHand) {
+      console.error('❌ DEBUG: resetToStart chamado sem parsedHand!');
+      return;
+    }
 
+    console.log('🔍 DEBUG: Resetando para início...');
+    console.log('🔍 DEBUG: parsedHand.players:', this.parsedHand.players);
+    
     this.currentStreetIndex = 0;
     this.currentActionIndex = -1;
     this.currentPlayers = [...this.parsedHand.players];
@@ -123,6 +141,9 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
     this.currentBets = {};
     this.lastAction = null;
     this.isPlaying = false;
+
+    console.log('🔍 DEBUG: currentPlayers após reset:', this.currentPlayers);
+    console.log('🔍 DEBUG: currentPlayers.length:', this.currentPlayers.length);
 
     // Apply blinds
     this.applyBlinds();
