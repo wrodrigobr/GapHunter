@@ -11,6 +11,7 @@ export interface RiropoHand {
   players: RiropoPlayer[];
   streets: RiropoStreet[];
   summary: RiropoSummary;
+  blinds: { small: number; big: number; ante?: number };
   heroCards?: string[];
 }
 
@@ -83,6 +84,9 @@ export class RiropoOriginalParserService {
       // Parse players
       const { players, playersEndIndex } = this.parsePlayers(lines);
 
+      // Parse blinds
+      const blinds = this.parseBlinds(lines, playersEndIndex);
+
       // Parse streets and actions
       const streets = this.parseStreetsAndActions(lines, playersEndIndex);
 
@@ -99,7 +103,8 @@ export class RiropoOriginalParserService {
         buttonSeat: buttonSeat,
         players: players,
         streets: streets,
-        summary: summary
+        summary: summary,
+        blinds: blinds
       };
 
       // Set hero cards if found
@@ -189,6 +194,42 @@ export class RiropoOriginalParserService {
       }
     }
     return null;
+  }
+
+  private parseBlinds(lines: string[], startIndex: number) {
+    const blinds = { small: 0, big: 0 };
+
+    for (let i = startIndex; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // posts the ante
+      if (line.includes('posts the ante')) {
+        const anteMatch = line.match(/posts the ante (\d+)/);
+        if (anteMatch && !blinds.ante) {
+          blinds.ante = parseInt(anteMatch[1]);
+        }
+      }
+      // posts small blind
+      else if (line.includes('posts small blind')) {
+        const sbMatch = line.match(/posts small blind (\d+)/);
+        if (sbMatch) {
+          blinds.small = parseInt(sbMatch[1]);
+        }
+      }
+      // posts big blind
+      else if (line.includes('posts big blind')) {
+        const bbMatch = line.match(/posts big blind (\d+)/);
+        if (bbMatch) {
+          blinds.big = parseInt(bbMatch[1]);
+        }
+      }
+      // *** HOLE CARDS *** indicates end of blinds section
+      else if (line.includes('*** HOLE CARDS ***')) {
+        break;
+      }
+    }
+
+    return blinds;
   }
 
   private parsePlayers(lines: string[]) {

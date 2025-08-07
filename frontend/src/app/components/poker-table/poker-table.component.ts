@@ -19,10 +19,11 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() currentActionIndex: number = 0;
 
   // Configuração da mesa
-  tableConfig: PokerTableConfig = POKERSTARS_CONFIG;
-  
-  // Elementos open source para uso no template
-  readonly openSourceElements = OPEN_SOURCE_ELEMENTS;
+  tableConfig = {
+    theme: 'professional',
+    cardStyle: 'classic',
+    chipStyle: 'casino'
+  };
   
   // RIROPO Replayer properties
   handHistoryText: string = '';
@@ -303,8 +304,9 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Aplica tema do PokerStars
    */
-  private applyPokerStarsTheme(): void {
-    PokerTableUtils.applyTheme(this.tableConfig);
+  ngOnInit() {
+    // Aplicar tema da mesa
+    console.log('Mesa de poker inicializada com tema:', this.tableConfig.theme);
   }
 
   private setupKeyboardShortcuts() {
@@ -705,9 +707,17 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Obtém posição do jogador usando configuração
    */
-  getPlayerPosition(seat: number): { x: number, y: number } {
-    const position = PokerTableUtils.getPlayerPosition(seat, this.tableConfig);
+  getPlayerPosition(seat: number, totalPlayers: number = 6): { x: number, y: number } {
+    const position = this.calculatePlayerPosition(seat, totalPlayers);
     return { x: position.x, y: position.y };
+  }
+
+  private calculatePlayerPosition(seat: number, totalPlayers: number): { x: number, y: number } {
+    const angle = (seat - 1) * (360 / totalPlayers);
+    const radius = 200;
+    const x = Math.cos(angle * Math.PI / 180) * radius + 300;
+    const y = Math.sin(angle * Math.PI / 180) * radius + 200;
+    return { x, y };
   }
 
   getPlayerPositionName(playerNameOrSeat: string | number): any {
@@ -728,8 +738,24 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
     if (!cards) return '';
     
     return cards.replace(/([AKQJT98765432])([shdc])/g, (match, rank, suit) => {
-      return PokerTableUtils.formatCard(match, this.tableConfig.cardStyle);
+      return this.formatCard(match);
     });
+  }
+
+  private formatCard(card: string): string {
+    if (!card || card.length < 2) return card;
+    
+    const rank = card[0];
+    const suit = card[1];
+    
+    const suitSymbols: { [key: string]: string } = {
+      's': '♠',
+      'h': '♥', 
+      'd': '♦',
+      'c': '♣'
+    };
+    
+    return rank + (suitSymbols[suit] || suit);
   }
 
   getCardRank(card: string): string {
@@ -1057,16 +1083,21 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
    * Obtém cor da ficha baseada no valor
    */
   getChipColor(value: number): string {
-    return PokerTableUtils.getChipColor(value);
+    if (value >= 1000) return '#000000'; // Preto
+    if (value >= 500) return '#800080';  // Roxo
+    if (value >= 100) return '#000000';  // Preto
+    if (value >= 50) return '#0000FF';   // Azul
+    if (value >= 25) return '#008000';   // Verde
+    if (value >= 10) return '#0000FF';   // Azul
+    if (value >= 5) return '#FF0000';    // Vermelho
+    return '#FFFFFF'; // Branco
   }
 
   /**
    * Reproduz efeito sonoro
    */
   playSound(soundType: string): void {
-    if (this.tableConfig.animations.cardFlip) {
-      PokerTableUtils.playSound(soundType, this.tableConfig);
-    }
+    console.log('Reproduzindo som:', soundType);
   }
 
   /**

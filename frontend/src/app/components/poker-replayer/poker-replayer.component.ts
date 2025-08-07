@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RiropoOriginalParserService, RiropoHand } from '../../services/riropo-original-parser.service';
+import { RiropoOriginalParserService, RiropoHand, RiropoPlayer, RiropoAction, RiropoStreet } from '../../services/riropo-original-parser.service';
 
 @Component({
   selector: 'app-poker-replayer',
