@@ -1109,6 +1109,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
         // Configurar mesa PokerStars
         this.tableConfig = { 
           theme: 'pokerstars', 
+          cardStyle: 'classic',
+          chipStyle: 'casino',
           tableColor: '#0d5016',
           feltTexture: 'smooth'
         };
@@ -1117,6 +1119,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
         // Configurar mesa clássica
         this.tableConfig = { 
           theme: 'classic', 
+          cardStyle: 'classic',
+          chipStyle: 'casino',
           tableColor: '#0d5016',
           feltTexture: 'smooth'
         };
@@ -1125,6 +1129,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
         // Configurar mesa moderna
         this.tableConfig = { 
           theme: 'modern', 
+          cardStyle: 'modern',
+          chipStyle: 'modern',
           tableColor: '#0d5016',
           feltTexture: 'smooth'
         };
@@ -1133,6 +1139,8 @@ export class PokerTableComponent implements OnInit, OnChanges, OnDestroy {
         // Configurar mesa padrão
         this.tableConfig = { 
           theme: 'dark', 
+          cardStyle: 'classic',
+          chipStyle: 'casino',
           tableColor: '#0d5016',
           feltTexture: 'smooth'
         };
