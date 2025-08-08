@@ -294,9 +294,9 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
         break;
         
       case 'call':
-        if (action.amount > 0) {
+        if (action.amount && action.amount > 0) {
           const currentBet = this.currentBets[player.name] || 0;
-          const additionalBet = action.amount;
+          const additionalBet = action.amount || 0;
           
           this.currentBets[player.name] = currentBet + additionalBet;
           player.stack -= additionalBet;
@@ -308,9 +308,9 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
         
       case 'bet':
       case 'raise':
-        if (action.amount > 0) {
+        if (action.amount && action.amount > 0) {
           const currentBet = this.currentBets[player.name] || 0;
-          const additionalBet = action.amount;
+          const additionalBet = action.amount || 0;
           
           this.currentBets[player.name] = currentBet + additionalBet;
           player.stack -= additionalBet;
@@ -322,9 +322,9 @@ export class PokerReplayerComponent implements OnInit, OnChanges {
         
       default:
         // Handle other actions (blinds, antes, etc.)
-        if (action.amount > 0) {
+        if (action.amount && action.amount > 0) {
           const currentBet = this.currentBets[player.name] || 0;
-          const additionalBet = action.amount;
+          const additionalBet = action.amount || 0;
           
           this.currentBets[player.name] = currentBet + additionalBet;
           player.stack -= additionalBet;
