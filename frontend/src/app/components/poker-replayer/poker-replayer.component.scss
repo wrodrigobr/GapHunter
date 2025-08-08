@@ -1,4 +1,27 @@
-.riropo-replayer {
+/* RIROPO Poker Replayer - Container isolado para evitar conflitos CSS */
+.riropo-poker-replayer-isolated {
+  /* Reset completo para evitar herança de estilos */
+  all: initial;
+  
+  /* Definir estilos base */
+  display: block;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #ffffff;
+  background: transparent;
+  
+  /* Garantir isolamento */
+  position: relative;
+  z-index: 100;
+  
+  /* Reset para todos os elementos filhos */
+  * {
+    box-sizing: border-box;
+  }
+}
+
+/* Estilos do poker replayer dentro do container isolado */
+.riropo-poker-replayer-isolated .poker-replayer {{
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;

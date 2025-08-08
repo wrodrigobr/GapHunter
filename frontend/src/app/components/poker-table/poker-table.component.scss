@@ -83,6 +83,34 @@ app-poker-replayer {
   width: 100%;
 }
 
+/* Container isolado para RIROPO - evita conflitos CSS */
+.riropo-isolated-container {
+  /* Reset de estilos para evitar herança */
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Isolar do CSS pai */
+  position: relative;
+  z-index: 10;
+  
+  /* Garantir que o componente RIROPO tenha espaço próprio */
+  display: block;
+  width: 100%;
+  min-height: 600px;
+  
+  /* Evitar interferência de outros estilos */
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Garantir que app-poker-replayer funcione dentro do isolamento */
+  app-poker-replayer {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
 /* Mensagem quando não há dados */
 .no-data-message {
   text-align: center;

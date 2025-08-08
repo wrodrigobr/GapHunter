@@ -20,18 +20,19 @@
       <button (click)="loadHandFromDatabase()" class="load-btn">Carregar Mesa RIROPO</button>
     </div>
     
-    <!-- Mostrar replayer RIROPO quando houver dados -->
-    <app-poker-replayer 
-      *ngIf="showReplayer"
-      [handHistory]="handHistoryText"
-      [backendData]="handReplay"
-      [autoPlay]="false"
-      [speed]="1"
-      (handComplete)="onHandComplete($event)">
-    </app-poker-replayer>
+    <!-- Mostrar replayer RIROPO quando houver dados - ISOLADO -->
+    <div class="riropo-isolated-container" *ngIf="showReplayer">
+      <app-poker-replayer 
+        [handHistory]="handHistoryText"
+        [backendData]="handReplay"
+        [autoPlay]="false"
+        [speed]="1"
+        (handComplete)="onHandComplete($event)">
+      </app-poker-replayer>
+    </div>
 
     <!-- Botão Tela Cheia -->
-    <div class="fullscreen-controls">
+    <div class="fullscreen-controls" *ngIf="showReplayer">
       <button 
         class="fullscreen-btn"
         (click)="openFullscreen()"
@@ -42,11 +43,7 @@
       </button>
     </div>
   </div>
-
-  <!-- Mesa de Poker -->
-  <div class="poker-table">
-    <!-- Feltro da Mesa -->
-    <div class="table-felt">
+</div>
       
       <!-- Cartas Comunitárias -->
       <div class="community-cards">
