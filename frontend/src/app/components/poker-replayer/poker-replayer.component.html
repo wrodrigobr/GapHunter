@@ -2,10 +2,10 @@
 <div class="poker-replayer">
   
   <!-- Header com informações da mão -->
-  <div class="hand-header">
+  <div class="hand-header" *ngIf="parsedHand">
     <div class="hand-info">
-      <h3>{{ parsedHand.tableName }} - Mão #{{ parsedHand.id }}</h3>
-      <span class="game-info">{{ parsedHand.gameType }} - {{ parsedHand.stakes }}</span>
+      <h3>{{ parsedHand?.tableName || 'Mesa' }} - Mão #{{ parsedHand?.id || '0' }}</h3>
+      <span class="game-info">{{ parsedHand?.gameType || 'Poker' }} - {{ parsedHand?.stakes || 'N/A' }}</span>
     </div>
     <div class="street-info">
       <span class="current-street">{{ getCurrentStreet().toUpperCase() }}</span>
@@ -178,10 +178,10 @@
           [style.width.%]="getProgressPercentage()"
         ></div>
       </div>
-      <span class="progress-text">
-        Street {{ currentStreetIndex + 1 }}/{{ parsedHand.streets.length }} - 
-        Ação {{ currentActionIndex + 1 }}/{{ parsedHand.streets[currentStreetIndex].actions.length || 0 }}
-      </span>
+      <div class="progress-info">
+        Street {{ currentStreetIndex + 1 }}/{{ parsedHand?.streets?.length || 0 }} - 
+        Ação {{ currentActionIndex + 1 }}/{{ parsedHand?.streets?.[currentStreetIndex]?.actions?.length || 0 }}
+      </div>
     </div>
 
     <!-- Controles de velocidade -->

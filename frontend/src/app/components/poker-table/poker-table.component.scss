@@ -1,80 +1,75 @@
-/* RIROPO Container - CSS Limpo */
+/* Poker Table - Container simples para RIROPO */
 .riropo-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background: #1a1a1a;
-  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* RIROPO Integration */
 .riropo-integration {
-  background: #16213e;
-  border-radius: 10px;
-  border: 2px solid #4ecdc4;
-  padding: 20px;
+  width: 100%;
+}
+
+.riropo-integration h3 {
+  color: #ffffff;
+  text-align: center;
   margin-bottom: 20px;
+  font-size: 1.5em;
+  font-weight: 600;
+}
 
-  h3 {
-    color: #4ecdc4;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-  }
+/* Input manual de hand history */
+.hand-input {
+  margin-bottom: 20px;
+  text-align: center;
+}
 
-  .hand-input {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    align-items: flex-start;
+.hand-textarea {
+  width: 100%;
+  max-width: 600px;
+  padding: 15px;
+  border: 2px solid #4a90e2;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 15px;
+}
 
-    .hand-textarea {
-      flex: 1;
-      min-height: 120px;
-      padding: 15px;
-      border: 2px solid #4ecdc4;
-      border-radius: 8px;
-      background: #1a1a2e;
-      color: white;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9em;
-      resize: vertical;
+.hand-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
 
-      &::placeholder {
-        color: #b8b8b8;
-      }
+/* Botões */
+.load-btn, .fullscreen-btn {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 10px;
+}
 
-      &:focus {
-        outline: none;
-        border-color: #44a08d;
-        box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
-      }
-    }
+.load-btn:hover, .fullscreen-btn:hover {
+  background: linear-gradient(135deg, #357abd, #2968a3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+}
 
-    .load-btn {
-      padding: 12px 24px;
-      background: #4ecdc4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-
-      &:hover {
-        background: #44a08d;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-    }
-  }
+/* Container isolado para RIROPO */
+.riropo-isolated-container {
+  position: relative;
+  z-index: 10;
+  margin-top: 20px;
 }
 
 /* Garantir que o replayer do RIROPO seja exibido corretamente */
@@ -83,204 +78,20 @@ app-poker-replayer {
   width: 100%;
 }
 
-/* Container isolado para RIROPO - evita conflitos CSS */
-.riropo-isolated-container {
-  /* Reset de estilos para evitar herança */
-  all: initial;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  
-  /* Isolar do CSS pai */
-  position: relative;
-  z-index: 10;
-  
-  /* Garantir que o componente RIROPO tenha espaço próprio */
-  display: block;
-  width: 100%;
-  min-height: 600px;
-  
-  /* Evitar interferência de outros estilos */
-  * {
-    box-sizing: border-box;
-  }
-  
-  /* Garantir que app-poker-replayer funcione dentro do isolamento */
-  app-poker-replayer {
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-  }
-}
-
-/* Mensagem quando não há dados */
-.no-data-message {
+/* Controles de tela cheia */
+.fullscreen-controls {
   text-align: center;
-  padding: 40px 20px;
-  color: #ccc;
-  
-  p {
-    font-size: 16px;
-    margin: 0;
-    line-height: 1.5;
-  }
+  margin-top: 20px;
 }
 
-/* Fichas Visuais */
-.poker-chips {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  z-index: 10;
-  
-  .chip-stack {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    .chip {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid #333;
-      position: relative;
-      margin-top: -8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      
-      &:first-child {
-        margin-top: 0;
-      }
-      
-      // Cores das fichas por valor
-      &.chip-1 {
-        background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-        border-color: #ccc;
-      }
-      
-      &.chip-5 {
-        background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
-        border-color: #c44569;
-      }
-      
-      &.chip-10 {
-        background: linear-gradient(135deg, #3742fa 0%, #2f3542 100%);
-        border-color: #2f3542;
-      }
-      
-      &.chip-25 {
-        background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
-        border-color: #0984e3;
-      }
-      
-      &.chip-50 {
-        background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);
-        border-color: #e17055;
-      }
-      
-      &.chip-100 {
-        background: linear-gradient(135deg, #000000 0%, #2c2c54 100%);
-        border-color: #40407a;
-      }
-      
-      &.chip-500 {
-        background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
-        border-color: #6c5ce7;
-      }
-      
-      &.chip-1000 {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-        border-color: #d35400;
-      }
-      
-      // Padrão para fichas especiais
-      &.ante-chip {
-        background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
-        border-color: #2d3436;
-        width: 20px;
-        height: 20px;
-      }
-      
-      &.blind-chip {
-        background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-        border-color: #00a085;
-      }
-    }
-  }
-  
-  .bet-amount {
-    background: rgba(0, 0, 0, 0.8);
-    color: #ffffff;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 4px;
-    white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    
-    &.ante-amount {
-      background: rgba(99, 110, 114, 0.9);
-      font-size: 0.65rem;
-    }
-    
-    &.blind-amount {
-      background: rgba(0, 184, 148, 0.9);
-    }
-  }
+.fullscreen-icon {
+  margin-right: 8px;
+  font-size: 18px;
 }
 
-/* Posicionamento das fichas por jogador */
-.player-seat {
-  .poker-chips {
-    // Posicionar fichas próximas ao centro da mesa
-    &.chips-position-1 { bottom: -40px; left: 50%; transform: translateX(-50%); }
-    &.chips-position-2 { bottom: -30px; right: -20px; }
-    &.chips-position-3 { top: 50%; right: -40px; transform: translateY(-50%); }
-    &.chips-position-4 { top: -30px; right: -20px; }
-    &.chips-position-5 { top: -40px; left: 50%; transform: translateX(-50%); }
-    &.chips-position-6 { top: -30px; left: -20px; }
-    &.chips-position-7 { top: 50%; left: -40px; transform: translateY(-50%); }
-    &.chips-position-8 { bottom: -30px; left: -20px; }
-    &.chips-position-9 { bottom: -40px; right: 20%; }
-  }
-}
-
-/* Animações para fichas */
-@keyframes chipDrop {
-  0% {
-    transform: translateY(-20px) scale(0.8);
-    opacity: 0;
-  }
-  50% {
-    transform: translateY(5px) scale(1.1);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes chipToPot {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(0.8);
-  }
-  100% {
-    transform: scale(0) translateX(0) translateY(-50px);
-    opacity: 0;
-  }
-}
-
-.chip-animate-in {
-  animation: chipDrop 0.5s ease-out;
-}
-
-.chip-animate-to-pot {
-  animation: chipToPot 0.8s ease-in forwards;
+/* Seção de replay */
+.hand-replay-section {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
